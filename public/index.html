@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkInCZ — Работа для мигрантов в Чехии</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4F46E5',
+            secondary: '#F59E0B',
+            success: '#10B981'
+          },
+          borderRadius: {
+            'none': '0px',
+            'sm': '4px',
+            DEFAULT: '8px',
+            'md': '12px',
+            'lg': '16px',
+            'xl': '20px',
+            '2xl': '24px',
+            '3xl': '32px',
+            'full': '9999px',
+            'button': '8px'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :where([class^="ri-"])::before { content: "\f3c2"; }
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    .live-activity-dot {
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .live-users-banner {
+      transition: all 0.3s ease;
+    }
+    .hero-gradient {
+      background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
+    }
+    .hero-parallax {
+      transform: translateY(var(--parallax-offset, 0));
+      transition: transform 0.1s ease-out;
+    }
+    .card-3d {
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      transition: all 0.3s ease;
+    }
+    .card-3d:hover {
+      transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y)) scale(1.02);
+    }
+    .button-ripple {
+      position: relative;
+      overflow: hidden;
+    }
+    .button-ripple::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 60%);
+      transform: scale(5);
+      opacity: 0;
+      transition: transform 0.5s, opacity 0.5s;
+    }
+    .button-ripple:active::after {
+      transform: scale(0);
+      opacity: 1;
+      transition: 0s;
+    }
+    @keyframes countUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-count-up {
+      animation: countUp 1s ease-out forwards;
+      opacity: 0;
+    }
+    .fade-in-section {
+      opacity: 0;
+      transform: translateY(20px);
+      visibility: hidden;
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+      will-change: opacity, visibility;
+    }
+    .fade-in-section.is-visible {
+      opacity: 1;
+      transform: none;
+      visibility: visible;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fadeInUp {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+    .animate-delay-1 { animation-delay: 0.1s; }
+    .animate-delay-2 { animation-delay: 0.2s; }
+    .animate-delay-3 { animation-delay: 0.3s; }
+    .animate-delay-4 { animation-delay: 0.4s; }
+    .animate-delay-5 { animation-delay: 0.5s; }
+    .animate-delay-6 { animation-delay: 0.6s; }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .custom-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 4px;
+      background-color: white;
+      cursor: pointer;
+      position: relative;
+    }
+    .custom-checkbox:checked {
+      background-color: #4F46E5;
+      border-color: #4F46E5;
+    }
+    .custom-checkbox:checked::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 1px;
+      background-color: white;
+    }
+    .custom-switch {
+      position: relative;
+      display: inline-block;
+      width: 3rem;
+      height: 1.5rem;
+    }
+    .custom-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e2e8f0;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 1.1rem;
+      width: 1.1rem;
+      left: 0.2rem;
+      bottom: 0.2rem;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .switch-slider {
+      background-color: #4F46E5;
+    }
+    input:checked + .switch-slider:before {
+      transform: translateX(1.5rem);
+    }
+    .modal { transition: opacity .3s; }
+    
+    /* Стили для личного кабинета */
+    .dashboard-nav-item.active {
+      background-color: white;
+      color: #4F46E5;
+      font-weight: 500;
+    }
+    
+    .dashboard-nav-item:hover {
+      background-color: white;
+    }
+
+    /* Стили для модальных уведомлений об ошибках */
+    .modal-error {
+      animation: slideInFromTop 0.3s ease-out;
+      transition: opacity 0.3s ease-out;
+    }
+    
+    @keyframes slideInFromTop {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .modal-error button:hover {
+      transform: scale(1.1);
+      transition: transform 0.2s ease;
+    }
+
+    /* Защита от горизонтального переполнения */
+    body, html {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+    
+    .container {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    
+    /* Адаптивная шапка */
+    header {
+      width: 100%;
+      overflow: hidden;
+    }
+    
+    @media (max-width: 1279px) {
+      .header-stats-panel {
+        display: none !important;
+      }
+    }
+
+    /* 🎨 ОПТИМИЗИРОВАННЫЕ СТИЛИ ДЛЯ ЧАТА (БЕЗ ЛАГОВ) */
+    .search-highlight {
+      background: #fbbf24;
+      border-radius: 4px;
+    }
+
+    /* Убрал transform hover эффекты для лучшей производительности */
+    .message-bubble:hover {
+      background-color: #f9fafb;
+    }
+
+    /* Темная тема для чата - упрощенная */
+    .dark-theme {
+      background: #1f2937;
+      color: #f9fafb;
+    }
+
+    .dark-theme .bg-white {
+      background: #374151 !important;
+      color: #f9fafb;
+    }
+
+    .dark-theme .border-gray-100 {
+      border-color: #4b5563 !important;
+    }
+
+    .dark-theme .text-gray-600 {
+      color: #d1d5db !important;
+    }
+
+    /* Упрощенная анимация для сообщений - БЕЗ TRANSFORM */
+    @keyframes messageSlideIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .message-item {
+      animation: messageSlideIn 0.2s ease-out;
+    }
+
+    /* Оптимизированный индикатор печатания */
+    @keyframes typing {
+      0%, 60%, 100% { opacity: 0.4; }
+      30% { opacity: 1; }
+    }
+
+    .animate-bounce {
+      animation: typing 1.4s infinite;
+    }
+
+    /* Убрал scale transforms для реакций */
+    .message-bubble .reaction-btn {
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .message-bubble:hover .reaction-btn {
+      opacity: 1;
+    }
+
+    /* Упрощенные тени без градиентов */
+    .shadow-3xl {
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Простые фоны без градиентов */
+    .bg-gradient-to-b {
+      background: #f9fafb;
+    }
+
+    /* Простая анимация уведомлений */
+    @keyframes slideInRight {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+
+    .animate-slideIn {
+      animation: slideInRight 0.2s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Статистика теперь интегрирована в шапку сайта -->
+
+<!-- Навигация -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="live-users-banner bg-gradient-to-r from-primary/10 to-transparent py-1 text-center text-sm">
+    <span class="inline-flex items-center gap-2">
+      <i class="ri-user-voice-line text-primary"></i>
+      <span class="live-users-count font-medium">2,458</span> человек сейчас на сайте
+      <span class="live-activity-dot ml-2 inline-block w-2 h-2 bg-success rounded-full"></span>
+    </span>
+  </div>
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between max-w-full overflow-hidden">
+    <div class="flex items-center gap-10">
+      <a href="#" class="text-2xl font-['Pacifico'] text-primary">WorkInCZ</a>
+      <nav class="hidden md:flex items-center space-x-6">
+        <a href="#" class="text-gray-700 hover:text-primary font-medium">Поиск работы</a>
+        <a href="#" class="text-gray-700 hover:text-primary font-medium">Биржа услуг</a>
+        <a href="#" class="text-gray-700 hover:text-primary font-medium">Юридическая помощь</a>
+        <a href="#" class="text-gray-700 hover:text-primary font-medium">Образование</a>
+      </nav>
+    </div>
+    <div class="flex items-center gap-3 overflow-hidden">
+      <div class="hidden lg:flex items-center gap-2">
+        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
+          <i class="ri-global-line text-gray-600"></i>
+        </div>
+        <select class="bg-transparent text-sm font-medium text-gray-700 border-none focus:outline-none pr-8">
+          <option value="ru">🇷🇺 Русский</option>
+          <option value="cz">🇨🇿 Čeština</option>
+          <option value="ua">🇺🇦 Українська</option>
+          <option value="by">🇧🇾 Беларуская</option>
+          <option value="vn">🇻🇳 Tiếng Việt</option>
+          <option value="pl">🇵🇱 Polski</option>
+          <option value="sk">🇸🇰 Slovenčina</option>
+          <option value="ro">🇷🇴 Română</option>
+          <option value="bg">🇧🇬 Български</option>
+        </select>
+      </div>
+      
+      <!-- 📊 КОМПАКТНАЯ СТАТИСТИКА ПЛАТФОРМЫ В ШАПКЕ -->
+      <div class="hidden xl:flex items-center gap-3 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200 header-stats-panel">
+        <!-- Онлайн пользователи -->
+        <div class="flex items-center gap-1.5">
+          <div class="w-5 h-5 flex items-center justify-center rounded-full bg-green-100">
+            <i class="ri-user-3-line text-green-600 text-xs"></i>
+          </div>
+          <div class="text-xs">
+            <span class="font-medium online-users-count">2,440</span>
+            <span class="text-gray-500 hidden 2xl:inline">online</span>
+          </div>
+          <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+        </div>
+        
+        <!-- Разделитель -->
+        <div class="w-px h-3 bg-gray-300"></div>
+        
+        <!-- Активные вакансии -->
+        <div class="flex items-center gap-1.5">
+          <div class="w-5 h-5 flex items-center justify-center rounded-full bg-secondary/10">
+            <i class="ri-file-list-3-line text-secondary text-xs"></i>
+          </div>
+          <div class="text-xs">
+            <span class="font-medium active-jobs-count">3,471</span>
+            <span class="text-gray-500 hidden 2xl:inline">вакансий</span>
+          </div>
+        </div>
+        
+        <!-- Статус пользователя (только для авторизованных) -->
+        <div id="user-status-header" class="flex items-center gap-1.5 hidden">
+          <div class="w-px h-3 bg-gray-300"></div>
+          <div class="w-5 h-5 flex items-center justify-center rounded-full bg-gray-100">
+            <i class="ri-vip-crown-line text-gray-600 text-xs"></i>
+          </div>
+          <div class="text-xs">
+            <span id="user-subscription-status" class="font-medium text-gray-900">VIP</span>
+          </div>
+        </div>
+      </div>
+      <!-- 👤 КОМПАКТНАЯ ПАНЕЛЬ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ (показывается только авторизованным) -->
+      <div id="user-profile-panel" class="hidden">
+        <div class="bg-gradient-to-r from-primary/5 to-transparent p-2 rounded-lg border border-primary/10">
+          <div class="flex items-center gap-2">
+            <div class="relative">
+              <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border-2 border-primary/20">
+                <img id="user-avatar" src="https://ui-avatars.com/api/?name=User&background=4F46E5&color=fff&size=40" alt="Avatar" class="w-full h-full object-cover">
+              </div>
+              <div id="user-status-indicator" class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                <i class="ri-check-line text-xs text-white"></i>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0 hidden xl:block">
+              <div class="flex items-center gap-2 mb-0.5">
+                <h3 id="user-display-name" class="text-sm font-bold text-gray-900 truncate">Пользователь</h3>
+                <span id="user-status-badge" class="px-1.5 py-0.5 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
+                  🧪 Тест
+                </span>
+              </div>
+              <div class="flex items-center gap-2 text-xs text-gray-600">
+                <div class="flex items-center gap-1">
+                  <i class="ri-star-line text-yellow-500"></i>
+                  <span id="user-rating">4.8</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <i class="ri-send-plane-line text-green-600"></i>
+                  <span id="user-stats">5</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <!-- Кнопка сообщений -->
+              <button id="messages-btn" onclick="openMessagesPanel()" class="relative text-gray-700 hover:text-primary p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                <i class="ri-message-3-line text-base"></i>
+                <span class="messages-badge absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs rounded-full w-3 h-3 flex items-center justify-center font-medium hidden">0</span>
+              </button>
+              
+              <!-- Кнопка личного кабинета -->
+              <button onclick="window.location.href='dashboard.html'" class="bg-primary/10 text-primary px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/20 transition-colors flex items-center gap-1.5">
+                <i class="ri-dashboard-line"></i>
+                <span class="hidden 2xl:block">Кабинет</span>
+              </button>
+              
+              <!-- Кнопка выхода -->
+              <button id="logout-btn" onclick="handleLogout()" class="bg-red-500/10 text-red-600 px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-red-500/20 transition-colors flex items-center gap-1.5">
+                <i class="ri-logout-circle-line"></i>
+                <span class="hidden 2xl:block">Выйти</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 🚀 КОМПАКТНЫЕ КНОПКИ ДЛЯ НЕАВТОРИЗОВАННЫХ ПОЛЬЗОВАТЕЛЕЙ -->
+      <div id="guest-buttons-panel" class="flex items-center gap-2">
+        <button id="post-job-btn" class="bg-secondary text-white px-3 py-2 rounded-button text-xs font-medium hover:bg-secondary/90 transition-colors hidden lg:block">
+        Разместить вакансию
+      </button>
+        <button onclick="openLoginModal()" class="hidden lg:block text-xs font-medium text-gray-700 hover:text-primary">Войти</button>
+        <button onclick="openRegistrationModal()" class="bg-primary text-white px-3 py-2 rounded-button text-xs font-medium hover:bg-primary/90 whitespace-nowrap">
+          <span class="hidden md:inline">Регистрация</span>
+          <span class="md:hidden">Вход</span>
+        </button>
+      </div>
+      <button class="md:hidden w-8 h-8 flex items-center justify-center">
+        <i class="ri-menu-line text-lg"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero секция -->
+<section class="relative overflow-hidden">
+  <div class="absolute inset-0 z-0" style="background-image: url('https://readdy.ai/api/search-image?query=Professional%20diverse%20people%20working%20in%20modern%20office%20space%2C%20bright%20and%20airy%20environment%20with%20large%20windows%2C%20showing%20collaboration%20between%20different%20nationalities%2C%20people%20looking%20at%20computers%20and%20documents%2C%20soft%20natural%20lighting%2C%20clean%20and%20modern%20workspace&width=1600&height=800&seq=hero1&orientation=landscape'); background-size: cover; background-position: center right;"></div>
+  <div class="absolute inset-0 z-10 hero-gradient"></div>
+  <div class="container mx-auto px-4 py-16 md:py-24 relative z-20">
+    <div class="w-full max-w-2xl">
+      <h1 class="text-4xl md:text-5xl font-['Pacifico'] text-gray-900 mb-6">Найдите работу в Чехии быстро и безопасно</h1>
+      <p class="text-lg md:text-xl text-gray-700 mb-8">WorkInCZ — это платформа, которая соединяет трудовых мигрантов с проверенными работодателями. Мы помогаем найти работу, жильё и юридическую поддержку в Чехии.</p>
+      <div class="bg-white p-5 rounded-lg shadow-lg mb-8">
+        <div class="flex flex-col md:flex-row gap-4 mb-4">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Профессия или ключевые слова</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="ri-search-line text-gray-400"></i>
+              </div>
+              <input type="text" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm" placeholder="Строитель, водитель, программист...">
+            </div>
+          </div>
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Город</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="ri-map-pin-line text-gray-400"></i>
+              </div>
+              <input type="text" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm" placeholder="Прага, Брно, Острава...">
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-4 mb-4">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" class="custom-checkbox">
+            <span class="text-sm text-gray-700">С жильём</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" class="custom-checkbox">
+            <span class="text-sm text-gray-700">Срочные вакансии</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" class="custom-checkbox">
+            <span class="text-sm text-gray-700">Без знания языка</span>
+          </label>
+        </div>
+        <button class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Найти работу</button>
+      </div>
+      <div class="flex flex-wrap gap-4 text-sm mb-8">
+        <span class="text-gray-600">Популярные запросы:</span>
+        <a href="#" class="text-primary hover:underline">Строительство</a>
+        <a href="#" class="text-primary hover:underline">Склады</a>
+        <a href="#" class="text-primary hover:underline">Уборка</a>
+        <a href="#" class="text-primary hover:underline">Транспорт</a>
+        <a href="#" class="text-primary hover:underline">IT</a>
+      </div>
+
+      <!-- 🚀 ДЕМО-ПАНЕЛЬ НОВОГО ЧАТА 2.0 -->
+      <div class="bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm p-6 rounded-2xl border border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center text-white shadow-lg">
+            <i class="ri-chat-3-line text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900">🎉 Новый современный чат!</h3>
+            <p class="text-gray-600">Протестируйте революционные возможности общения с работодателями</p>
+          </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-gray-200">
+            <h4 class="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+              <i class="ri-chat-smile-3-line text-primary"></i>
+              Новые функции:
+            </h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>✅ Статусы сообщений (отправлено/доставлено/прочитано)</li>
+              <li>✅ Копирование и перевод сообщений</li>
+              <li>✅ Быстрые реакции и эмодзи</li>
+              <li>✅ Голосовые сообщения и файлы</li>
+              <li>✅ Поиск по истории сообщений</li>
+            </ul>
+          </div>
+          
+          <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-gray-200">
+            <h4 class="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+              <i class="ri-palette-line text-secondary"></i>
+              Дизайн:
+            </h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>🎨 Современные пузыри сообщений</li>
+              <li>🎨 Плавные анимации и эффекты</li>
+              <li>🎨 Темная/светлая тема</li>
+              <li>🎨 Адаптивный дизайн</li>
+              <li>🎨 Группировка сообщений</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="flex flex-wrap gap-3">
+          <button onclick="openMessagesPanel()" 
+                  class="bg-primary text-white px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2 shadow-md">
+            <i class="ri-message-3-line"></i>
+            Открыть панель сообщений
+          </button>
+          
+          <button onclick="startChatWithUser('demo_employer_1', '🎉 Тестирую новый чат! Потрясающие возможности! Как дела с вакансиями?', 'demo_job_1')" 
+                  class="bg-green-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-green-600 transition-colors duration-200 flex items-center gap-2 shadow-md">
+            <i class="ri-chat-3-line"></i>
+            Демо-чат с работодателем
+          </button>
+          
+          <button onclick="testChatFeatures()" 
+                  class="bg-secondary text-white px-6 py-3 rounded-xl font-medium hover:bg-secondary/90 transition-colors duration-200 flex items-center gap-2 shadow-md">
+            <i class="ri-star-line"></i>
+            Тест всех функций
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Статистика -->
+<section class="bg-white py-12">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center stats-section">
+      <div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-1">
+        <div class="text-3xl font-bold text-primary mb-2 animate-number" data-target="3450">0+</div>
+        <div class="text-gray-600">Активных вакансий</div>
+      </div>
+      <div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-2">
+        <div class="text-3xl font-bold text-primary mb-2">1,200+</div>
+        <div class="text-gray-600">Проверенных работодателей</div>
+      </div>
+      <div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-3">
+        <div class="text-3xl font-bold text-primary mb-2">15,000+</div>
+        <div class="text-gray-600">Успешных трудоустройств</div>
+      </div>
+      <div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-4">
+        <div class="text-3xl font-bold text-primary mb-2">9</div>
+        <div class="text-gray-600">Языков интерфейса</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Категории вакансий -->
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12">Популярные категории вакансий</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+      <a href="#" data-category="construction" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+        <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-building-line text-2xl text-primary"></i>
+        </div>
+        <h3 class="font-medium mb-2">Строительство</h3>
+        <p class="text-sm text-gray-500">856 вакансий</p>
+      </a>
+      <a href="#" data-category="warehouse" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+        <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-store-3-line text-2xl text-primary"></i>
+        </div>
+        <h3 class="font-medium mb-2">Склады</h3>
+        <p class="text-sm text-gray-500">642 вакансии</p>
+      </a>
+      <a href="#" data-category="cleaning" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+        <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-home-gear-line text-2xl text-primary"></i>
+        </div>
+        <h3 class="font-medium mb-2">Уборка</h3>
+        <p class="text-sm text-gray-500">529 вакансий</p>
+      </a>
+      <a href="#" data-category="transport" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+        <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-truck-line text-2xl text-primary"></i>
+        </div>
+        <h3 class="font-medium mb-2">Транспорт</h3>
+        <p class="text-sm text-gray-500">487 вакансий</p>
+      </a>
+      <a href="#" data-category="it" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+        <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-code-s-slash-line text-2xl text-primary"></i>
+        </div>
+        <h3 class="font-medium mb-2">IT</h3>
+        <p class="text-sm text-gray-500">324 вакансии</p>
+      </a>
+      <a href="#" data-category="all" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+        <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-more-line text-2xl text-primary"></i>
+        </div>
+        <h3 class="font-medium mb-2">Все категории</h3>
+        <p class="text-sm text-gray-500">3450+ вакансий</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Горячие вакансии -->
+<section class="py-16 bg-white">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-between items-center mb-10">
+      <h2 class="text-3xl font-bold">Срочные вакансии</h2>
+      <a href="#" class="text-primary font-medium hover:underline flex items-center gap-1">
+        Смотреть все
+        <i class="ri-arrow-right-line"></i>
+      </a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 jobs-container">
+      <!-- Вакансии загружаются динамически -->
+      <!-- Вакансия 1 -->
+      <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 card-3d">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-xl font-semibold mb-1">Разнорабочий на стройку</h3>
+              <p class="text-gray-600 mb-1">Stavební firma Novák</p>
+              <div class="flex items-center gap-2 text-sm text-gray-500">
+                <i class="ri-map-pin-line"></i>
+                <span>Прага</span>
+              </div>
+            </div>
+            <div class="flex flex-col items-end">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-secondary/80 to-secondary text-white mb-2">
+                Срочно
+              </span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                С жильём
+              </span>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i class="ri-money-czech-koruna-circle-line text-gray-500"></i>
+              <span class="font-medium">140-160 Kč/час</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <i class="ri-time-line text-gray-500"></i>
+              <span>Полный рабочий день</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="ri-translate-2 text-gray-500"></i>
+              <span>Русский, Базовый чешский</span>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">Требуются разнорабочие на строительный объект в Праге. Опыт работы не обязателен. Предоставляем жильё и помощь с документами.</p>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="handleJobApplication('job_stavba_1', 'Разнорабочий на стройку')" class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2 button-ripple">
+              <i class="ri-send-plane-line"></i>
+              Откликнуться
+            </button>
+            <!-- 💬 КНОПКА ЧАТА С РАБОТОДАТЕЛЕМ -->
+            <button onclick="startChatWithUser('employer_stavba_1', 'Привет! Меня заинтересовала ваша вакансия разнорабочего. Можете рассказать подробнее?', 'job_stavba_1')" 
+                    class="bg-green-500 text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-green-600 whitespace-nowrap flex items-center gap-2 button-ripple">
+              <i class="ri-chat-3-line"></i>
+              Написать
+            </button>
+            <button onclick="handleJobSave('job_stavba_1', 'Разнорабочий на стройку')" class="bg-secondary/10 text-secondary border-none px-3 py-2 rounded-button text-sm font-medium hover:bg-secondary/20 whitespace-nowrap flex items-center gap-2">
+              <i class="ri-bookmark-line"></i>
+              Сохранить
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Вакансия 2 -->
+      <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 card-3d">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-xl font-semibold mb-1">Оператор производства</h3>
+              <p class="text-gray-600 mb-1">Škoda Auto a.s.</p>
+              <div class="flex items-center gap-2 text-sm text-gray-500">
+                <i class="ri-map-pin-line"></i>
+                <span>Млада-Болеслав</span>
+              </div>
+            </div>
+            <div class="flex flex-col items-end">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-secondary/80 to-secondary text-white mb-2">
+                Срочно
+              </span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+                С жильём
+              </span>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i class="ri-money-czech-koruna-circle-line text-gray-500"></i>
+              <span class="font-medium">32 000 - 38 000 Kč/месяц</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <i class="ri-time-line text-gray-500"></i>
+              <span>Сменный график</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="ri-translate-2 text-gray-500"></i>
+              <span>Базовый чешский</span>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">Работа на автомобильном производстве. Сборка компонентов, контроль качества. Предоставляем общежитие, транспорт до работы и социальный пакет.</p>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="handleJobApplication('job_skoda_1', 'Оператор производства')" class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2 button-ripple">
+              <i class="ri-send-plane-line"></i>
+              Откликнуться
+            </button>
+            <button onclick="startChatWithUser('employer_skoda', 'Здравствуйте! Меня заинтересовала вакансия оператора производства в Škoda Auto.', 'job_skoda_1')" 
+                    class="bg-blue-500 text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-blue-600 whitespace-nowrap flex items-center gap-2">
+              <i class="ri-message-3-line"></i>
+              Написать
+            </button>
+            <button onclick="handleJobSave('job_skoda_1', 'Оператор производства')" class="bg-secondary/10 text-secondary border-none px-3 py-2 rounded-button text-sm font-medium hover:bg-secondary/20 whitespace-nowrap flex items-center gap-2">
+              <i class="ri-bookmark-line"></i>
+              Сохранить
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Вакансия 3 -->
+      <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 card-3d">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-xl font-semibold mb-1">Кладовщик-комплектовщик</h3>
+              <p class="text-gray-600 mb-1">Alza.cz a.s.</p>
+              <div class="flex items-center gap-2 text-sm text-gray-500">
+                <i class="ri-map-pin-line"></i>
+                <span>Прага</span>
+              </div>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
+              Срочно
+            </span>
+          </div>
+          <div class="mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i class="ri-money-czech-koruna-circle-line text-gray-500"></i>
+              <span class="font-medium">130 Kč/час</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <i class="ri-time-line text-gray-500"></i>
+              <span>Полный рабочий день</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="ri-translate-2 text-gray-500"></i>
+              <span>Русский, Английский</span>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">Работа на складе интернет-магазина. Комплектация заказов, сортировка товаров. Требуется внимательность и ответственность. Бонусы за выполнение плана.</p>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="handleJobApplication('job_alza_1', 'Кладовщик-комплектовщик')" class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2 button-ripple">
+              <i class="ri-send-plane-line"></i>
+              Откликнуться
+            </button>
+            <button onclick="startChatWithUser('employer_123', 'Здравствуйте! Меня заинтересовала ваша вакансия разнорабочего.', 'job_456')" 
+                    class="bg-green-500 text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-green-600 whitespace-nowrap flex items-center gap-2">
+              <i class="ri-message-3-line"></i>
+              Написать
+            </button>
+            <button onclick="handleJobSave('job_alza_1', 'Кладовщик-комплектовщик')" class="bg-secondary/10 text-secondary border-none px-3 py-2 rounded-button text-sm font-medium hover:bg-secondary/20 whitespace-nowrap flex items-center gap-2">
+              <i class="ri-bookmark-line"></i>
+              Сохранить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Преимущества -->
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12">Почему WorkInCZ?</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fadeInUp animate-delay-1">
+        <div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-shield-check-line text-xl text-primary"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Проверенные работодатели</h3>
+        <p class="text-gray-600">Мы проверяем каждую компанию по IČO в реестре ARES. Вы можете быть уверены, что работаете с легальным бизнесом.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-translate-2 text-xl text-primary"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Многоязычный интерфейс</h3>
+        <p class="text-gray-600">Сайт доступен на 9 языках: русском, чешском, украинском, белорусском, вьетнамском, польском, словацком, румынском и болгарском.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-home-4-line text-xl text-primary"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Вакансии с жильём</h3>
+        <p class="text-gray-600">Многие работодатели предлагают жильё. Используйте специальный фильтр, чтобы найти такие вакансии.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-chat-1-line text-xl text-primary"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Встроенный чат</h3>
+        <p class="text-gray-600">Общайтесь с работодателями напрямую через встроенный чат. Отправляйте документы и получайте ответы быстро.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-scales-3-line text-xl text-primary"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Юридическая поддержка</h3>
+        <p class="text-gray-600">Получите доступ к базе знаний и контактам бесплатных юристов, которые помогают мигрантам с документами.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+          <i class="ri-star-line text-xl text-primary"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Рейтинг и отзывы</h3>
+        <p class="text-gray-600">Читайте отзывы о работодателях от других сотрудников. Оставляйте свои отзывы после работы.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Тарифы -->
+<section class="py-16 bg-white">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-4">Премиальные возможности</h2>
+    <p class="text-lg text-gray-600 text-center mb-12 max-w-3xl mx-auto">Получите доступ к расширенным функциям и увеличьте свои шансы на успешное трудоустройство</p>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <!-- Базовый тариф -->
+      <div class="bg-white border border-gray-200 rounded-lg p-8 hover:shadow-xl transition-all duration-300">
+        <div class="text-center mb-8">
+          <h3 class="text-xl font-semibold mb-2">Базовый</h3>
+          <div class="text-3xl font-bold mb-2">Бесплатно</div>
+          <p class="text-gray-600">Основные возможности поиска работы</p>
+        </div>
+        <ul class="space-y-4 mb-8">
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Поиск вакансий (70%)</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Базовое резюме</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>5 откликов в месяц</span>
+          </li>
+          <li class="flex items-center gap-3 text-gray-400">
+            <i class="ri-close-circle-line"></i>
+            <span>Эксклюзивные вакансии</span>
+          </li>
+          <li class="flex items-center gap-3 text-gray-400">
+            <i class="ri-close-circle-line"></i>
+            <span>Автоотклик</span>
+          </li>
+        </ul>
+        <button class="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-button font-medium hover:bg-gray-200 whitespace-nowrap">Текущий тариф</button>
+      </div>
+      <!-- VIP тариф -->
+      <div class="bg-white border-2 border-primary rounded-lg p-8 hover:shadow-xl transition-all duration-300 relative">
+        <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+          <span class="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium">Популярный выбор</span>
+        </div>
+        <div class="text-center mb-8">
+          <h3 class="text-xl font-semibold mb-2">VIP</h3>
+          <div class="text-3xl font-bold mb-2">399 Kč</div>
+          <p class="text-gray-600">30 дней (первый месяц 1 Kč)</p>
+        </div>
+        <ul class="space-y-4 mb-8">
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Все возможности базового</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Полный доступ к вакансиям</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Автоматизированный отклик</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Приоритет в поиске</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Премиальные проекты</span>
+          </li>
+        </ul>
+        <button class="w-full bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap flex items-center justify-center gap-2">
+          <i class="ri-vip-crown-line"></i>
+          Активировать VIP
+        </button>
+      </div>
+      <!-- Премиум тариф -->
+      <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-8 hover:shadow-xl transition-all duration-300 text-white">
+        <div class="text-center mb-8">
+          <h3 class="text-xl font-semibold mb-2">Премиум</h3>
+          <div class="text-3xl font-bold mb-2">1 999 Kč</div>
+          <p class="text-gray-300">30 дней (для работодателей)</p>
+        </div>
+        <ul class="space-y-4 mb-8">
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>5 вакансий + 10 фриланс</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Расширенный поиск</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Аналитика откликов</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Закрепление в топе</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <i class="ri-checkbox-circle-line text-success"></i>
+            <span>Приоритетная поддержка</span>
+          </li>
+        </ul>
+        <button class="w-full bg-white text-gray-900 px-6 py-3 rounded-button font-medium hover:bg-gray-100 whitespace-nowrap flex items-center justify-center gap-2">
+          <i class="ri-shield-star-line"></i>
+          Получить Премиум
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Модальное окно (Регистрация/Вход) -->
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white p-6 rounded-lg w-full max-w-sm relative">
+    <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-400 text-2xl">&times;</button>
+    <h3 class="text-xl font-bold mb-4">Вход / Регистрация</h3>
+    <form id="authForm">
+      <input type="text" placeholder="Ваше имя" class="w-full mb-2 border px-3 py-2 rounded" required />
+      <input type="email" placeholder="Email" class="w-full mb-2 border px-3 py-2 rounded" required />
+      <div class="relative mb-2">
+        <input type="password" id="password-field" placeholder="Пароль" class="w-full border px-3 py-2 pr-10 rounded" required />
+        <button type="button" id="toggle-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none">
+          <i class="ri-eye-off-line" id="password-icon"></i>
+        </button>
+      </div>
+      <div class="flex items-center mb-2">
+        <input type="radio" name="role" id="worker" class="mr-1" checked>
+        <label for="worker" class="text-sm">Я соискатель</label>
+        <input type="radio" name="role" id="employer" class="ml-4 mr-1">
+        <label for="employer" class="text-sm">Я работодатель</label>
+      </div>
+      <button type="submit" class="bg-primary text-white w-full py-2 rounded-button">Продолжить</button>
+    </form>
+    <div id="authMessage" class="text-center mt-3 text-success hidden"></div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAo34JvPwyqjwzjhd-d-qEKh7HqAAWsIiM",
+    authDomain: "workincz-759c7.firebaseapp.com",
+    databaseURL: "https://workincz-759c7-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "workincz-759c7",
+    storageBucket: "workincz-759c7.firebasestorage.app",
+    messagingSenderId: "670842817143",
+    appId: "1:670842817143:web:d8998634da78318e9f1472",
+    measurementId: "G-PB27XT0CT0"
+  };
+  
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // Функция для открытия модала входа (простая форма)
+  function openLoginModal() {
+    document.getElementById('modal').classList.remove('hidden');
+    document.getElementById('authMessage').classList.add('hidden');
+    
+    // Изменяем заголовок и скрываем поле имени
+    const title = document.querySelector('#modal h3');
+    title.textContent = 'Вход в систему';
+    
+    const nameField = document.querySelector('#modal input[type="text"]');
+    nameField.style.display = 'none';
+    nameField.removeAttribute('required');
+    
+    const roleSection = document.querySelector('#modal .flex.items-center');
+    roleSection.style.display = 'none';
+    
+    const submitBtn = document.querySelector('#modal button[type="submit"]');
+    submitBtn.textContent = 'Войти';
+  }
+
+  // Функция для открытия расширенной регистрации
+  function openRegistrationModal() {
+    if (window.userProfileManager) {
+      window.userProfileManager.showExtendedRegistration();
+    } else {
+      // Fallback на простой модал если модуль не загружен
+      openModal();
+    }
+  }
+
+  // Старая функция для совместимости
+  function openModal() {
+    document.getElementById('modal').classList.remove('hidden');
+    document.getElementById('authMessage').classList.add('hidden');
+    
+    // Показываем все поля для регистрации
+    const title = document.querySelector('#modal h3');
+    title.textContent = 'Вход / Регистрация';
+    
+    const nameField = document.querySelector('#modal input[type="text"]');
+    nameField.style.display = 'block';
+    nameField.setAttribute('required', 'required');
+    
+    const roleSection = document.querySelector('#modal .flex.items-center');
+    roleSection.style.display = 'flex';
+    
+    const submitBtn = document.querySelector('#modal button[type="submit"]');
+    submitBtn.textContent = 'Продолжить';
+  }
+  
+  function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    // Обработчик кнопки показа/скрытия пароля
+    const togglePassword = document.getElementById('toggle-password');
+    const passwordField = document.getElementById('password-field');
+    const passwordIcon = document.getElementById('password-icon');
+    
+    if (togglePassword && passwordField && passwordIcon) {
+      togglePassword.addEventListener('click', function() {
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
+        
+        // Меняем иконку
+        if (type === 'text') {
+          passwordIcon.className = 'ri-eye-line';
+        } else {
+          passwordIcon.className = 'ri-eye-off-line';
+        }
+      });
+    }
+    
+    const form = document.getElementById("authForm");
+    if (form) {
+      form.onsubmit = async function(e) {
+        e.preventDefault();
+        const nameField = form.querySelector('input[type="text"]');
+        const name = nameField.style.display === 'none' ? '' : nameField.value;
+        const email = form.querySelector('input[type="email"]').value;
+        const password = document.getElementById('password-field').value;
+        const isEmployer = form.querySelector('#employer').checked;
+        const messageDiv = document.getElementById('authMessage');
+        messageDiv.classList.add('hidden');
+        
+        const isLoginMode = nameField.style.display === 'none';
+        
+        if (isLoginMode) {
+          // Режим входа - только логин
+          try {
+            const loginCredential = await auth.signInWithEmailAndPassword(email, password);
+            const loginUser = loginCredential.user;
+            
+            // Загружаем данные пользователя из Firestore
+            const userDoc = await db.collection("users").doc(loginUser.uid).get();
+            if (userDoc.exists) {
+              const userData = userDoc.data();
+              
+              // Сохраняем данные пользователя для быстрого входа
+              localStorage.setItem('workincz_user_name', userData.name || '');
+              localStorage.setItem('workincz_user_email', userData.email || email);
+              localStorage.setItem('workincz_user_role', userData.role || 'worker');
+              
+              messageDiv.textContent = "Добро пожаловать, " + (userData.name || 'Пользователь').split(' ')[0] + "!";
+            } else {
+              messageDiv.textContent = "Вход выполнен!";
+            }
+            
+            messageDiv.classList.remove('hidden');
+            messageDiv.classList.add('text-success');
+            form.reset();
+            
+            // Закрываем модал через 2 секунды
+            setTimeout(() => {
+              closeModal();
+              
+              // Ждем инициализации UserProfileManager и используем его для проверки профиля
+              const waitForUserProfileManager = () => {
+                if (window.userProfileManager) {
+                  window.userProfileManager.checkUserProfileCompleteness(loginUser);
+                } else {
+                  // Ждем 100мс и проверяем снова
+                  setTimeout(waitForUserProfileManager, 100);
+                }
+              };
+              waitForUserProfileManager();
+            }, 2000);
+            
+          } catch (error) {
+            let errorMessage = "Неверный email или пароль";
+            
+            if (error.code === 'auth/user-not-found') {
+              errorMessage = "Пользователь с таким email не найден. Проверьте email или зарегистрируйтесь.";
+            } else if (error.code === 'auth/wrong-password') {
+              errorMessage = "Неверный пароль. Попробуйте еще раз.";
+            } else if (error.code === 'auth/invalid-email') {
+              errorMessage = "Неверный формат email адреса.";
+            } else if (error.code === 'auth/too-many-requests') {
+              errorMessage = "Слишком много попыток входа. Попробуйте позже.";
+            }
+            
+            messageDiv.textContent = errorMessage;
+            messageDiv.classList.remove('hidden');
+            messageDiv.classList.remove('text-success');
+            messageDiv.classList.add('text-red-600');
+          }
+        } else {
+          // Режим регистрации - создание нового пользователя
+          try {
+            let userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            let user = userCredential.user;
+            const role = isEmployer ? "employer" : "worker";
+            
+            await db.collection("users").doc(user.uid).set({
+              name,
+              email,
+              role,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            // Сохраняем данные пользователя для быстрого входа
+            localStorage.setItem('workincz_user_name', name);
+            localStorage.setItem('workincz_user_email', email);
+            localStorage.setItem('workincz_user_role', role);
+            
+            messageDiv.textContent = "✅ Регистрация успешна! Добро пожаловать, " + name.split(' ')[0] + "!";
+            messageDiv.classList.remove('hidden');
+            messageDiv.classList.remove('text-red-600');
+            messageDiv.classList.add('text-success');
+            form.reset();
+            
+            // Закрываем модал через 2 секунды
+            setTimeout(() => {
+              closeModal();
+              
+              // Ждем инициализации UserProfileManager и используем его для проверки профиля
+              const waitForUserProfileManager = () => {
+                if (window.userProfileManager) {
+                  window.userProfileManager.checkUserProfileCompleteness(user);
+                } else {
+                  // Ждем 100мс и проверяем снова
+                  setTimeout(waitForUserProfileManager, 100);
+                }
+              };
+              waitForUserProfileManager();
+            }, 2000);
+            
+          } catch (error) {
+            let errorMessage = "Не удалось зарегистрироваться";
+            
+            if (error.code === 'auth/email-already-in-use') {
+              errorMessage = "Пользователь с таким email уже существует. Попробуйте войти или используйте другой email.";
+            } else if (error.code === 'auth/weak-password') {
+              errorMessage = "Пароль слишком простой. Используйте минимум 6 символов.";
+            } else if (error.code === 'auth/invalid-email') {
+              errorMessage = "Неверный формат email адреса.";
+            }
+            
+            messageDiv.textContent = errorMessage;
+            messageDiv.classList.remove('hidden');
+            messageDiv.classList.remove('text-success');
+            messageDiv.classList.add('text-red-600');
+          }
+        }
+      };
+    }
+  });
+</script>
+
+<!-- JavaScript для анимаций и интерактивности -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Live users widget
+  function updateLiveUsers() {
+    const liveUsersElements = document.querySelectorAll('.live-users-count, .online-users-count');
+    const activeJobsElements = document.querySelectorAll('.active-jobs-count');
+    
+    liveUsersElements.forEach(element => {
+      if (element) {
+        const baseCount = 2458;
+        const variation = Math.floor(Math.random() * 200) - 100;
+        const newCount = baseCount + variation;
+        element.textContent = newCount.toLocaleString();
+      }
+    });
+    
+    activeJobsElements.forEach(element => {
+      if (element) {
+        const baseCount = 3450;
+        const variation = Math.floor(Math.random() * 100) - 50;
+        const newCount = baseCount + variation;
+        element.textContent = newCount.toLocaleString();
+      }
+    });
+  }
+  
+  setInterval(updateLiveUsers, 5000);
+  
+  // Анимации появления секций
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        if (entry.target.classList.contains('stats-section')) {
+          animateNumbers();
+        }
+      }
+    });
+  }, observerOptions);
+  
+  document.querySelectorAll('section').forEach(section => {
+    section.classList.add('fade-in-section');
+    observer.observe(section);
+  });
+  
+  function animateNumbers() {
+    document.querySelectorAll('.animate-number').forEach(el => {
+      const target = parseInt(el.getAttribute('data-target'));
+      const duration = 2000;
+      const start = 0;
+      const increment = target / (duration / 16);
+      let current = start;
+      
+      const updateNumber = () => {
+        current += increment;
+        if (current < target) {
+          el.textContent = Math.floor(current).toLocaleString() + '+';
+          requestAnimationFrame(updateNumber);
+        } else {
+          el.textContent = target.toLocaleString() + '+';
+        }
+      };
+      
+      el.classList.add('animate-count-up');
+      updateNumber();
+    });
+  }
+  
+  // Языковой селектор
+  const languageSelect = document.querySelector('select');
+  if (languageSelect) {
+    languageSelect.addEventListener('change', function() {
+      console.log('Выбран язык:', this.value);
+      // Здесь будет логика смены языка
+    });
+  }
+});
+</script>
+
+<!-- Централизованный менеджер аутентификации (загружается первым) -->
+<script src="js/auth-manager.js"></script>
+<!-- Модуль системы сообщений и уведомлений -->
+<script src="js/messaging-manager.js"></script>
+<!-- Модуль платежной системы -->
+<script src="js/payment-manager.js"></script>
+<!-- Модуль работы с вакансиями -->
+<script src="js/jobs.js"></script>
+<!-- Модуль профилей пользователей -->
+<script src="js/user-profiles.js"></script>
+<!-- Модуль системы откликов -->
+<script src="js/applications.js"></script>
+<!-- Модуль размещения вакансий -->
+<script src="js/job-posting.js"></script>
+<!-- Модуль демо-данных -->
+<script src="js/demo-data.js"></script>
+
+<!-- 🧪 Тестовые функции для демонстрации -->
+<script>
+  // 👤 УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ ПОЛЬЗОВАТЕЛЯ
+  function updateUserInterface(userData = null) {
+    const userProfilePanel = document.getElementById('user-profile-panel');
+    const guestButtonsPanel = document.getElementById('guest-buttons-panel');
+    
+    if (userData) {
+      // Пользователь авторизован - показываем панель профиля
+      console.log('👤 Обновление интерфейса для авторизованного пользователя:', userData);
+      
+      // Скрываем кнопки для гостей
+      guestButtonsPanel.classList.add('hidden');
+      
+      // Обновляем данные профиля
+      updateUserProfileData(userData);
+      
+      // Показываем панель профиля
+      userProfilePanel.classList.remove('hidden');
+      
+      // Анимация появления
+      userProfilePanel.style.opacity = '0';
+      userProfilePanel.style.transform = 'translateY(-10px)';
+      setTimeout(() => {
+        userProfilePanel.style.transition = 'all 0.3s ease';
+        userProfilePanel.style.opacity = '1';
+        userProfilePanel.style.transform = 'translateY(0)';
+      }, 50);
+      
+    } else {
+      // Пользователь не авторизован - показываем кнопки для гостей
+      console.log('👤 Обновление интерфейса для гостя');
+      
+      // Скрываем панель профиля
+      userProfilePanel.classList.add('hidden');
+      
+      // Показываем кнопки для гостей
+      guestButtonsPanel.classList.remove('hidden');
+    }
+  }
+  
+  // 📝 ОБНОВЛЕНИЕ ДАННЫХ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ
+  function updateUserProfileData(userData) {
+    const isEmployer = userData.role === 'employer';
+    const isTestUser = !userData.uid || userData.isTestUser;
+    
+    // Обновляем аватар
+    const avatar = document.getElementById('user-avatar');
+    if (avatar) {
+      avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || 'User')}&background=4F46E5&color=fff&size=48`;
+      avatar.alt = userData.name || 'Пользователь';
+    }
+    
+    // Обновляем статусный индикатор
+    const statusIndicator = document.getElementById('user-status-indicator');
+    if (statusIndicator) {
+      if (isTestUser) {
+        statusIndicator.className = 'absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full border-2 border-white flex items-center justify-center';
+        statusIndicator.innerHTML = '<i class="ri-flask-line text-xs text-white"></i>';
+      } else {
+        statusIndicator.className = 'absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center';
+        statusIndicator.innerHTML = '<i class="ri-check-line text-xs text-white"></i>';
+      }
+    }
+    
+    // Обновляем имя пользователя
+    const displayName = document.getElementById('user-display-name');
+    if (displayName) {
+      displayName.textContent = userData.name || 'Пользователь';
+    }
+    
+    // Обновляем статусный бейдж
+    const statusBadge = document.getElementById('user-status-badge');
+    if (statusBadge) {
+      if (isTestUser) {
+        statusBadge.className = 'px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800';
+        statusBadge.textContent = '🧪 Тестовый';
+      } else if (userData.subscription?.type === 'vip') {
+        statusBadge.className = 'px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800';
+        statusBadge.textContent = '👑 VIP';
+      } else if (userData.subscription?.type === 'premium') {
+        statusBadge.className = 'px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800';
+        statusBadge.textContent = '💎 Премиум';
+      } else {
+        statusBadge.className = 'px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600';
+        statusBadge.textContent = '🔵 Базовый';
+      }
+    }
+    
+    // Обновляем роль
+    const roleText = document.getElementById('user-role-text');
+    if (roleText) {
+      roleText.textContent = isEmployer ? 'Работодатель' : 'Соискатель';
+    }
+    
+    // Обновляем рейтинг
+    const rating = document.getElementById('user-rating');
+    if (rating) {
+      rating.textContent = userData.rating || '4.8';
+    }
+    
+    // Обновляем статистику
+    const stats = document.getElementById('user-stats');
+    if (stats) {
+      if (isEmployer) {
+        stats.textContent = `${userData.activeJobs || 3} активных вакансий`;
+      } else {
+        stats.textContent = `${userData.applications || 5} откликов`;
+      }
+    }
+    
+    // 📊 ОБНОВЛЯЕМ СТАТУС ПОЛЬЗОВАТЕЛЯ В ШАПКЕ
+    updateHeaderUserStatus(userData);
+    
+    console.log('✅ Данные профиля пользователя обновлены');
+  }
+  
+  // 📊 УПРАВЛЕНИЕ СТАТУСОМ ПОЛЬЗОВАТЕЛЯ В ШАПКЕ
+  function updateHeaderUserStatus(userData) {
+    const userStatusHeader = document.getElementById('user-status-header');
+    const subscriptionStatus = document.getElementById('user-subscription-status');
+    
+    if (userData && userStatusHeader && subscriptionStatus) {
+      // Показываем статус пользователя
+      userStatusHeader.classList.remove('hidden');
+      
+      // Обновляем текст статуса
+      if (userData.subscription?.type === 'vip') {
+        subscriptionStatus.textContent = '👑 VIP';
+        subscriptionStatus.className = 'font-medium text-yellow-600';
+      } else if (userData.subscription?.type === 'premium') {
+        subscriptionStatus.textContent = '💎 Премиум';
+        subscriptionStatus.className = 'font-medium text-purple-600';
+      } else {
+        subscriptionStatus.textContent = userData.isTestUser ? '🧪 Тестовый' : '🔵 Базовый';
+        subscriptionStatus.className = 'font-medium text-gray-600';
+      }
+      
+      console.log('📊 Статус пользователя в шапке обновлен');
+    } else if (userStatusHeader) {
+      // Скрываем статус для неавторизованных пользователей
+      userStatusHeader.classList.add('hidden');
+      console.log('📊 Статус пользователя в шапке скрыт');
+    }
+  }
+
+  // 🧪 ТЕСТОВАЯ ФУНКЦИЯ для симуляции входа пользователя
+  function testLogin() {
+    console.log('🧪 Запуск тестового входа...');
+    
+    // Симулируем данные тестового пользователя
+    const testUserData = {
+      name: 'Vladimir Testov',
+      email: 'vladimir.testov@workincz.com',
+      role: 'worker', // worker или employer
+      rating: '4.8',
+      applications: 5,
+      subscription: { type: 'basic' },
+      isTestUser: true,
+      profileCompleted: true
+    };
+    
+    // Сохраняем в localStorage для демонстрации
+    localStorage.setItem('workincz_user_name', testUserData.name);
+    localStorage.setItem('workincz_user_email', testUserData.email);
+    localStorage.setItem('workincz_user_role', testUserData.role);
+    
+    // Обновляем интерфейс
+    updateUserInterface(testUserData);
+    
+    console.log('✅ Тестовый вход выполнен! Проверьте панель профиля в шапке.');
+    showNotification('✅ Тестовый вход выполнен!', 'success');
+  }
+  
+  // 🔐 ФУНКЦИЯ ВЫХОДА ИЗ СИСТЕМЫ
+  async function handleLogout() {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.disabled = true;
+      logoutBtn.innerHTML = '<i class="ri-loader-2-line animate-spin"></i> Выход...';
+    }
+    
+    try {
+      console.log('🔐 Начало процедуры выхода...');
+      
+      // Показываем уведомление о выходе
+      showLogoutNotification('🔄 Выполняется выход из системы...', 'info');
+      
+      // Очищаем локальное хранилище
+      localStorage.removeItem('workincz_user_name');
+      localStorage.removeItem('workincz_user_email');
+      localStorage.removeItem('workincz_user_role');
+      
+      // Обновляем интерфейс для гостя
+      updateUserInterface(null);
+      
+      console.log('✅ Выход выполнен успешно!');
+      showLogoutNotification('✅ Выход выполнен успешно!', 'success');
+      
+      // Если есть AuthManager, пытаемся выйти через него
+      if (window.authManager && window.authManager.logout) {
+        try {
+          await window.authManager.logout();
+        } catch (authError) {
+          console.log('⚠️ AuthManager logout failed, but local logout completed');
+        }
+      }
+      
+    } catch (error) {
+      console.error('❌ Ошибка при выходе:', error);
+      showLogoutNotification('❌ Ошибка при выходе из системы', 'error');
+      
+      // Восстанавливаем кнопку
+      if (logoutBtn) {
+        logoutBtn.disabled = false;
+        logoutBtn.innerHTML = '<i class="ri-logout-circle-line"></i><span class="hidden lg:block">Выйти</span>';
+      }
+    }
+  }
+
+  // 🧪 ТЕСТОВАЯ ФУНКЦИЯ для выхода из системы (для совместимости)
+  async function testLogout() {
+    await handleLogout();
+  }
+  
+  // 🎯 ГЛОБАЛЬНЫЕ ФУНКЦИИ МЯГКОЙ АВТОРИЗАЦИИ
+  function closeSoftAuthModal() {
+    if (window.authManager) {
+      window.authManager.closeSoftAuthModal();
+    }
+  }
+
+  function requireAuth(action, context = {}) {
+    if (window.authManager) {
+      return window.authManager.requireAuth(action, context);
+    }
+    // Fallback если AuthManager не готов
+    alert('Для этого действия необходима авторизация');
+    return false;
+  }
+
+  // 💼 ОБРАБОТЧИК ОТКЛИКОВ НА ВАКАНСИИ
+  function handleJobApplication(jobId, jobTitle) {
+    console.log(`💼 Попытка отклика на вакансию: ${jobTitle} (${jobId})`);
+    
+    if (!requireAuth('откликнуться на вакансию', { jobId, jobTitle })) {
+      return; // Пользователь не авторизован - показан модал
+    }
+    
+    // Пользователь авторизован - выполняем отклик
+    showJobApplicationSuccess(jobTitle);
+  }
+
+  // ⭐ ОБРАБОТЧИК СОХРАНЕНИЯ ВАКАНСИЙ
+  function handleJobSave(jobId, jobTitle) {
+    console.log(`⭐ Попытка сохранения вакансии: ${jobTitle} (${jobId})`);
+    
+    if (!requireAuth('сохранить вакансию', { jobId, jobTitle })) {
+      return; // Пользователь не авторизован - показан модал
+    }
+    
+    // Пользователь авторизован - сохраняем
+    saveJobToFavorites(jobId, jobTitle);
+  }
+
+  // ✅ УВЕДОМЛЕНИЕ ОБ УСПЕШНОМ ОТКЛИКЕ
+  function showJobApplicationSuccess(jobTitle) {
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-[9999] flex items-center gap-3 animate-slideIn';
+    notification.innerHTML = `
+      <i class="ri-check-circle-line text-xl"></i>
+      <div>
+        <div class="font-medium">Отклик отправлен!</div>
+        <div class="text-sm text-green-100">На вакансию "${jobTitle}"</div>
+      </div>
+      <button onclick="this.parentElement.remove()" class="ml-2 text-green-100 hover:text-white">
+        <i class="ri-close-line"></i>
+      </button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Автоматически убираем через 5 секунд
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.style.animation = 'slideOut 0.3s ease-out forwards';
+        setTimeout(() => notification.remove(), 300);
+      }
+    }, 5000);
+  }
+
+  // 💾 СОХРАНЕНИЕ В ИЗБРАННОЕ
+  function saveJobToFavorites(jobId, jobTitle) {
+    // Получаем текущие избранные из localStorage
+    const favorites = JSON.parse(localStorage.getItem('favorite_jobs') || '[]');
+    
+    // Проверяем что вакансия еще не сохранена
+    if (favorites.some(job => job.id === jobId)) {
+      showNotification('Вакансия уже в избранном!', 'info');
+      return;
+    }
+    
+    // Добавляем в избранные
+    favorites.push({
+      id: jobId,
+      title: jobTitle,
+      savedAt: Date.now()
+    });
+    
+    localStorage.setItem('favorite_jobs', JSON.stringify(favorites));
+    
+    // Показываем уведомление
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-secondary text-white px-6 py-4 rounded-lg shadow-lg z-[9999] flex items-center gap-3 animate-slideIn';
+    notification.innerHTML = `
+      <i class="ri-bookmark-fill text-xl"></i>
+      <div>
+        <div class="font-medium">Добавлено в избранное!</div>
+        <div class="text-sm text-secondary-100">"${jobTitle}"</div>
+      </div>
+      <button onclick="this.parentElement.remove()" class="ml-2 text-secondary-100 hover:text-white">
+        <i class="ri-close-line"></i>
+      </button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.style.animation = 'slideOut 0.3s ease-out forwards';
+        setTimeout(() => notification.remove(), 300);
+      }
+    }, 5000);
+    
+    console.log(`💾 Вакансия "${jobTitle}" сохранена в избранное`);
+  }
+
+  // 📢 УНИВЕРСАЛЬНАЯ ФУНКЦИЯ УВЕДОМЛЕНИЙ
+  function showNotification(message, type = 'info') {
+    const colors = {
+      info: 'bg-blue-500',
+      success: 'bg-green-500',
+      warning: 'bg-yellow-500',
+      error: 'bg-red-500'
+    };
+    
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-lg z-[9999] flex items-center gap-3 animate-slideIn`;
+    notification.innerHTML = `
+      <i class="ri-information-line text-xl"></i>
+      <span>${message}</span>
+      <button onclick="this.parentElement.remove()" class="ml-2 text-white/80 hover:text-white">
+        <i class="ri-close-line"></i>
+      </button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.style.animation = 'slideOut 0.3s ease-out forwards';
+        setTimeout(() => notification.remove(), 300);
+      }
+    }, 4000);
+  }
+
+  // 📢 ФУНКЦИЯ ПОКАЗА УВЕДОМЛЕНИЙ
+  function showLogoutNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-4 rounded-lg text-white z-[9999] flex items-center gap-3 animate-slideIn ${
+      type === 'success' ? 'bg-green-500' : 
+      type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+    }`;
+    
+    const icon = type === 'success' ? 'ri-check-circle-line' : 
+                 type === 'error' ? 'ri-error-warning-line' : 'ri-information-line';
+    
+    notification.innerHTML = `
+      <i class="${icon} text-xl"></i>
+      <span>${message}</span>
+      <button onclick="this.parentElement.remove()" class="ml-2 text-white/80 hover:text-white">
+        <i class="ri-close-line"></i>
+      </button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Автоматически убираем через 5 секунд
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.style.animation = 'slideOut 0.3s ease-out forwards';
+        setTimeout(() => notification.remove(), 300);
+    }
+    }, 5000);
+  }
+  
+  // Добавляем информацию в консоль
+  console.log('🧪 Для тестирования входа выполните: testLogin()');
+  console.log('🧪 Или используйте кнопку тестирования ниже:');
+  
+  // 🚀 ИНИЦИАЛИЗАЦИЯ ИНТЕРФЕЙСА ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Инициализация главной страницы...');
+    
+    // Проверяем, есть ли данные авторизованного пользователя
+    checkUserAuth();
+  
+  // Добавляем кнопку тестирования на страницу (только в dev режиме)
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      const testButton = document.createElement('button');
+      testButton.innerHTML = '🧪 Тест: Войти как Vladimir';
+      testButton.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-red-600 z-50';
+      testButton.onclick = testLogin;
+      document.body.appendChild(testButton);
+    }
+    });
+
+  // 🔍 ПРОВЕРКА АВТОРИЗАЦИИ ПОЛЬЗОВАТЕЛЯ
+  function checkUserAuth() {
+    console.log('🔍 Проверка состояния авторизации...');
+    
+    const userName = localStorage.getItem('workincz_user_name');
+    const userEmail = localStorage.getItem('workincz_user_email');
+    const userRole = localStorage.getItem('workincz_user_role');
+    
+    if (userName && userEmail) {
+      // Пользователь авторизован - показываем профиль
+      const userData = {
+        name: userName,
+        email: userEmail,
+        role: userRole || 'worker',
+        isTestUser: true, // Помечаем как тестового, так как данные из localStorage
+        rating: '4.8',
+        applications: userRole === 'employer' ? 3 : 5,
+        subscription: { type: 'basic' }
+      };
+      
+      console.log('✅ Найдены данные авторизованного пользователя:', userData);
+      updateUserInterface(userData);
+    } else {
+      // Пользователь не авторизован - показываем гостевой интерфейс
+      console.log('👤 Пользователь не авторизован, показываем гостевой интерфейс');
+      updateUserInterface(null);
+    }
+  }
+</script>
+
+<!-- 📊 JavaScript для статистики в шапке -->
+<script>
+  // 📊 ОБНОВЛЕНИЕ СТАТИСТИКИ В ШАПКЕ (LIVE DATA)
+  function updateHeaderStats() {
+    // Симулируем обновление статистики
+    const onlineUsersElement = document.querySelector('.online-users-count');
+    const activeJobsElement = document.querySelector('.active-jobs-count');
+    
+    if (onlineUsersElement) {
+      // Симулируем изменение количества пользователей онлайн
+      const currentUsers = parseInt(onlineUsersElement.textContent.replace(',', ''));
+      const newUsers = currentUsers + Math.floor(Math.random() * 10) - 5; // ±5 пользователей
+      onlineUsersElement.textContent = Math.max(1000, newUsers).toLocaleString();
+    }
+    
+    if (activeJobsElement) {
+      // Симулируем изменение количества вакансий
+      const currentJobs = parseInt(activeJobsElement.textContent.replace(',', ''));
+      const newJobs = currentJobs + Math.floor(Math.random() * 6) - 3; // ±3 вакансии
+      activeJobsElement.textContent = Math.max(3000, newJobs).toLocaleString();
+    }
+  }
+  
+  // Обновляем статистику каждые 30 секунд
+  setInterval(updateHeaderStats, 30000);
+  
+  // Добавляем пульсацию для индикатора онлайн
+  document.addEventListener('DOMContentLoaded', function() {
+    const onlineDots = document.querySelectorAll('.animate-pulse');
+    onlineDots.forEach(dot => {
+      setInterval(() => {
+        dot.style.opacity = '0.3';
+        setTimeout(() => dot.style.opacity = '1', 500);
+      }, 2000);
+    });
+  });
+  
+  console.log('📊 Статистика в шапке инициализирована');
+</script>
+
+<!-- 🎨 СТИЛИ ДЛЯ СТАТИСТИКИ В ШАПКЕ -->
+<style>
+  /* Анимации для статистики в шапке */
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { 
+      opacity: 1; 
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 0.7; 
+      transform: scale(1.1);
+    }
+  }
+  
+  .animate-slideIn {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Стили для статистики в шапке */
+  .header-stats-panel {
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  .header-stats-panel:hover {
+    background-color: rgb(249 250 251);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Анимация чисел в статистике */
+  .online-users-count,
+  .active-jobs-count {
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+  
+  .online-users-count:hover,
+  .active-jobs-count:hover {
+    transform: scale(1.05);
+    color: #4F46E5;
+  }
+  
+  /* Стили для кнопки статуса */
+  #user-status-header button {
+    transition: all 0.2s ease;
+  }
+  
+     #user-status-header button:hover {
+     transform: translateY(-1px);
+     color: #4F46E5;
+   }
+ </style>
+
+<script>
+// 🧪 ФУНКЦИЯ ТЕСТИРОВАНИЯ ВСЕХ ВОЗМОЖНОСТЕЙ ЧАТА
+function testChatFeatures() {
+  // Проверяем инициализацию
+  if (!window.messagingManager) {
+    alert('⚠️ Система сообщений ещё загружается. Попробуйте через секунду.');
+    return;
+  }
+
+  // Показываем панель сообщений
+  openMessagesPanel();
+  
+  // Через секунду запускаем демо-чат
+  setTimeout(() => {
+    startChatWithUser('demo_employer_advanced', '🎉 Тестирую ВСЕ возможности нового чата! Невероятно круто!', 'demo_job_advanced');
+    
+    // Демонстрируем функции через 2 секунды
+    setTimeout(() => {
+      showChatFeatureDemo();
+    }, 2000);
+  }, 1000);
+}
+
+// 🎭 ДЕМОНСТРАЦИЯ ВОЗМОЖНОСТЕЙ ЧАТА
+function showChatFeatureDemo() {
+  const demoMessages = [
+    '👋 Добро пожаловать в новый чат WorkInCZ!',
+    '✨ Вы можете кликнуть правой кнопкой по любому сообщению',
+    '📋 Попробуйте: Копировать • Перевести • Ответить • Реакции',
+    '🔍 Используйте поиск в шапке чата',
+    '⚙️ Откройте настройки для персонализации',
+    '🎤 Попробуйте голосовые сообщения!',
+    '😀 Вставляйте эмодзи через панель инструментов',
+    '📎 Прикрепляйте файлы и изображения'
+  ];
+
+  // Имитируем отправку демо-сообщений
+  demoMessages.forEach((message, index) => {
+    setTimeout(() => {
+      if (window.messagingManager && window.messagingManager.currentChatId) {
+        window.messagingManager.sendMessage(
+          window.messagingManager.currentChatId, 
+          message, 
+          'text'
+        ).catch(console.error);
+      }
+    }, (index + 1) * 1500);
+  });
+
+  // Показываем уведомление о завершении демо
+  setTimeout(() => {
+    if (window.messagingManager) {
+      window.messagingManager.showSuccessToast('🎉 Демонстрация завершена! Попробуйте все функции сами.');
+    }
+  }, demoMessages.length * 1500 + 2000);
+}
+
+// 🚀 АВТОЗАПУСК СИСТЕМЫ СООБЩЕНИЙ
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🚀 Инициализация WorkInCZ Chat System...');
+  
+  // Проверяем загрузку системы сообщений каждые 500мс
+  const checkMessagingSystem = setInterval(() => {
+    if (window.messagingManager && window.messagingManager.isInitialized) {
+      console.log('✅ Система сообщений успешно инициализирована!');
+      
+      // Показываем уведомление о готовности
+      setTimeout(() => {
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 animate-slideIn';
+        notification.innerHTML = `
+          <div class="flex items-center gap-2">
+            <i class="ri-check-circle-line"></i>
+            <span>💬 Новый чат готов к работе!</span>
+          </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.remove();
+        }, 5000);
+      }, 1000);
+      
+      clearInterval(checkMessagingSystem);
+    }
+  }, 500);
+  
+  // Таймаут на случай проблем с загрузкой
+  setTimeout(() => {
+    clearInterval(checkMessagingSystem);
+    if (!window.messagingManager?.isInitialized) {
+      console.warn('⚠️ Система сообщений загружается дольше обычного...');
+    }
+  }, 10000);
+});
+
+console.log('🎯 WorkInCZ Modern Chat 2.0 загружен!');
+</script>
+
+</body>
+</html>
