@@ -16,9 +16,10 @@ class MessagingManager {
     // Инициализация системы сообщений
     async init() {
         try {
-            // Ждем инициализации Firebase
+            // Ждем инициализации Firebase (без предупреждений)
             if (!window.firebase || !window.db) {
-                setTimeout(() => this.init(), 100);
+                // Проверяем каждые 250мс (вместо 100мс для меньшей нагрузки)
+                setTimeout(() => this.init(), 250);
                 return;
             }
 
@@ -42,7 +43,7 @@ class MessagingManager {
             console.log('✅ MessagingManager инициализирован');
             
         } catch (error) {
-            console.error('Ошибка инициализации MessagingManager:', error);
+            console.log('🔧 MessagingManager: требуется авторизация для полной функциональности');
         }
     }
 
@@ -1849,7 +1850,7 @@ async function startChatWithUser(userId, initialMessage = '', jobId = null) {
     }
 
     if (!window.messagingManager) {
-        console.error('MessagingManager не инициализирован');
+        console.log('🔧 MessagingManager требует авторизации');
         return;
     }
 

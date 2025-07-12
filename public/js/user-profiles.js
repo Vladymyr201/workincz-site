@@ -38,7 +38,7 @@ class UserProfileManager {
       });
     } else {
       // Fallback на прямую инициализацию Firebase
-      console.warn('⚠️ AuthManager не найден, используем прямую инициализацию Firebase');
+      console.log('🔧 AuthManager не найден, используем прямую инициализацию Firebase');
       if (typeof firebase !== 'undefined') {
         this.db = firebase.firestore();
         this.auth = firebase.auth();
@@ -57,7 +57,7 @@ class UserProfileManager {
           }
         });
       } else {
-        console.error('❌ Firebase не найден в UserProfileManager');
+        console.log('🔧 Firebase не доступен в UserProfileManager');
       }
     }
     

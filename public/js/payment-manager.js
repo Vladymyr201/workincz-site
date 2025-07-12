@@ -264,8 +264,8 @@ class PaymentManager {
 
     // Создание элемента карты для ввода данных
     createCardElement(containerId) {
-        if (!this.isStripeLoaded) {
-            console.error('Stripe еще не загружен');
+        if (!this.stripe) {
+                          console.log('🔧 Stripe загружается, ожидаем...');
             return;
         }
 

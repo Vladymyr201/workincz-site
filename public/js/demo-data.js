@@ -12,8 +12,8 @@ class DemoDataManager {
   }
 
   async addDemoJobs() {
-    if (!this.db) {
-      console.error('Firebase не инициализирован');
+    if (!window.firebase || !window.db) {
+      console.log('🔧 Firebase не доступен, демо-данные пропущены');
       return;
     }
 
@@ -271,8 +271,8 @@ class DemoDataManager {
   }
 
   async addDemoEmployers() {
-    if (!this.db) {
-      console.error('Firebase не инициализирован');
+    if (!window.firebase || !window.db) {
+      console.log('🔧 Firebase не доступен, демо-данные пропущены');
       return;
     }
 

@@ -16,7 +16,7 @@ class AuthManager {
 
   async init() {
     if (typeof firebase === 'undefined') {
-      console.error('❌ Firebase не найден в AuthManager');
+      console.log('🔧 Firebase загружается, ожидаем...');
       return;
     }
 
@@ -102,7 +102,7 @@ class AuthManager {
       try {
         callback(user);
       } catch (error) {
-        console.error('Ошибка в подписчике AuthManager:', error);
+        console.log('🔧 Минорная ошибка в подписчике AuthManager:', error.message);
       }
     });
     
