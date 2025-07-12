@@ -48,9 +48,30 @@ class AuthManager {
     if (user) {
       // Загружаем данные пользователя с кешированием
       await this.loadUserData(user.uid);
+      
+      // 🔥 Sentry: устанавливаем контекст пользователя
+      if (typeof Sentry !== 'undefined' && this.currentUser?.userData) {
+        const userData = this.currentUser.userData;
+        if (typeof setSentryUser === 'function') {
+          setSentryUser({
+            uid: user.uid,
+            email: user.email,
+            name: userData.name,
+            role: userData.role,
+            subscription: userData.subscription
+          });
+        }
+        console.log('🔥 Sentry контекст пользователя установлен');
+      }
     } else {
       // Очищаем кеш при выходе
       this.userDataCache.clear();
+      
+      // 🔥 Sentry: очищаем контекст пользователя
+      if (typeof Sentry !== 'undefined') {
+        Sentry.setUser(null);
+        console.log('🔥 Sentry контекст пользователя очищен');
+      }
     }
     
     // Уведомляем всех подписчиков одним пакетом
@@ -434,6 +455,16 @@ class AuthManager {
   async logout() {
     try {
       console.log('🚪 Выход из системы...');
+      
+      // 🔥 Sentry: отслеживаем выход пользователя
+      if (typeof Sentry !== 'undefined') {
+        Sentry.addBreadcrumb({
+          message: 'User logged out',
+          category: 'auth',
+          level: 'info'
+        });
+      }
+      
       await this.auth.signOut();
       
       // Очистка кеша и состояния
@@ -444,6 +475,17 @@ class AuthManager {
       return true;
     } catch (error) {
       console.error('❌ Ошибка выхода:', error);
+      
+      // 🔥 Sentry: отслеживаем ошибки выхода
+      if (typeof Sentry !== 'undefined') {
+        Sentry.captureException(error, {
+          tags: {
+            errorType: 'auth-logout-error',
+            critical: false
+          }
+        });
+      }
+      
       return false;
     }
   }

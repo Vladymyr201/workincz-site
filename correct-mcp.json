@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "existing-server": {
+      "command": "npx",
+      "args": [
+        "существующие серверы"
+      ]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "D:/workincz-site"
+      ]
+    }
+  }
+} 

@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Личный кабинет — WorkInCZ</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  
+  <!-- 🎨 FAVICON логотип -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M20 50 C20 35, 35 20, 50 20 C65 20, 80 35, 80 50 C80 65, 65 80, 50 80 C35 80, 20 65, 20 50 Z' fill='none' stroke='%234F46E5' stroke-width='4' opacity='0.4'/%3E%3Cpath d='M50 20 C65 20, 80 35, 80 50 C80 65, 65 80, 50 80 C35 80, 20 65, 20 50 C20 35, 35 20, 50 20 Z' fill='none' stroke='%2306B6D4' stroke-width='4' opacity='0.7'/%3E%3Ccircle cx='50' cy='50' r='5' fill='%234F46E5'/%3E%3Ccircle cx='25' cy='35' r='3' fill='%2306B6D4'/%3E%3Ccircle cx='75' cy='35' r='3' fill='%2306B6D4'/%3E%3Ccircle cx='25' cy='65' r='3' fill='%2306B6D4'/%3E%3Ccircle cx='75' cy='65' r='3' fill='%2306B6D4'/%3E%3Cline x1='50' y1='50' x2='25' y2='35' stroke='%234F46E5' stroke-width='2' opacity='0.5'/%3E%3Cline x1='50' y1='50' x2='75' y2='35' stroke='%234F46E5' stroke-width='2' opacity='0.5'/%3E%3Cline x1='50' y1='50' x2='25' y2='65' stroke='%234F46E5' stroke-width='2' opacity='0.5'/%3E%3Cline x1='50' y1='50' x2='75' y2='65' stroke='%234F46E5' stroke-width='2' opacity='0.5'/%3E%3C/svg%3E">
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -25,6 +27,9 @@
   
   <!-- Remix Icons -->
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  
+  <!-- 🔥 Sentry Error Monitoring -->
+  <script src="https://browser.sentry-cdn.com/8.46.0/bundle.tracing.replay.min.js" crossorigin="anonymous"></script>
   
   <style>
     .fade-in-section {
@@ -52,6 +57,55 @@
       color: #4F46E5;
     }
   </style>
+  
+  <script>
+    // 🔥 Инициализация Sentry мониторинга для дашборда
+    Sentry.init({
+      dsn: "https://9ed881144e5e1aeb0ad63db29f4491ed@o4509651227705344.ingest.de.sentry.io/4509651487883344",
+      environment: "production",
+      integrations: [
+        new Sentry.BrowserTracing(),
+        new Sentry.Replay({
+          maskAllText: true,
+          blockAllMedia: true,
+        }),
+      ],
+      tracesSampleRate: 1.0,
+      replaysOnErrorSampleRate: 1.0,
+      replaysSessionSampleRate: 0.1,
+      
+      beforeSend(event) {
+        if (event.exception) {
+          const error = event.exception.values[0];
+          console.log('🔥 Dashboard Sentry error:', error.type, error.value);
+        }
+        return event;
+      },
+      
+      release: "workincz@1.0.0",
+      dist: "production",
+      
+      initialScope: {
+        tags: {
+          platform: "web", 
+          component: "dashboard"
+        }
+      }
+    });
+    
+    // Функция для отслеживания пользовательских действий в дашборде
+    function trackDashboardAction(action, section, data = {}) {
+      Sentry.addBreadcrumb({
+        message: `Dashboard action: ${action}`,
+        category: 'user.dashboard',
+        data: {
+          section: section,
+          ...data
+        },
+        level: 'info'
+      });
+    }
+  </script>
 </head>
 <body class="bg-gray-50">
   <!-- Шапка личного кабинета -->
@@ -65,7 +119,36 @@
           </a>
           <div class="h-6 w-px bg-gray-300"></div>
           <div class="flex items-center gap-3">
-            <div class="text-2xl font-bold text-primary">WorkInCZ</div>
+            <div class="flex items-center gap-2">
+              <!-- 🎨 ЛОГОТИП SVG (уменьшенная версия для dashboard) -->
+              <svg width="24" height="24" viewBox="0 0 100 100">
+                <!-- Символ бесконечности -->
+                <path d="M20 50 C20 35, 35 20, 50 20 C65 20, 80 35, 80 50 C80 65, 65 80, 50 80 C35 80, 20 65, 20 50 Z" 
+                      fill="none" stroke="#4F46E5" stroke-width="3" opacity="0.3"/>
+                <path d="M50 20 C65 20, 80 35, 80 50 C80 65, 65 80, 50 80 C35 80, 20 65, 20 50 C20 35, 35 20, 50 20 Z" 
+                      fill="none" stroke="#06B6D4" stroke-width="3" opacity="0.6"/>
+                
+                <!-- Центральная точка -->
+                <circle cx="50" cy="50" r="4" fill="#4F46E5"/>
+                
+                <!-- Сетевые узлы -->
+                <circle cx="25" cy="35" r="2" fill="#06B6D4"/>
+                <circle cx="75" cy="35" r="2" fill="#06B6D4"/>
+                <circle cx="25" cy="65" r="2" fill="#06B6D4"/>
+                <circle cx="75" cy="65" r="2" fill="#06B6D4"/>
+                
+                <!-- Соединительные линии -->
+                <line x1="50" y1="50" x2="25" y2="35" stroke="#4F46E5" stroke-width="1.5" opacity="0.4"/>
+                <line x1="50" y1="50" x2="75" y2="35" stroke="#4F46E5" stroke-width="1.5" opacity="0.4"/>
+                <line x1="50" y1="50" x2="25" y2="65" stroke="#4F46E5" stroke-width="1.5" opacity="0.4"/>
+                <line x1="50" y1="50" x2="75" y2="65" stroke="#4F46E5" stroke-width="1.5" opacity="0.4"/>
+                
+                <!-- Дополнительные связи -->
+                <line x1="25" y1="35" x2="75" y2="65" stroke="#06B6D4" stroke-width="1" opacity="0.3"/>
+                <line x1="75" y1="35" x2="25" y2="65" stroke="#06B6D4" stroke-width="1" opacity="0.3"/>
+              </svg>
+              <div class="text-2xl font-bold text-primary">WorkInCZ</div>
+            </div>
             <span class="text-lg font-semibold text-gray-900">Личный кабинет</span>
           </div>
         </div>

@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  
+  <!-- 🔥 Sentry Error Monitoring -->
+  <script src="https://browser.sentry-cdn.com/8.46.0/bundle.tracing.replay.min.js" crossorigin="anonymous"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -344,6 +347,132 @@
       animation: slideInRight 0.2s ease-out;
     }
   </style>
+  
+  <script>
+    // 🔥 Инициализация Sentry мониторинга
+    Sentry.init({
+      dsn: "https://9ed881144e5e1aeb0ad63db29f4491ed@o4509651227705344.ingest.de.sentry.io/4509651487883344",
+      environment: "production",
+      integrations: [
+        new Sentry.BrowserTracing({
+          // Отслеживание производительности страниц
+          startTransactionOnLocationChange: true,
+          startTransactionOnPageLoad: true,
+        }),
+        new Sentry.Replay({
+          // Запись сессий для анализа ошибок
+          maskAllText: true,
+          blockAllMedia: true,
+        }),
+      ],
+      // Процент транзакций для отслеживания производительности
+      tracesSampleRate: 1.0,
+      // Процент сессий для записи при ошибках
+      replaysOnErrorSampleRate: 1.0,
+      // Процент обычных сессий для записи
+      replaysSessionSampleRate: 0.1,
+      
+      beforeSend(event) {
+        // Фильтрация чувствительных данных
+        if (event.exception) {
+          const error = event.exception.values[0];
+          console.log('🔥 Sentry caught error:', error.type, error.value);
+        }
+        return event;
+      },
+      
+      // Дополнительные настройки
+      release: "workincz@1.0.0",
+      dist: "production",
+      
+      // Настройка пользователя
+      initialScope: {
+        tags: {
+          platform: "web",
+          component: "main-site"
+        },
+        user: {
+          segment: "job-seekers"
+        }
+      }
+    });
+    
+    // Установка контекста пользователя при авторизации
+    function setSentryUser(userData) {
+      Sentry.setUser({
+        id: userData.uid || userData.email,
+        email: userData.email,
+        username: userData.name,
+        segment: userData.role === 'employer' ? 'employers' : 'job-seekers'
+      });
+      
+      Sentry.setTags({
+        userRole: userData.role || 'guest',
+        userSubscription: userData.subscription?.type || 'basic'
+      });
+    }
+    
+    // Отслеживание критических действий
+    function trackJobApplication(jobId, jobTitle) {
+      Sentry.addBreadcrumb({
+        message: 'User applied to job',
+        category: 'user.action',
+        data: {
+          jobId: jobId,
+          jobTitle: jobTitle
+        },
+        level: 'info'
+      });
+    }
+    
+    // Обработка ошибок платежей
+    window.addEventListener('unhandledrejection', function(event) {
+      if (event.reason?.message?.includes('payment') || event.reason?.message?.includes('stripe')) {
+        Sentry.captureException(event.reason, {
+          tags: {
+            errorType: 'payment-error',
+            critical: true
+          }
+        });
+      }
+    });
+
+    // 🧪 Тестовая функция для проверки Sentry (только для разработки)
+    function testSentryError() {
+      console.log('🔥 Тестируем Sentry мониторинг...');
+      
+      // Тест 1: JavaScript ошибка
+      setTimeout(() => {
+        throw new Error('Test Sentry Error: Все работает корректно!');
+      }, 1000);
+      
+      // Тест 2: Отклик на вакансию
+      if (typeof trackJobApplication === 'function') {
+        trackJobApplication('test-job-123', 'Тестовая вакансия для Sentry');
+      }
+      
+      // Тест 3: Breadcrumb
+      Sentry.addBreadcrumb({
+        message: 'User tested Sentry monitoring',
+        category: 'test',
+        data: {
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent
+        },
+        level: 'info'
+      });
+      
+      console.log('🔥 Sentry тесты запущены!');
+    }
+
+    // Привязываем тестовую функцию к window для отладки
+    window.testSentryError = testSentryError;
+  </script>
+  
+  <!-- 🎨 FAVICON логотип -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M20 50 C20 35, 35 20, 50 20 C65 20, 80 35, 80 50 C80 65, 65 80, 50 80 C35 80, 20 65, 20 50 Z' fill='none' stroke='%234F46E5' stroke-width='4' opacity='0.4'/%3E%3Cpath d='M50 20 C65 20, 80 35, 80 50 C80 65, 65 80, 50 80 C35 80, 20 65, 20 50 C20 35, 35 20, 50 20 Z' fill='none' stroke='%2306B6D4' stroke-width='4' opacity='0.7'/%3E%3Ccircle cx='50' cy='50' r='5' fill='%234F46E5'/%3E%3Ccircle cx='25' cy='35' r='3' fill='%2306B6D4'/%3E%3Ccircle cx='75' cy='35' r='3' fill='%2306B6D4'/%3E%3Ccircle cx='25' cy='65' r='3' fill='%2306B6D4'/%3E%3Ccircle cx='75' cy='65' r='3' fill='%2306B6D4'/%3E%3Cline x1='50' y1='50' x2='25' y2='35' stroke='%234F46E5' stroke-width='2' opacity='0.5'/%3E%3Cline x1='50' y1='50' x2='75' y2='35' stroke='%234F46E5' stroke-width='2' opacity='0.5'/%3E%3Cline x1='50' y1='50' x2='25' y2='65' stroke='%234F46E5' stroke-width='2' opacity='0.5'/%3E%3Cline x1='50' y1='50' x2='75' y2='65' stroke='%234F46E5' stroke-width='2' opacity='0.5'/%3E%3C/svg%3E">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -360,7 +489,37 @@
   </div>
   <div class="container mx-auto px-4 py-3 flex items-center justify-between max-w-full overflow-hidden">
     <div class="flex items-center gap-10">
-      <a href="#" class="text-2xl font-['Pacifico'] text-primary">WorkInCZ</a>
+      <a href="#" class="flex items-center gap-2 group">
+        <!-- 🎨 НОВЫЙ ЛОГОТИП SVG -->
+        <svg width="32" height="32" viewBox="0 0 100 100" class="group-hover:scale-105 transition-transform duration-200">
+          <!-- Символ бесконечности -->
+          <path d="M20 50 C20 35, 35 20, 50 20 C65 20, 80 35, 80 50 C80 65, 65 80, 50 80 C35 80, 20 65, 20 50 Z" 
+                fill="none" stroke="#4F46E5" stroke-width="3" opacity="0.3"/>
+          <path d="M50 20 C65 20, 80 35, 80 50 C80 65, 65 80, 50 80 C35 80, 20 65, 20 50 C20 35, 35 20, 50 20 Z" 
+                fill="none" stroke="#06B6D4" stroke-width="3" opacity="0.6"/>
+          
+          <!-- Центральная точка -->
+          <circle cx="50" cy="50" r="4" fill="#4F46E5"/>
+          
+          <!-- Сетевые узлы -->
+          <circle cx="25" cy="35" r="2" fill="#06B6D4"/>
+          <circle cx="75" cy="35" r="2" fill="#06B6D4"/>
+          <circle cx="25" cy="65" r="2" fill="#06B6D4"/>
+          <circle cx="75" cy="65" r="2" fill="#06B6D4"/>
+          
+          <!-- Соединительные линии -->
+          <line x1="50" y1="50" x2="25" y2="35" stroke="#4F46E5" stroke-width="1.5" opacity="0.4"/>
+          <line x1="50" y1="50" x2="75" y2="35" stroke="#4F46E5" stroke-width="1.5" opacity="0.4"/>
+          <line x1="50" y1="50" x2="25" y2="65" stroke="#4F46E5" stroke-width="1.5" opacity="0.4"/>
+          <line x1="50" y1="50" x2="75" y2="65" stroke="#4F46E5" stroke-width="1.5" opacity="0.4"/>
+          
+          <!-- Дополнительные связи -->
+          <line x1="25" y1="35" x2="75" y2="65" stroke="#06B6D4" stroke-width="1" opacity="0.3"/>
+          <line x1="75" y1="35" x2="25" y2="65" stroke="#06B6D4" stroke-width="1" opacity="0.3"/>
+        </svg>
+        
+        <span class="text-2xl font-['Pacifico'] text-primary group-hover:text-primary/80 transition-colors">WorkInCZ</span>
+      </a>
       <nav class="hidden md:flex items-center space-x-6">
         <a href="#" class="text-gray-700 hover:text-primary font-medium">Поиск работы</a>
         <a href="#" class="text-gray-700 hover:text-primary font-medium">Биржа услуг</a>
