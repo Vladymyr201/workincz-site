@@ -727,28 +727,15 @@ class ApplicationsManager {
   }
 
   showSuccess(message) {
-    this.showToast(message, 'success');
+    window.showToast(message, 'success');
   }
 
   showError(message) {
-    this.showToast(message, 'error');
+    window.showToast(message, 'error');
   }
 
-  showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 transition-all duration-300 ${
-      type === 'success' ? 'bg-green-500' : 
-      type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-    }`;
-    toast.textContent = message;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      setTimeout(() => toast.remove(), 300);
-    }, 4000);
-  }
+  // --- Унифицированный toast ---
+  // Используйте window.showToast(message, type) вместо собственной реализации
 }
 
 // Инициализация при загрузке страницы

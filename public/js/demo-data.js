@@ -262,11 +262,11 @@ class DemoDataManager {
       }
       
       console.log('🎉 Все демо-вакансии успешно добавлены!');
-      this.showSuccess('Демо-вакансии добавлены в базу данных!');
+      window.showToast('Демо-вакансии добавлены в базу данных!', 'success');
       
     } catch (error) {
       console.error('❌ Ошибка добавления демо-вакансий:', error);
-      this.showError('Ошибка добавления демо-вакансий: ' + error.message);
+      window.showToast('Ошибка добавления демо-вакансий: ' + error.message, 'error');
     }
   }
 
@@ -340,27 +340,11 @@ class DemoDataManager {
   }
 
   showSuccess(message) {
-    this.showToast(message, 'success');
+    window.showToast(message, 'success');
   }
 
   showError(message) {
-    this.showToast(message, 'error');
-  }
-
-  showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 transition-all duration-300 ${
-      type === 'success' ? 'bg-green-500' : 
-      type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-    }`;
-    toast.textContent = message;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      setTimeout(() => toast.remove(), 300);
-    }, 4000);
+    window.showToast(message, 'error');
   }
 }
 

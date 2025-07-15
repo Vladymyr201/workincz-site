@@ -494,6 +494,47 @@ class AuthManager {
 // Создаем глобальный экземпляр
 window.authManager = new AuthManager();
 
+// ====== FORGOT PASSWORD HANDLER (SOFT-LAUNCH) ======
+document.addEventListener('DOMContentLoaded', () => {
+  const forgotLink = document.getElementById('forgot-password-link');
+  const forgotModal = document.getElementById('forgot-password-modal');
+  const closeForgotModal = document.getElementById('close-forgot-modal');
+  const forgotForm = document.getElementById('forgot-password-form');
+  const forgotEmail = document.getElementById('forgot-password-email');
+  const forgotStatus = document.getElementById('forgot-password-status');
+  if (!forgotLink || !forgotModal || !closeForgotModal || !forgotForm) return;
+
+  forgotLink.onclick = (e) => {
+    e.preventDefault();
+    forgotModal.classList.remove('hidden');
+    forgotStatus.textContent = '';
+    forgotForm.reset();
+  };
+  closeForgotModal.onclick = () => forgotModal.classList.add('hidden');
+  forgotModal.onclick = (e) => { if (e.target === forgotModal) forgotModal.classList.add('hidden'); };
+
+  forgotForm.onsubmit = async (e) => {
+    e.preventDefault();
+    const email = forgotEmail.value.trim();
+    forgotStatus.textContent = '';
+    if (!email) {
+      forgotStatus.textContent = 'Введите email.';
+      forgotStatus.className = 'text-red-600';
+      return;
+    }
+    try {
+      if (!window.firebase || !window.firebase.auth) throw new Error('Firebase Auth не инициализирован');
+      await window.firebase.auth().sendPasswordResetEmail(email);
+      forgotStatus.textContent = 'Письмо с инструкцией отправлено! Проверьте почту.';
+      forgotStatus.className = 'text-green-600';
+      forgotForm.reset();
+    } catch (err) {
+      forgotStatus.textContent = 'Ошибка: ' + (err.message || 'Не удалось отправить письмо.');
+      forgotStatus.className = 'text-red-600';
+    }
+  };
+});
+
 // Экспорт для использования в других модулях
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = AuthManager;

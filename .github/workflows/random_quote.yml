@@ -1,0 +1,27 @@
+name: Random Programming Quote Badge
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  quote-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get random programming quote
+        id: quote
+        run: |
+          curl -s https://programming-quotes-api.herokuapp.com/quotes/random > quote.json
+          echo "QUOTE=$(jq -r .en quote.json)" >> $GITHUB_ENV
+          echo "AUTHOR=$(jq -r .author quote.json)" >> $GITHUB_ENV
+      - name: Generate badge
+        run: |
+          echo "![Random Quote](https://img.shields.io/badge/quote-$(echo ${{ env.QUOTE }} | sed 's/ /%20/g')--${{ env.AUTHOR }}-blue)" > random-quote-badge.md
+      - name: Commit badge
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add random-quote-badge.md
+          git commit -m "chore: update random programming quote badge" || echo "No changes to commit"
+          git push || echo "No changes to push"

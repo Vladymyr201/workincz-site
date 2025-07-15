@@ -147,7 +147,7 @@
                 <line x1="25" y1="35" x2="75" y2="65" stroke="#06B6D4" stroke-width="1" opacity="0.3"/>
                 <line x1="75" y1="35" x2="25" y2="65" stroke="#06B6D4" stroke-width="1" opacity="0.3"/>
               </svg>
-              <div class="text-2xl font-bold text-primary">WorkInCZ</div>
+            <div class="text-2xl font-bold text-primary">WorkInCZ</div>
             </div>
             <span class="text-lg font-semibold text-gray-900">Личный кабинет</span>
           </div>
@@ -214,6 +214,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  
+  <!-- 💬 Система сообщений -->
+  <script src="js/messaging-manager.js"></script>
   
   <script>
     // Firebase config
@@ -336,8 +339,12 @@
           </div>
         `;
 
-        // Создаем навигацию
+        // Создаем структурированную навигацию по группам
         document.getElementById('dashboardNav').innerHTML = `
+          <!-- 👤 ОСНОВНОЕ -->
+          <div class="mb-6">
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-2">Основное</h4>
+            <div class="space-y-1">
           <button class="dashboard-nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="overview">
             <i class="ri-dashboard-line"></i>
             <span>Обзор</span>
@@ -351,14 +358,52 @@
             <span>${isEmployer ? 'Мои вакансии' : 'Мои отклики'}</span>
             <span class="ml-auto bg-primary text-white text-xs px-2 py-1 rounded-full">3</span>
           </button>
-          <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="${isEmployer ? 'candidates' : 'saved'}">
-            <i class="${isEmployer ? 'ri-team-line' : 'ri-bookmark-line'}"></i>
-            <span>${isEmployer ? 'Кандидаты' : 'Сохраненные'}</span>
+            </div>
+          </div>
+
+          <!-- 🛠 СЕРВИСЫ -->
+          <div class="mb-6">
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-2">Сервисы</h4>
+            <div class="space-y-1">
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="services">
+                <i class="ri-service-line"></i>
+                <span>Биржа услуг</span>
+                <span class="ml-auto bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">Новое</span>
           </button>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="legal">
+                <i class="ri-scales-3-line"></i>
+                <span>Юридическая помощь</span>
+              </button>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="education">
+                <i class="ri-graduation-cap-line"></i>
+                <span>Образование</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 📊 ИНСТРУМЕНТЫ -->
+          <div class="mb-6">
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-2">Инструменты</h4>
+            <div class="space-y-1">
           <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="analytics">
             <i class="ri-bar-chart-line"></i>
             <span>Аналитика</span>
           </button>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="statistics">
+                <i class="ri-line-chart-line"></i>
+                <span>Статистика</span>
+              </button>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="${isEmployer ? 'candidates' : 'saved'}">
+                <i class="${isEmployer ? 'ri-team-line' : 'ri-bookmark-line'}"></i>
+                <span>${isEmployer ? 'Кандидаты' : 'Сохраненные'}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ⚙️ СИСТЕМА -->
+          <div class="mb-4">
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-2">Система</h4>
+            <div class="space-y-1">
           <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="subscription">
             <i class="ri-vip-crown-line"></i>
             <span>Подписка</span>
@@ -368,6 +413,12 @@
             <i class="ri-settings-line"></i>
             <span>Настройки</span>
           </button>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="languages">
+                <i class="ri-global-line"></i>
+                <span>Языки</span>
+              </button>
+            </div>
+          </div>
         `;
 
         // Обработчики навигации
@@ -509,8 +560,12 @@
           </div>
         `;
 
-        // Создаем навигацию
+        // Создаем структурированную навигацию по группам
         document.getElementById('dashboardNav').innerHTML = `
+          <!-- 👤 ОСНОВНОЕ -->
+          <div class="mb-6">
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-2">Основное</h4>
+            <div class="space-y-1">
           <button class="dashboard-nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="overview">
             <i class="ri-dashboard-line"></i>
             <span>Обзор</span>
@@ -524,14 +579,52 @@
             <span>${isEmployer ? 'Мои вакансии' : 'Мои отклики'}</span>
             <span class="ml-auto bg-primary text-white text-xs px-2 py-1 rounded-full">3</span>
           </button>
-          <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="${isEmployer ? 'candidates' : 'saved'}">
-            <i class="${isEmployer ? 'ri-team-line' : 'ri-bookmark-line'}"></i>
-            <span>${isEmployer ? 'Кандидаты' : 'Сохраненные'}</span>
+            </div>
+          </div>
+
+          <!-- 🛠 СЕРВИСЫ -->
+          <div class="mb-6">
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-2">Сервисы</h4>
+            <div class="space-y-1">
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="services">
+                <i class="ri-service-line"></i>
+                <span>Биржа услуг</span>
+                <span class="ml-auto bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">Новое</span>
           </button>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="legal">
+                <i class="ri-scales-3-line"></i>
+                <span>Юридическая помощь</span>
+              </button>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="education">
+                <i class="ri-graduation-cap-line"></i>
+                <span>Образование</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 📊 ИНСТРУМЕНТЫ -->
+          <div class="mb-6">
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-2">Инструменты</h4>
+            <div class="space-y-1">
           <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="analytics">
             <i class="ri-bar-chart-line"></i>
             <span>Аналитика</span>
           </button>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="statistics">
+                <i class="ri-line-chart-line"></i>
+                <span>Статистика</span>
+              </button>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="${isEmployer ? 'candidates' : 'saved'}">
+                <i class="${isEmployer ? 'ri-team-line' : 'ri-bookmark-line'}"></i>
+                <span>${isEmployer ? 'Кандидаты' : 'Сохраненные'}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ⚙️ СИСТЕМА -->
+          <div class="mb-4">
+            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-2">Система</h4>
+            <div class="space-y-1">
           <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="subscription">
             <i class="ri-vip-crown-line"></i>
             <span>Подписка</span>
@@ -541,6 +634,12 @@
             <i class="ri-settings-line"></i>
             <span>Настройки</span>
           </button>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="languages">
+                <i class="ri-global-line"></i>
+                <span>Языки</span>
+              </button>
+            </div>
+          </div>
         `;
 
         // Обработчики навигации
@@ -904,6 +1003,257 @@
           `;
           break;
 
+        case 'services':
+          content.innerHTML = `
+            <div class="space-y-6">
+              <div class="bg-white rounded-lg p-6 shadow-sm">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <i class="ri-service-line text-primary"></i>
+                  Биржа услуг
+                </h3>
+                <p class="text-gray-600 mb-6">Предлагайте свои услуги или найдите нужных специалистов</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-4">
+                      <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="ri-hammer-line text-blue-600 text-xl"></i>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold">Ремонт и строительство</h4>
+                        <p class="text-sm text-gray-600">47 услуг доступно</p>
+                      </div>
+                    </div>
+                    <button class="w-full bg-primary/10 text-primary px-4 py-2 rounded-lg hover:bg-primary/20">
+                      Просмотреть услуги
+                    </button>
+                  </div>
+                  
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-4">
+                      <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="ri-car-line text-green-600 text-xl"></i>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold">Транспорт и доставка</h4>
+                        <p class="text-sm text-gray-600">23 услуги доступно</p>
+                      </div>
+                    </div>
+                    <button class="w-full bg-primary/10 text-primary px-4 py-2 rounded-lg hover:bg-primary/20">
+                      Просмотреть услуги
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-green-50 rounded-lg">
+                  <h4 class="font-semibold text-green-800 mb-2">Новая функция!</h4>
+                  <p class="text-green-700 text-sm">Теперь вы можете предлагать свои услуги прямо в личном кабинете</p>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'legal':
+          content.innerHTML = `
+            <div class="space-y-6">
+              <div class="bg-white rounded-lg p-6 shadow-sm">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <i class="ri-scales-3-line text-primary"></i>
+                  Юридическая помощь
+                </h3>
+                <p class="text-gray-600 mb-6">Консультации по трудовому праву и оформлению документов в Чехии</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <h4 class="font-semibold mb-2">📋 Оформление документов</h4>
+                    <ul class="text-sm text-gray-600 space-y-1 mb-4">
+                      <li>• ВНЖ и разрешения на работу</li>
+                      <li>• Регистрация ИП</li>
+                      <li>• Справки и переводы</li>
+                    </ul>
+                    <button class="w-full bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
+                      Заказать консультацию
+                    </button>
+                  </div>
+                  
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <h4 class="font-semibold mb-2">⚖️ Трудовые споры</h4>
+                    <ul class="text-sm text-gray-600 space-y-1 mb-4">
+                      <li>• Невыплата зарплаты</li>
+                      <li>• Нарушение условий труда</li>
+                      <li>• Незаконное увольнение</li>
+                    </ul>
+                    <button class="w-full bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
+                      Получить помощь
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'education':
+          content.innerHTML = `
+            <div class="space-y-6">
+              <div class="bg-white rounded-lg p-6 shadow-sm">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <i class="ri-graduation-cap-line text-primary"></i>
+                  Образование и курсы
+                </h3>
+                <p class="text-gray-600 mb-6">Повышайте квалификацию и изучайте чешский язык</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <i class="ri-translate-2 text-blue-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-center mb-2">Чешский язык</h4>
+                    <p class="text-sm text-gray-600 text-center mb-4">Курсы от А1 до С2</p>
+                    <button class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                      Записаться
+                    </button>
+                  </div>
+                  
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <i class="ri-tools-line text-green-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-center mb-2">Профессиональные курсы</h4>
+                    <p class="text-sm text-gray-600 text-center mb-4">IT, строительство, автодело</p>
+                    <button class="w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                      Выбрать курс
+                    </button>
+                  </div>
+                  
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <i class="ri-award-line text-yellow-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-center mb-2">Сертификация</h4>
+                    <p class="text-sm text-gray-600 text-center mb-4">Получите признанные дипломы</p>
+                    <button class="w-full bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
+                      Узнать больше
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'statistics':
+          content.innerHTML = `
+            <div class="space-y-6">
+              <div class="bg-white rounded-lg p-6 shadow-sm">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <i class="ri-line-chart-line text-primary"></i>
+                  Детальная статистика
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600">2,440</div>
+                    <div class="text-sm text-gray-600">Пользователей онлайн</div>
+                  </div>
+                  <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600">3,471</div>
+                    <div class="text-sm text-gray-600">Активных вакансий</div>
+                  </div>
+                  <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-yellow-600">1,200+</div>
+                    <div class="text-sm text-gray-600">Работодателей</div>
+                  </div>
+                  <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-purple-600">15,000+</div>
+                    <div class="text-sm text-gray-600">Успешных трудоустройств</div>
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <h4 class="font-semibold mb-2">📊 Ваша активность</h4>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>Просмотров профиля: <span class="font-semibold">127</span></div>
+                    <div>Откликов отправлено: <span class="font-semibold">5</span></div>
+                    <div>Сохраненных вакансий: <span class="font-semibold">12</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'languages':
+          content.innerHTML = `
+            <div class="space-y-6">
+              <div class="bg-white rounded-lg p-6 shadow-sm">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <i class="ri-global-line text-primary"></i>
+                  Языковые настройки
+                </h3>
+                <p class="text-gray-600 mb-6">Выберите предпочитаемый язык интерфейса</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <label class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input type="radio" name="language" value="ru" checked class="text-primary">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🇷🇺</span>
+                      <span class="font-medium">Русский</span>
+                    </div>
+                  </label>
+                  
+                  <label class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input type="radio" name="language" value="cz" class="text-primary">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🇨🇿</span>
+                      <span class="font-medium">Čeština</span>
+                    </div>
+                  </label>
+                  
+                  <label class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input type="radio" name="language" value="ua" class="text-primary">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🇺🇦</span>
+                      <span class="font-medium">Українська</span>
+                    </div>
+                  </label>
+                  
+                  <label class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input type="radio" name="language" value="by" class="text-primary">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🇧🇾</span>
+                      <span class="font-medium">Беларуская</span>
+                    </div>
+                  </label>
+                  
+                  <label class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input type="radio" name="language" value="vn" class="text-primary">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🇻🇳</span>
+                      <span class="font-medium">Tiếng Việt</span>
+                    </div>
+                  </label>
+                  
+                  <label class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input type="radio" name="language" value="pl" class="text-primary">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">🇵🇱</span>
+                      <span class="font-medium">Polski</span>
+                    </div>
+                  </label>
+                </div>
+                
+                <div class="mt-6">
+                  <button class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90">
+                    Сохранить изменения
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+
         case 'settings':
           content.innerHTML = `
             <div class="space-y-6">
@@ -950,6 +1300,96 @@
                   </div>
                 </div>
               </div>
+
+              <!-- 🧪 АДМИНИСТРАТИВНЫЕ ИНСТРУМЕНТЫ -->
+              <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-6 border border-yellow-200">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <i class="ri-tools-line text-yellow-600"></i>
+                  Инструменты тестирования
+                </h3>
+                <p class="text-sm text-gray-600 mb-4">Инструменты для проверки работоспособности системы</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button onclick="testAllChatFunctions()" 
+                          class="bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2">
+                    <i class="ri-test-tube-line"></i>
+                    <span>Полное тестирование чата</span>
+                  </button>
+                  
+                  <button onclick="generateChatSystemReport()" 
+                          class="bg-green-500 text-white px-4 py-3 rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2">
+                    <i class="ri-file-list-3-line"></i>
+                    <span>Отчет о системе</span>
+                  </button>
+                  
+                  <button onclick="openMessagesPanel()" 
+                          class="bg-purple-500 text-white px-4 py-3 rounded-lg hover:bg-purple-600 transition-colors flex items-center gap-2">
+                    <i class="ri-message-3-line"></i>
+                    <span>Открыть панель чата</span>
+                  </button>
+                  
+                  <button onclick="window.testSentryError ? window.testSentryError() : alert('Sentry не найден')" 
+                          class="bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2">
+                    <i class="ri-bug-line"></i>
+                    <span>Тест Sentry</span>
+                  </button>
+                </div>
+                
+                <div class="mt-4 p-3 bg-yellow-100 rounded-lg">
+                  <p class="text-xs text-yellow-800">
+                    <i class="ri-information-line mr-1"></i>
+                    Эти инструменты доступны только в режиме разработки и для тестирования
+                  </p>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'career':
+          content.innerHTML = `
+            <div class="bg-white rounded-lg p-6 shadow-sm" aria-label="Карьерный трекер">
+              <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <i class="ri-road-map-line text-primary"></i>
+                Карьерный трекер
+                <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full ml-2">AI</span>
+              </h3>
+              <p class="text-gray-600 mb-4">Персональный карьерный путь с AI-советами, целями, прогрессом и бейджами. Делитесь успехами и получайте рекомендации!</p>
+              <!-- TODO: AI-советы, цели, прогресс, бейджи, share-link, PDF, геймификация -->
+              <div class="mb-6">
+                <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2" tabIndex="0" aria-label="Получить AI-совет">
+                  <i class="ri-robot-2-line"></i>
+                  Получить AI-совет
+                </button>
+                <span class="ml-3 text-xs text-gray-400">AI-советы помогают строить карьеру</span>
+              </div>
+              <div class="mb-6">
+                <h4 class="font-semibold mb-2">Ваши цели</h4>
+                <ul class="list-disc pl-6 text-gray-700">
+                  <li>Пройти собеседование в топ-компании</li>
+                  <li>Улучшить резюме (PDF)</li>
+                  <li>Выучить чешский язык до B1</li>
+                </ul>
+                <button class="mt-3 bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs" tabIndex="0" aria-label="Добавить цель">+ Добавить цель</button>
+              </div>
+              <div class="mb-6">
+                <h4 class="font-semibold mb-2">Прогресс и бейджи</h4>
+                <div class="flex gap-3 items-center">
+                  <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs"><i class="ri-medal-line"></i> 3 цели выполнено</span>
+                  <span class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs"><i class="ri-star-smile-line"></i> Бейдж: "AI-стратег"</span>
+                </div>
+              </div>
+              <div class="mb-6">
+                <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2" tabIndex="0" aria-label="Поделиться прогрессом">
+                  <i class="ri-share-line"></i>
+                  Поделиться прогрессом
+                </button>
+                <button class="ml-3 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2" tabIndex="0" aria-label="Экспортировать в PDF">
+                  <i class="ri-file-pdf-line"></i>
+                  PDF
+                </button>
+              </div>
+              <div class="text-xs text-gray-400 mt-4">GDPR-friendly, все данные анонимны. UX-first, mobile-friendly, поддержка i18n, accessibility, комментарии в коде.</div>
             </div>
           `;
           break;
@@ -962,6 +1402,198 @@
           `;
       }
     }
+  </script>
+
+  <!-- ====== FEEDBACK FORM (SOFT-LAUNCH) ====== -->
+  <section id="feedback-section" class="mt-12 bg-white rounded-lg shadow p-6 max-w-xl mx-auto">
+    <h2 class="text-xl font-bold mb-4">Обратная связь</h2>
+    <form id="feedback-form" class="space-y-4">
+      <div>
+        <label for="feedback-message" class="block text-sm font-medium text-gray-700 mb-2">Ваш отзыв или вопрос *</label>
+        <textarea id="feedback-message" required rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Опишите проблему, пожелание или идею..."></textarea>
+      </div>
+      <div>
+        <label for="feedback-email" class="block text-sm font-medium text-gray-700 mb-2">Email для ответа</label>
+        <input type="email" id="feedback-email" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Ваш email (авто)">
+      </div>
+      <button type="submit" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90">Отправить</button>
+      <div id="feedback-status" class="mt-2 text-sm"></div>
+    </form>
+  </section>
+
+  <!-- ====== FAQ SECTION (SOFT-LAUNCH) ====== -->
+  <section id="faq-section" class="mt-12 bg-white rounded-lg shadow p-6 max-w-xl mx-auto">
+    <h2 class="text-xl font-bold mb-4">FAQ — Часто задаваемые вопросы</h2>
+    <div class="space-y-3">
+      <details class="border rounded-lg p-3">
+        <summary class="font-medium cursor-pointer">Как получить код приглашения для регистрации?</summary>
+        <div class="mt-2 text-gray-700 text-sm">Коды выдаются участникам soft-launch. Если вы хотите присоединиться — напишите нам через форму обратной связи или Telegram-бота.</div>
+      </details>
+      <details class="border rounded-lg p-3">
+        <summary class="font-medium cursor-pointer">Я забыл(а) пароль. Как восстановить доступ?</summary>
+        <div class="mt-2 text-gray-700 text-sm">На экране входа нажмите «Забыли пароль?» и следуйте инструкции. Если не приходит письмо — проверьте спам или напишите в поддержку.</div>
+      </details>
+      <details class="border rounded-lg p-3">
+        <summary class="font-medium cursor-pointer">Как удалить свой аккаунт и все данные?</summary>
+        <div class="mt-2 text-gray-700 text-sm">Напишите нам через форму обратной связи или на email support@workincz.eu — мы удалим все ваши данные в течение 72 часов (GDPR).</div>
+      </details>
+      <details class="border rounded-lg p-3">
+        <summary class="font-medium cursor-pointer">Как стать VIP или разместить горячее объявление?</summary>
+        <div class="mt-2 text-gray-700 text-sm">В личном кабинете выберите нужную услугу и следуйте инструкции Stripe. Если возникнут вопросы — пишите в поддержку.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- 🟢 Кнопка Lucky Job (Мне повезет!) — начало -->
+  <div class="flex justify-end mb-4">
+    <!-- 🟢 Tooltip для кнопки Lucky Job -->
+    <div class="relative inline-block group">
+      <button id="luckyJobBtn"
+        class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-button shadow hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        aria-label="Мне повезет! (Показать случайную вакансию)"
+        tabIndex="0"
+        title="Мне повезет! (Lucky Job)"
+        aria-describedby="luckyJobTooltip"
+        >
+        <i class="ri-dice-5-line text-xl" aria-hidden="true"></i>
+        <span class="hidden sm:inline" data-i18n="luckyJobBtn">Мне повезет!</span>
+      </button>
+      <div id="luckyJobTooltip" role="tooltip" class="absolute z-50 left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-gray-900 text-white text-xs rounded shadow opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-opacity duration-200">
+        Случайная вакансия по вашему профилю
+      </div>
+    </div>
+  </div>
+  <!-- 🟢 Кнопка Lucky Job (Мне повезет!) — конец -->
+
+  <!-- 🟢 Lucky Job Analytics (только для админов) -->
+  <div id="luckyJobAnalytics" class="hidden bg-white rounded-lg shadow p-4 mb-6" aria-label="Статистика Lucky Job">
+    <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+      <i class="ri-bar-chart-2-line text-primary"></i>
+      Статистика Lucky Job
+    </h3>
+    <div class="flex flex-wrap gap-6 mb-4">
+      <div>
+        <div class="text-2xl font-bold" id="luckyJobClicks">0</div>
+        <div class="text-gray-500 text-sm">Кликов</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold" id="luckyJobShows">0</div>
+        <div class="text-gray-500 text-sm">Показов вакансий</div>
+      </div>
+    </div>
+    <div>
+      <div class="font-semibold mb-1">Топ-5 вакансий по рандому:</div>
+      <ol id="luckyJobTopJobs" class="list-decimal pl-5 text-sm text-gray-700"></ol>
+    </div>
+  </div>
+  <script>
+  // 🟢 Lucky Job Analytics: показать секцию только для админов (заглушка)
+  window.addEventListener('DOMContentLoaded', () => {
+    const isAdmin = window.authManager?.currentUser?.isAdmin || false; // TODO: заменить на реальную проверку
+    if (isAdmin) {
+      document.getElementById('luckyJobAnalytics').classList.remove('hidden');
+      // Здесь будет вызов функции обновления статистики
+      if (window.jobsManager) window.jobsManager.updateLuckyJobAnalytics();
+    }
+  });
+  </script>
+
+  <!-- 🟢 Рекомендации вакансий (Вам может понравиться) -->
+  <div id="jobRecommendations" class="hidden bg-white rounded-lg shadow p-4 mb-6" aria-label="Вам может понравиться">
+    <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+      <i class="ri-star-smile-line text-primary"></i>
+      Вам может понравиться
+    </h3>
+    <div id="jobRecommendationsList" class="grid gap-4 sm:grid-cols-2 md:grid-cols-3"></div>
+  </div>
+
+  <!-- 🟢 Баннер обратной связи Lucky Job -->
+  <div id="luckyJobFeedback" class="hidden bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg mb-6 flex flex-col sm:flex-row items-center gap-3" aria-label="Обратная связь Lucky Job">
+    <div class="flex-1">
+      <span class="font-semibold text-yellow-800">Помогли ли вам наши рекомендации?</span>
+      <span class="text-gray-700 ml-2">Оставьте отзыв — это анонимно и поможет нам стать лучше!</span>
+    </div>
+    <div class="flex gap-2">
+      <button id="luckyJobFeedbackYes" class="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200" aria-label="Да" tabIndex="0">👍 Да</button>
+      <button id="luckyJobFeedbackNo" class="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200" aria-label="Нет" tabIndex="0">👎 Нет</button>
+      <button id="luckyJobFeedbackComment" class="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200" aria-label="Оставить комментарий" tabIndex="0">Оставить комментарий</button>
+    </div>
+  </div>
+  <!-- 🟢 Модальное окно для комментария -->
+  <div id="luckyJobFeedbackModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative">
+      <button aria-label="Закрыть" tabIndex="0" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-2xl" id="closeLuckyJobFeedbackModal">&times;</button>
+      <div class="mb-2 font-bold text-lg">Ваш комментарий</div>
+      <textarea id="luckyJobFeedbackText" class="w-full border rounded p-2 mb-3" rows="3" placeholder="Напишите, что улучшить или что понравилось..."></textarea>
+      <button id="luckyJobFeedbackSend" class="px-4 py-2 bg-primary text-white rounded">Отправить</button>
+    </div>
+  </div>
+
+  <!-- 🟢 Lucky Job Feedback Dashboard (только для админов) -->
+  <div id="luckyJobFeedbackDashboard" class="hidden mt-6" aria-label="Аналитика обратной связи Lucky Job">
+    <h4 class="font-semibold mb-2 flex items-center gap-2">
+      <i class="ri-feedback-line text-primary"></i>
+      Обратная связь Lucky Job
+    </h4>
+    <div class="flex flex-wrap gap-6 mb-2">
+      <div>
+        <div class="text-2xl font-bold" id="luckyJobFeedbackPositive">0%</div>
+        <div class="text-gray-500 text-sm">Положительных отзывов</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold" id="luckyJobFeedbackTotal">0</div>
+        <div class="text-gray-500 text-sm">Всего отзывов</div>
+      </div>
+    </div>
+    <div class="mb-2">
+      <div class="font-semibold mb-1">Топ-3 проблемы/пожелания:</div>
+      <ul id="luckyJobFeedbackTopIssues" class="list-disc pl-5 text-sm text-gray-700"></ul>
+    </div>
+    <div>
+      <div class="font-semibold mb-1">Динамика по дням:</div>
+      <div id="luckyJobFeedbackTrends" class="text-xs text-gray-500"></div>
+    </div>
+  </div>
+
+  <!-- 🟢 AI-подбор вакансий (AI-рекомендации) -->
+  <div id="aiJobRecommendations" class="hidden bg-white rounded-lg shadow p-4 mb-6" aria-label="AI-подбор вакансий">
+    <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+      <i class="ri-robot-2-line text-primary"></i>
+      AI-подбор вакансий
+      <span class="text-xs text-gray-400 ml-2">Подбор с помощью AI</span>
+    </h3>
+    <div id="aiJobRecommendationsList" class="grid gap-4 sm:grid-cols-2 md:grid-cols-3"></div>
+  </div>
+
+  <!-- 🟢 Настройки рекомендаций (для пользователя) -->
+  <div id="recommendationSettings" class="hidden bg-white rounded-lg shadow p-4 mb-6" aria-label="Настройки рекомендаций">
+    <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+      <i class="ri-settings-3-line text-primary"></i>
+      Настройки рекомендаций
+    </h3>
+    <div class="flex flex-col gap-3">
+      <label class="flex items-center gap-2">
+        <input type="checkbox" id="toggleAIRecs" class="accent-primary" />
+        <span>Получать AI-рекомендации</span>
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="checkbox" id="toggleEmailRecs" class="accent-primary" />
+        <span>Получать email-подборки вакансий</span>
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="checkbox" id="togglePushRecs" class="accent-primary" />
+        <span>Получать push-уведомления о вакансиях</span>
+      </label>
+    </div>
+    <div id="recSettingsStatus" class="text-xs text-gray-500 mt-2"></div>
+  </div>
+  <script>
+  // 🟢 Показ секции только для авторизованных
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.authManager?.currentUser) {
+      document.getElementById('recommendationSettings').classList.remove('hidden');
+    }
+  });
   </script>
 </body>
 </html> 

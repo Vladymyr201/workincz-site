@@ -11,6 +11,7 @@ class UserProfileManager {
       profile: {},
       preferences: {}
     };
+    this.careerGoalsUnsub = null; // для отписки от onSnapshot
     
     this.init();
   }
@@ -31,9 +32,13 @@ class UserProfileManager {
           console.log('🔐 Пользователь вошел в систему:', user.email);
           // Проверяем, заполнен ли профиль пользователя
           await this.checkUserProfileCompleteness(user);
+          // --- Подписка на цели в Firestore ---
+          this.subscribeCareerGoalsRealtime();
+          await this.migrateLocalGoalsToFirestoreIfNeeded(user.uid, this.db);
         } else {
           // Очищаем сохраненные данные при выходе
           this.clearSavedUserData();
+          this.unsubscribeCareerGoalsRealtime();
         }
       });
     } else {
@@ -51,9 +56,12 @@ class UserProfileManager {
             console.log('🔐 Пользователь вошел в систему:', user.email);
             // Проверяем, заполнен ли профиль пользователя
             await this.checkUserProfileCompleteness(user);
+            this.subscribeCareerGoalsRealtime();
+            await this.migrateLocalGoalsToFirestoreIfNeeded(user.uid, this.db);
           } else {
             // Очищаем сохраненные данные при выходе
             this.clearSavedUserData();
+            this.unsubscribeCareerGoalsRealtime();
           }
         });
       } else {
@@ -158,6 +166,10 @@ class UserProfileManager {
                   <option value="ro">Română</option>
                   <option value="bg">Български</option>
                 </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Код приглашения *</label>
+                <input type="text" id="inviteCode" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary" required placeholder="Введите код приглашения">
               </div>
             </div>
             <div class="mt-6">
@@ -635,7 +647,8 @@ class UserProfileManager {
         phone: document.getElementById('phone').value,
         password: document.getElementById('password').value,
         language: document.getElementById('language').value,
-        role: document.querySelector('input[name="role"]:checked').value
+        role: document.querySelector('input[name="role"]:checked').value,
+        inviteCode: document.getElementById('inviteCode').value // Новый параметр
       };
     } else if (this.registrationStep === 2) {
       const role = this.userData.basic.role;
@@ -721,6 +734,15 @@ class UserProfileManager {
         );
         console.log('✅ Пользователь создан в Auth:', userCredential.user.uid);
         user = userCredential.user;
+      }
+
+      // Проверка инвайт-кода для soft-launch
+      const inviteCode = this.userData.basic.inviteCode?.trim();
+      if (!inviteCode || !VALID_INVITE_CODES.includes(inviteCode)) {
+        this.showModalError('Для регистрации требуется действующий код приглашения. Пожалуйста, обратитесь к администрации или введите корректный код.');
+        completeBtn.disabled = false;
+        completeBtn.textContent = originalText;
+        return;
       }
 
       // Создаем профиль пользователя в Firestore
@@ -1593,6 +1615,9 @@ class UserProfileManager {
       case 'settings':
         this.loadSettingsSection(content);
         break;
+      case 'career':
+        this.loadCareerSection(content, isEmployer);
+        break;
       default:
         content.innerHTML = '<p class="text-gray-500">Раздел в разработке</p>';
     }
@@ -1807,6 +1832,9 @@ class UserProfileManager {
         break;
       case 'settings':
         this.loadSettingsSection(content);
+        break;
+      case 'career':
+        this.loadCareerSection(content, isEmployer);
         break;
       default:
         content.innerHTML = '<p class="text-gray-500">Раздел в разработке</p>';
@@ -2600,19 +2628,28 @@ class UserProfileManager {
   }
 
   showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 transition-all duration-300 ${
-      type === 'success' ? 'bg-green-500' : 
-      type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-    }`;
+    let toast = document.getElementById('careerToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'careerToast';
+      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-white text-sm transition-all';
+      toast.style.transition = 'opacity 0.4s, transform 0.4s';
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(20px)';
+      document.body.appendChild(toast);
+    }
     toast.textContent = message;
-    
-    document.body.appendChild(toast);
-    
+    toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-white text-sm transition-all ' + (type === 'error' ? 'bg-red-600' : 'bg-primary');
+    // Показать с анимацией
+    setTimeout(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+    }, 10);
+    // Скрыть с анимацией
     setTimeout(() => {
       toast.style.opacity = '0';
-      setTimeout(() => toast.remove(), 300);
-    }, 4000);
+      toast.style.transform = 'translateY(20px)';
+    }, 2010);
   }
 
   // 🧪 ТЕСТОВАЯ ФУНКЦИЯ для демонстрации работы кнопок
@@ -2640,6 +2677,537 @@ class UserProfileManager {
     // Вызываем обновление UI
     this.updateUIForLoggedInUser();
   }
+
+  async loadCareerSection(content, isEmployer) {
+    let goals = [];
+    let useFirestore = this.currentUser && this.db;
+    let loading = false;
+    // --- Debug events для overlay ---
+    if (!this.careerDebugEvents) this.careerDebugEvents = [];
+    const debug = window.location.search.includes('debug=1');
+    try {
+      if (useFirestore) {
+        content.innerHTML = `
+          <div class='bg-white rounded-lg p-6 shadow-sm'>
+            <h3 class='text-lg font-semibold mb-4 flex items-center gap-2'>
+              <i class='ri-road-map-line text-primary'></i> Карьерный трекер
+            </h3>
+            <div class='mb-6'>
+              <div class='h-4 bg-gray-200 rounded w-1/2 mb-3 animate-pulse'></div>
+              <div class='space-y-2'>
+                <div class='h-4 bg-gray-200 rounded w-full animate-pulse'></div>
+                <div class='h-4 bg-gray-200 rounded w-5/6 animate-pulse'></div>
+                <div class='h-4 bg-gray-200 rounded w-2/3 animate-pulse'></div>
+              </div>
+            </div>
+          </div>
+        `;
+        loading = true;
+        this.careerDebugEvents.push(`[${new Date().toLocaleTimeString()}] Загрузка целей из Firestore...`);
+        goals = await loadGoalsFromFirestore(this.currentUser.uid, this.db);
+        if (!goals || !Array.isArray(goals)) goals = [];
+        this.careerDebugEvents.push(`[${new Date().toLocaleTimeString()}] Загружено целей: ${goals.length}`);
+        loading = false;
+      } else {
+        this.careerDebugEvents.push(`[${new Date().toLocaleTimeString()}] Загрузка целей из localStorage...`);
+        try {
+          goals = JSON.parse(localStorage.getItem('careerGoals') || '[]');
+          if (!Array.isArray(goals)) goals = [];
+        } catch { goals = []; }
+        this.careerDebugEvents.push(`[${new Date().toLocaleTimeString()}] Загружено целей: ${goals.length}`);
+      }
+    } catch (err) {
+      this.careerDebugEvents.push(`[${new Date().toLocaleTimeString()}] Ошибка загрузки целей: ${err}`);
+    }
+    const doneCount = goals.filter(g => g.done).length;
+    const percent = Math.round((doneCount / goals.length) * 100);
+    // --- HTML ---
+    content.innerHTML = `
+      <div class="bg-white rounded-lg p-6 shadow-sm" aria-label="Карьерный трекер">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <i class="ri-road-map-line text-primary"></i>
+          Карьерный трекер
+          <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full ml-2">AI</span>
+        </h3>
+        <p class="text-gray-600 mb-4">Персональный карьерный путь с AI-советами, целями, прогрессом и бейджами. Делитесь успехами и получайте рекомендации!</p>
+        <!-- TODO: AI-советы, цели, прогресс, бейджи, share-link, PDF, геймификация -->
+        <div class="mb-6">
+          <button id="getAiAdviceBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2" tabIndex="0" aria-label="Получить AI-совет">
+            <i class="ri-robot-2-line"></i>
+            Получить AI-совет
+          </button>
+          <span class="ml-3 text-xs text-gray-400">AI-советы помогают строить карьеру</span>
+        </div>
+        <div class="mb-6">
+          <h4 class="font-semibold mb-2">Ваши цели</h4>
+          <ul class="list-disc pl-6 text-gray-700 space-y-2" id="goalsList">
+            ${goals.map((g, i) => `
+              <li class="flex items-center gap-2 ${g.isNew ? 'transition-opacity duration-700 opacity-0 animate-fade-in' : ''}">
+                <input type="checkbox" class="accent-primary" data-goalid="${i}" ${g.done ? 'checked' : ''} aria-label="${g.title}" />
+                <span class="${g.done ? 'line-through text-gray-400' : ''}">${g.title}</span>
+                <button class="ml-1 text-gray-400 hover:text-red-500 focus:outline-none" data-delgoalid="${i}" aria-label="Удалить цель"><i class="ri-close-line"></i></button>
+              </li>
+            `).join('')}
+          </ul>
+          <button class="mt-3 bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs" id="addGoalBtn" tabIndex="0" aria-label="Добавить цель">+ Добавить цель</button>
+          <button class="mt-3 ml-2 bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs relative group" id="randomGoalBtn" tabIndex="0" aria-label="Мне повезёт!">
+            Мне повезёт!
+            <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max max-w-xs px-3 py-1 rounded bg-gray-900 text-white text-xs opacity-0 group-hover:opacity-100 group-focus:opacity-100 pointer-events-none transition-opacity z-50" id="randomGoalTooltip">
+              Добавить случайную карьерную цель
+            </span>
+          </button>
+          <span id="randomGoalStats" class="block mt-2 text-xs text-gray-500"></span>
+        </div>
+        <div class="mb-6">
+          <h4 class="font-semibold mb-2">Прогресс и бейджи</h4>
+          <!-- Прогресс-бар -->
+          <div class="w-full bg-gray-200 rounded-full h-3 mb-3" aria-label="Прогресс по целям">
+            <div class="bg-green-500 h-3 rounded-full transition-all duration-700" style="width: ${percent}%" id="goalsProgressBar" ${doneCount === goals.length && goals.length > 0 ? 'class="animate-pulse bg-green-500 h-3 rounded-full transition-all duration-700"' : ''}></div>
+          </div>
+          <div class="flex gap-3 items-center">
+            <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs"><i class="ri-medal-line"></i> ${doneCount} из ${goals.length} целей</span>
+            <button id="showCongratsBtn" class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs focus:outline-none" tabIndex="0" aria-label="Поздравление"><i class="ri-star-smile-line"></i> Бейдж: "AI-стратег"</button>
+          </div>
+        </div>
+        <div class="mb-6">
+          <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2" tabIndex="0" aria-label="Поделиться прогрессом">
+            <i class="ri-share-line"></i>
+            Поделиться прогрессом
+          </button>
+          <button class="ml-3 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2" tabIndex="0" aria-label="Экспортировать в PDF">
+            <i class="ri-file-pdf-line"></i>
+            PDF
+          </button>
+        </div>
+        <div class="text-xs text-gray-400 mt-4">GDPR-friendly, все данные анонимны. UX-first, mobile-friendly, поддержка i18n, accessibility, комментарии в коде.</div>
+        <div class="mb-6">
+          <h4 class="font-semibold mb-2">Календарь целей <span class="text-xs text-gray-400">(эксперимент)</span></h4>
+          <div id="goalsCalendar" class="flex gap-1 flex-wrap items-end" aria-label="Календарь выполнения целей"></div>
+          <div class="text-xs text-gray-400 mt-1">*Показывает, сколько целей выполнено по дням за последние 30 дней</div>
+        </div>
+        <div class="mb-6">
+          <h4 class="font-semibold mb-2">Челлендж недели <span class="text-xs text-purple-500 ml-2">NEW</span></h4>
+          <div class="flex items-center gap-3 mb-2">
+            <span class="inline-flex items-center gap-1 bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs"><i class="ri-fire-line"></i> Откликнуться на 3 вакансии за неделю</span>
+            <button id="completeChallengeBtn" class="bg-purple-600 text-white px-3 py-1 rounded-lg text-xs hover:bg-purple-700 transition-colors" tabIndex="0" aria-label="Выполнить челлендж">Выполнено!</button>
+          </div>
+          <div id="challengeStatus" class="text-xs text-gray-500"></div>
+        </div>
+      </div>
+      <!-- Модальное окно AI-совета -->
+      <div id="aiAdviceModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-lg relative">
+          <button id="closeAiAdviceModal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700" aria-label="Закрыть совет"><i class="ri-close-line text-2xl"></i></button>
+          <h4 class="text-lg font-bold mb-2 flex items-center gap-2"><i class="ri-robot-2-line text-primary"></i> AI-совет</h4>
+          <div id="aiAdviceText" class="text-gray-700 mb-2">Сегодня отличный день, чтобы обновить своё резюме и откликнуться на 2 новые вакансии. Успехов!</div>
+          <div class="text-xs text-gray-400">*Совет сгенерирован автоматически. В будущем — интеграция с OpenAI.</div>
+        </div>
+      </div>
+      <!-- Модальное окно добавления цели -->
+      <div id="addGoalModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-lg relative">
+          <button id="closeAddGoalModal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700" aria-label="Закрыть"><i class="ri-close-line text-2xl"></i></button>
+          <h4 class="text-lg font-bold mb-2 flex items-center gap-2"><i class="ri-flag-line text-primary"></i> Новая цель</h4>
+          <form id="addGoalForm" class="space-y-3">
+            <input type="text" id="goalTitle" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Опишите вашу цель..." required />
+            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">Добавить</button>
+          </form>
+          <div class="text-xs text-gray-400 mt-2">*В будущем — сохранение целей в Firestore.</div>
+        </div>
+      </div>
+      <!-- Модальное окно share-link -->
+      <div id="shareProgressModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-lg relative">
+          <button id="closeShareProgressModal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700" aria-label="Закрыть"><i class="ri-close-line text-2xl"></i></button>
+          <h4 class="text-lg font-bold mb-2 flex items-center gap-2"><i class="ri-share-line text-primary"></i> Поделиться прогрессом</h4>
+          <div class="mb-3">Скопируйте ссылку и поделитесь своим карьерным прогрессом:</div>
+          <div class="flex items-center gap-2 mb-2">
+            <input id="shareLinkInput" type="text" readonly class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" value="https://workincz.com/career/your-id" />
+            <button id="copyShareLinkBtn" class="bg-primary text-white px-3 py-2 rounded-lg hover:bg-primary/90 transition-colors text-xs">Копировать</button>
+          </div>
+          <div id="shareLinkStatus" class="text-xs text-green-600 h-4"></div>
+          <div class="text-xs text-gray-400 mt-2">*В будущем — реальный share-link и интеграция с соцсетями.</div>
+        </div>
+      </div>
+      <!-- Модальное окно PDF-экспорта -->
+      <div id="exportPdfModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-lg relative">
+          <button id="closeExportPdfModal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700" aria-label="Закрыть"><i class="ri-close-line text-2xl"></i></button>
+          <h4 class="text-lg font-bold mb-2 flex items-center gap-2"><i class="ri-file-pdf-line text-primary"></i> PDF-экспорт</h4>
+          <div class="mb-3">В будущем здесь будет экспорт карьерного трека в PDF-файл с вашими целями, прогрессом и советами.</div>
+          <div class="text-xs text-gray-400 mt-2">*TODO: интеграция с PDF-генератором (jsPDF, html2pdf, серверный экспорт).</div>
+        </div>
+      </div>
+      <!-- Модальное окно поздравления -->
+      <div id="congratsModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-lg relative text-center">
+          <button id="closeCongratsModal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700" aria-label="Закрыть"><i class="ri-close-line text-2xl"></i></button>
+          <div class="text-4xl mb-2 animate-bounce">🎉</div>
+          <h4 class="text-lg font-bold mb-2">Поздравляем!</h4>
+          <div class="mb-2">Вы выполнили все цели и получили бейдж <b>AI-стратег</b>!</div>
+          <div class="text-xs text-gray-400">*TODO: динамический расчёт прогресса и интеграция с Firestore.</div>
+        </div>
+      </div>
+    `;
+    // --- JS обработчик для кнопки AI-совета ---
+    const getAiAdviceBtn = document.getElementById('getAiAdviceBtn');
+    const aiAdviceModal = document.getElementById('aiAdviceModal');
+    const closeAiAdviceModal = document.getElementById('closeAiAdviceModal');
+    if (getAiAdviceBtn && aiAdviceModal && closeAiAdviceModal) {
+      getAiAdviceBtn.addEventListener('click', () => {
+        aiAdviceModal.classList.remove('hidden');
+        aiAdviceModal.focus();
+      });
+      closeAiAdviceModal.addEventListener('click', () => {
+        aiAdviceModal.classList.add('hidden');
+      });
+      // Закрытие по ESC
+      aiAdviceModal.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') aiAdviceModal.classList.add('hidden');
+      });
+    }
+    // TODO: интеграция с OpenAI для генерации персональных советов
+    // --- JS обработчик для кнопки добавления цели ---
+    const addGoalBtn = document.getElementById('addGoalBtn');
+    const addGoalModal = document.getElementById('addGoalModal');
+    const closeAddGoalModal = document.getElementById('closeAddGoalModal');
+    const addGoalForm = document.getElementById('addGoalForm');
+    if (addGoalBtn && addGoalModal && closeAddGoalModal && addGoalForm) {
+      addGoalBtn.addEventListener('click', () => {
+        addGoalModal.classList.remove('hidden');
+        document.getElementById('goalTitle').focus();
+      });
+      closeAddGoalModal.addEventListener('click', () => {
+        addGoalModal.classList.add('hidden');
+      });
+      addGoalModal.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') addGoalModal.classList.add('hidden');
+      });
+      addGoalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('goalTitle').value.trim();
+        if (title) {
+          goals.push({ title, done: false, isNew: true });
+          localStorage.setItem('careerGoals', JSON.stringify(goals));
+          addGoalModal.classList.add('hidden');
+          this.loadCareerSection(content, isEmployer);
+        }
+      });
+    }
+    // --- JS обработчик для кнопки 'Поделиться прогрессом' ---
+    const shareProgressBtn = document.getElementById('shareProgressBtn');
+    const shareProgressModal = document.getElementById('shareProgressModal');
+    const closeShareProgressModal = document.getElementById('closeShareProgressModal');
+    const copyShareLinkBtn = document.getElementById('copyShareLinkBtn');
+    const shareLinkInput = document.getElementById('shareLinkInput');
+    const shareLinkStatus = document.getElementById('shareLinkStatus');
+    if (shareProgressBtn && shareProgressModal && closeShareProgressModal && copyShareLinkBtn && shareLinkInput && shareLinkStatus) {
+      shareProgressBtn.addEventListener('click', () => {
+        shareProgressModal.classList.remove('hidden');
+        shareLinkInput.focus();
+        shareLinkStatus.textContent = '';
+      });
+      closeShareProgressModal.addEventListener('click', () => {
+        shareProgressModal.classList.add('hidden');
+      });
+      shareProgressModal.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') shareProgressModal.classList.add('hidden');
+      });
+      copyShareLinkBtn.addEventListener('click', () => {
+        shareLinkInput.select();
+        document.execCommand('copy');
+        shareLinkStatus.textContent = 'Ссылка скопирована!';
+        setTimeout(() => shareLinkStatus.textContent = '', 2000);
+      });
+    }
+    // TODO: интеграция с реальным share-link и соцсетями
+    // --- JS обработчик для кнопки PDF-экспорта ---
+    const exportPdfBtn = document.getElementById('exportPdfBtn');
+    const exportPdfModal = document.getElementById('exportPdfModal');
+    const closeExportPdfModal = document.getElementById('closeExportPdfModal');
+    if (exportPdfBtn && exportPdfModal && closeExportPdfModal) {
+      exportPdfBtn.addEventListener('click', async () => {
+        // --- PDF экспорт целей ---
+        let goals = [];
+        let useFirestore = this.currentUser && this.db;
+        if (useFirestore) {
+          goals = await loadGoalsFromFirestore(this.currentUser.uid, this.db);
+          if (!goals || !Array.isArray(goals)) goals = [];
+        } else {
+          try {
+            goals = JSON.parse(localStorage.getItem('careerGoals') || '[]');
+            if (!Array.isArray(goals)) goals = [];
+          } catch { goals = []; }
+        }
+        if (typeof window.jspdf !== 'undefined' || typeof window.jsPDF !== 'undefined') {
+          const doc = new (window.jspdf?.jsPDF || window.jsPDF)();
+          doc.setFontSize(16);
+          doc.text('Карьерный трекер — Мои цели', 10, 15);
+          doc.setFontSize(12);
+          doc.text('Дата: ' + new Date().toLocaleDateString('ru-RU'), 10, 25);
+          doc.text(' ', 10, 32);
+          goals.forEach((g, i) => {
+            doc.text(`${i + 1}. [${g.done ? 'x' : ' '}] ${g.title}`, 10, 40 + i * 10);
+          });
+          doc.save('career-goals.pdf');
+          showToast('PDF-файл успешно сохранён!', 'success');
+        } else {
+          showToast('PDF-экспорт недоступен: jsPDF не подключён.', 'error');
+        }
+        // Открыть модалку с сообщением об успехе (или оставить как есть)
+        exportPdfModal.classList.remove('hidden');
+        exportPdfModal.focus();
+      });
+      closeExportPdfModal.addEventListener('click', () => {
+        exportPdfModal.classList.add('hidden');
+      });
+      exportPdfModal.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') exportPdfModal.classList.add('hidden');
+      });
+    }
+    // TODO: интеграция с PDF-генератором
+    // --- JS обработчик для бейджа/поздравления ---
+    const showCongratsBtn = document.getElementById('showCongratsBtn');
+    const congratsModal = document.getElementById('congratsModal');
+    const closeCongratsModal = document.getElementById('closeCongratsModal');
+    if (showCongratsBtn && congratsModal && closeCongratsModal) {
+      showCongratsBtn.addEventListener('click', () => {
+        congratsModal.classList.remove('hidden');
+        congratsModal.focus();
+      });
+      closeCongratsModal.addEventListener('click', () => {
+        congratsModal.classList.add('hidden');
+      });
+      congratsModal.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') congratsModal.classList.add('hidden');
+      });
+    }
+    // TODO: динамический расчёт прогресса и интеграция с Firestore
+    // --- Обработчик чекбоксов целей ---
+    document.querySelectorAll('#goalsList input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', async e => {
+        const idx = +cb.dataset.goalid;
+        if (!isNaN(idx) && goals[idx]) {
+          goals[idx].done = cb.checked;
+          // --- Сохраняем дату выполнения ---
+          if (cb.checked) {
+            goals[idx].dateCompleted = new Date().toISOString();
+          } else {
+            delete goals[idx].dateCompleted;
+          }
+          if (useFirestore) {
+            await saveGoalsToFirestore(this.currentUser.uid, this.db, goals);
+          } else {
+            localStorage.setItem('careerGoals', JSON.stringify(goals));
+          }
+          this.loadCareerSection(content, isEmployer);
+        }
+      });
+    });
+    // --- Обработчик добавления цели ---
+    if (addGoalBtn && addGoalModal && closeAddGoalModal && addGoalForm) {
+      addGoalBtn.addEventListener('click', () => {
+        addGoalModal.classList.remove('hidden');
+        document.getElementById('goalTitle').focus();
+      });
+      closeAddGoalModal.addEventListener('click', () => {
+        addGoalModal.classList.add('hidden');
+      });
+      addGoalModal.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') addGoalModal.classList.add('hidden');
+      });
+      addGoalForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('goalTitle').value.trim();
+        if (title) {
+          goals.push({ title, done: false, isNew: true });
+          if (useFirestore) {
+            await saveGoalsToFirestore(this.currentUser.uid, this.db, goals);
+          } else {
+            localStorage.setItem('careerGoals', JSON.stringify(goals));
+          }
+          addGoalModal.classList.add('hidden');
+          this.loadCareerSection(content, isEmployer);
+        }
+      });
+    }
+    // --- Обработчик удаления цели ---
+    document.querySelectorAll('#goalsList button[data-delgoalid]').forEach(btn => {
+      btn.addEventListener('click', async e => {
+        const idx = +btn.dataset.delgoalid;
+        if (!isNaN(idx) && goals[idx]) {
+          const deletedGoal = { ...goals[idx] };
+          const li = btn.closest('li');
+          if (li) {
+            li.classList.add('transition-opacity', 'duration-500', 'opacity-0');
+            setTimeout(async () => {
+              goals.splice(idx, 1);
+              this.careerDebugEvents.push(`[${new Date().toLocaleTimeString()}] Удалена цель: ${deletedGoal.title}`);
+              if (useFirestore) {
+                await saveGoalsToFirestore(this.currentUser.uid, this.db, goals);
+              } else {
+                localStorage.setItem('careerGoals', JSON.stringify(goals));
+              }
+              // --- Undo toast ---
+              if (window.showUndoToast) {
+                window.showUndoToast('Цель удалена', async () => {
+                  goals.splice(idx, 0, deletedGoal);
+                  this.careerDebugEvents.push(`[${new Date().toLocaleTimeString()}] Восстановлена цель: ${deletedGoal.title}`);
+                  if (useFirestore) {
+                    await saveGoalsToFirestore(this.currentUser.uid, this.db, goals);
+                  } else {
+                    localStorage.setItem('careerGoals', JSON.stringify(goals));
+                  }
+                  this.loadCareerSection(content, isEmployer);
+                });
+              }
+              this.loadCareerSection(content, isEmployer);
+            }, 500);
+          } else {
+            // fallback: если li не найден, просто удалить
+            goals.splice(idx, 1);
+            this.careerDebugEvents.push(`[${new Date().toLocaleTimeString()}] Удалена цель: ${deletedGoal.title}`);
+            if (useFirestore) {
+              await saveGoalsToFirestore(this.currentUser.uid, this.db, goals);
+            } else {
+              localStorage.setItem('careerGoals', JSON.stringify(goals));
+            }
+            if (window.showUndoToast) {
+              window.showUndoToast('Цель удалена', async () => {
+                goals.splice(idx, 0, deletedGoal);
+                this.careerDebugEvents.push(`[${new Date().toLocaleTimeString()}] Восстановлена цель: ${deletedGoal.title}`);
+                if (useFirestore) {
+                  await saveGoalsToFirestore(this.currentUser.uid, this.db, goals);
+                } else {
+                  localStorage.setItem('careerGoals', JSON.stringify(goals));
+                }
+                this.loadCareerSection(content, isEmployer);
+              });
+            }
+            this.loadCareerSection(content, isEmployer);
+          }
+        }
+      });
+    });
+    // В обработчиках:
+    const randomGoalBtn = document.getElementById('randomGoalBtn');
+    if (randomGoalBtn) {
+      randomGoalBtn.addEventListener('click', async () => {
+        const randomGoals = [
+          'Пройти бесплатный онлайн-курс по soft skills',
+          'Сделать ревью резюме с AI',
+          'Попросить рекомендацию у коллеги',
+          'Посетить карьерный вебинар',
+          'Обновить профиль LinkedIn',
+          'Составить список топ-5 компаний мечты',
+          'Пройти тест на знание чешского языка',
+          'Сделать 3 отклика за неделю',
+          'Проконсультироваться с карьерным коучем',
+          'Добавить новое достижение в резюме'
+        ];
+        // Исключить уже существующие цели
+        let currentGoals = [];
+        let useFirestore = window.userProfileManager?.currentUser && window.userProfileManager?.db;
+        if (useFirestore) {
+          currentGoals = await loadGoalsFromFirestore(window.userProfileManager.currentUser.uid, window.userProfileManager.db);
+          if (!currentGoals || !Array.isArray(currentGoals)) currentGoals = [];
+        } else {
+          try {
+            currentGoals = JSON.parse(localStorage.getItem('careerGoals') || '[]');
+            if (!Array.isArray(currentGoals)) currentGoals = [];
+          } catch { currentGoals = []; }
+        }
+        const existingTitles = currentGoals.map(g => g.title);
+        const available = randomGoals.filter(g => !existingTitles.includes(g));
+        if (available.length === 0) {
+          showToast('Все рандомные цели уже добавлены!', 'info');
+          // Анимация shake
+          randomGoalBtn.classList.add('animate-shake');
+          setTimeout(() => randomGoalBtn.classList.remove('animate-shake'), 500);
+          return;
+        }
+        const goal = available[Math.floor(Math.random() * available.length)];
+        currentGoals.push({ title: goal, done: false });
+        if (useFirestore) {
+          await saveGoalsToFirestore(window.userProfileManager.currentUser.uid, window.userProfileManager.db, currentGoals);
+        } else {
+          localStorage.setItem('careerGoals', JSON.stringify(currentGoals));
+        }
+        showToast('Добавлена цель: ' + goal, 'success');
+        window.userProfileManager.loadCareerSection(document.getElementById('dashboardMainContent'), window.userProfileManager.currentUser?.role === 'employer');
+
+        let randomClicks = 0;
+        if (useFirestore) {
+          const doc = await window.userProfileManager.db.collection('careerGoals').doc(window.userProfileManager.currentUser.uid).get();
+          randomClicks = doc.exists && typeof doc.data().randomGoalClicks === 'number' ? doc.data().randomGoalClicks : 0;
+          await window.userProfileManager.db.collection('careerGoals').doc(window.userProfileManager.currentUser.uid).set({ randomGoalClicks: randomClicks + 1 }, { merge: true });
+        } else {
+          randomClicks = parseInt(localStorage.getItem('careerRandomClicks') || '0', 10);
+          localStorage.setItem('careerRandomClicks', String(randomClicks + 1));
+        }
+
+        let stats = 0;
+        if (window.userProfileManager?.currentUser && window.userProfileManager?.db) {
+          const doc = await window.userProfileManager.db.collection('careerGoals').doc(window.userProfileManager.currentUser.uid).get();
+          stats = doc.exists && typeof doc.data().randomGoalClicks === 'number' ? doc.data().randomGoalClicks : 0;
+        } else {
+          stats = parseInt(localStorage.getItem('careerRandomClicks') || '0', 10);
+        }
+        const statsEl = document.getElementById('randomGoalStats');
+        if (statsEl) statsEl.textContent = `Рандом использован: ${stats} раз${stats === 1 ? '' : stats % 10 === 1 && stats !== 11 ? '' : stats % 10 >= 2 && stats % 10 <= 4 && (stats < 10 || stats > 20) ? 'а' : ''}`;
+      });
+    }
+    // --- Календарь целей (heatmap) ---
+    const calendarEl = document.getElementById('goalsCalendar');
+    if (calendarEl) {
+      renderGoalsCalendar(goals, 30, calendarEl);
+    }
+    // --- Челлендж недели ---
+    // Вызов отдельной функции для управления блоком челленджа
+    manageWeeklyChallenge(content);
+    // После рендера секции — показываем debug overlay, если включён
+    if (debug && window.renderCareerDebugOverlay) {
+      window.renderCareerDebugOverlay(this.careerDebugEvents, content);
+    }
+  }
+
+  // --- Подписка на цели в Firestore (real-time sync) ---
+  subscribeCareerGoalsRealtime() {
+    if (!this.db || !this.currentUser) return;
+    if (this.careerGoalsUnsub) this.careerGoalsUnsub();
+    this.careerGoalsUnsub = this.db.collection('careerGoals').doc(this.currentUser.uid)
+      .onSnapshot((doc) => {
+        // При любом изменении целей — обновить UI, если dashboard открыт
+        const dashboard = document.getElementById('dashboardMainContent');
+        if (dashboard) this.loadCareerSection(dashboard, this.currentUser.role === 'employer');
+      });
+  }
+  unsubscribeCareerGoalsRealtime() {
+    if (this.careerGoalsUnsub) {
+      this.careerGoalsUnsub();
+      this.careerGoalsUnsub = null;
+    }
+  }
+
+  // В методе subscribeCareerGoalsRealtime (или после успешной авторизации)
+  async migrateLocalGoalsToFirestoreIfNeeded(userId, db) {
+    try {
+      const doc = await db.collection('careerGoals').doc(userId).get();
+      const firestoreGoals = doc.exists && Array.isArray(doc.data().goals) ? doc.data().goals : [];
+      let localGoals = [];
+      try {
+        localGoals = JSON.parse(localStorage.getItem('careerGoals') || '[]');
+        if (!Array.isArray(localGoals)) localGoals = [];
+      } catch { localGoals = []; }
+      if (firestoreGoals.length === 0 && localGoals.length > 0) {
+        await db.collection('careerGoals').doc(userId).set({ goals: localGoals }, { merge: true });
+        localStorage.removeItem('careerGoals');
+        console.log('Миграция целей из localStorage в Firestore выполнена');
+      }
+    } catch (e) {
+      console.error('Ошибка миграции целей в Firestore:', e);
+    }
+  }
 }
 
 // Инициализация при загрузке страницы
@@ -2651,3 +3219,224 @@ document.addEventListener('DOMContentLoaded', () => {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = UserProfileManager;
 } 
+
+// ====== FEEDBACK FORM HANDLER (SOFT-LAUNCH) ======
+document.addEventListener('DOMContentLoaded', () => {
+  const feedbackForm = document.getElementById('feedback-form');
+  if (!feedbackForm) return;
+
+  // Авто-подстановка email если пользователь авторизован
+  const emailInput = document.getElementById('feedback-email');
+  if (window.userProfileManager && window.userProfileManager.currentUser) {
+    emailInput.value = window.userProfileManager.currentUser.email || '';
+  }
+
+  feedbackForm.onsubmit = async (e) => {
+    e.preventDefault();
+    const message = document.getElementById('feedback-message').value.trim();
+    const email = emailInput.value.trim();
+    const statusDiv = document.getElementById('feedback-status');
+    statusDiv.textContent = '';
+    if (!message) {
+      statusDiv.textContent = 'Пожалуйста, заполните поле отзыва.';
+      statusDiv.className = 'text-red-600';
+      return;
+    }
+    try {
+      // Firestore должен быть инициализирован
+      if (!window.firebase || !window.firebase.firestore) throw new Error('Firestore не инициализирован');
+      await window.firebase.firestore().collection('feedback').add({
+        message,
+        email,
+        createdAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+        userId: window.userProfileManager?.currentUser?.uid || null
+      });
+      statusDiv.textContent = 'Спасибо за ваш отзыв!';
+      statusDiv.className = 'text-green-600';
+      feedbackForm.reset();
+    } catch (err) {
+      statusDiv.textContent = 'Ошибка отправки: ' + err.message;
+      statusDiv.className = 'text-red-600';
+    }
+  };
+}); 
+
+// --- Firestore integration for career goals (архитектурная заготовка) ---
+// TODO: заменить localStorage на Firestore для авторизованных пользователей
+async function loadGoalsFromFirestore(userId) {
+  // TODO: реализовать загрузку целей из Firestore (коллекция 'careerGoals', doc userId)
+  // Пример: return await db.collection('careerGoals').doc(userId).get() ...
+  return null; // пока не реализовано
+}
+async function saveGoalToFirestore(userId, goal) {
+  // TODO: реализовать добавление новой цели в Firestore
+  // Пример: await db.collection('careerGoals').doc(userId).update({ goals: ... })
+}
+async function updateGoalInFirestore(userId, goalIndex, goal) {
+  // TODO: реализовать обновление статуса/текста цели в Firestore
+}
+async function deleteGoalFromFirestore(userId, goalIndex) {
+  // TODO: реализовать удаление цели из Firestore
+}
+// --- В будущем: использовать эти функции вместо localStorage, если пользователь авторизован ---
+
+// --- Обновление статистики популярных целей ---
+async function incrementPopularRandomGoal(goalTitle, db) {
+  try {
+    const statsRef = db.collection('careerGoalsStats').doc('popularRandomGoals');
+    await statsRef.set({ [goalTitle]: window.firebase.firestore.FieldValue.increment(1) }, { merge: true });
+  } catch (e) {
+    console.error('Ошибка обновления статистики популярных целей:', e);
+  }
+}
+
+/**
+ * Рендерит heatmap-календарь целей за N дней.
+ * @param {Array} goals - массив целей (объекты с полями done, dateCompleted)
+ * @param {number} days - количество дней для отображения (например, 30)
+ * @param {HTMLElement} container - DOM-элемент для вставки heatmap
+ */
+function renderGoalsCalendar(goals, days, container) {
+  // Собираем даты выполнения целей (dateCompleted)
+  const now = new Date();
+  const dayStats = Array.from({length: days}, (_, i) => {
+    const d = new Date(now);
+    d.setDate(now.getDate() - (days - 1 - i));
+    return {date: d, count: 0};
+  });
+  goals.forEach(g => {
+    if (g.done && g.dateCompleted) {
+      const d = new Date(g.dateCompleted);
+      for (let i = 0; i < days; i++) {
+        if (d.toDateString() === dayStats[i].date.toDateString()) {
+          dayStats[i].count++;
+        }
+      }
+    }
+  });
+  // Рисуем heatmap: чем больше целей, тем насыщеннее цвет
+  container.innerHTML = dayStats.map(ds => {
+    const c = ds.count;
+    const color = c === 0 ? 'bg-gray-200' : c === 1 ? 'bg-green-200' : c === 2 ? 'bg-green-400' : 'bg-green-600';
+    // accessibility: tabIndex, aria-label, tooltip
+    const label = `${ds.date.toLocaleDateString('ru-RU')}: ${c} целей выполнено`;
+    return `<div class="w-4 h-8 rounded ${color} flex items-end justify-center text-[10px] text-white focus:outline-none cursor-pointer goals-calendar-cell" tabIndex="0" aria-label="${label}" data-tooltip="${label}">${c > 0 ? c : ''}</div>`;
+  }).join('');
+  // --- кастомный tooltip ---
+  let tooltip = document.getElementById('goalsCalendarTooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.id = 'goalsCalendarTooltip';
+    tooltip.className = 'fixed z-50 px-2 py-1 rounded bg-gray-900 text-white text-xs opacity-0 pointer-events-none transition-opacity duration-150';
+    document.body.appendChild(tooltip);
+  }
+  function showTooltip(e, text) {
+    tooltip.textContent = text;
+    tooltip.style.left = (e.clientX + 10) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+    tooltip.style.opacity = '1';
+  }
+  function hideTooltip() {
+    tooltip.style.opacity = '0';
+  }
+  container.querySelectorAll('.goals-calendar-cell').forEach(cell => {
+    cell.addEventListener('mouseenter', e => showTooltip(e, cell.dataset.tooltip));
+    cell.addEventListener('mouseleave', hideTooltip);
+    cell.addEventListener('focus', e => showTooltip(e, cell.dataset.tooltip));
+    cell.addEventListener('blur', hideTooltip);
+    cell.addEventListener('keydown', e => { if (e.key === 'Escape') hideTooltip(); });
+  });
+}
+
+/**
+ * Рендерит прогресс-бар по проценту выполнения.
+ * @param {number} percent - процент выполнения (0-100)
+ * @param {HTMLElement} container - DOM-элемент для вставки прогресс-бара
+ */
+function renderProgressBar(percent, container) {
+  container.innerHTML = `
+    <div class="w-full bg-gray-200 rounded-full h-3 mb-3" aria-label="Прогресс по целям">
+      <div class="bg-green-500 h-3 rounded-full transition-all duration-700${percent === 100 ? ' animate-pulse' : ''}" style="width: ${percent}%"></div>
+    </div>
+  `;
+}
+
+/**
+ * Рендерит бейдж с иконкой и подписью.
+ * @param {string} label - текст бейджа
+ * @param {string} icon - HTML-иконка (например, '<i class="ri-medal-line"></i>')
+ * @param {HTMLElement} container - DOM-элемент для вставки бейджа
+ */
+function renderBadge(label, icon, container) {
+  container.innerHTML = `
+    <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">${icon} ${label}</span>
+  `;
+}
+
+/**
+ * Управляет отображением и логикой челленджа недели в карьерном трекере.
+ * @param {HTMLElement} content - контейнер секции карьерного трекера
+ */
+function manageWeeklyChallenge(content) {
+  // --- HTML блока челленджа ---
+  const challengeBlock = document.createElement('div');
+  challengeBlock.className = 'mb-6';
+  challengeBlock.innerHTML = `
+    <h4 class="font-semibold mb-2">Челлендж недели <span class="text-xs text-purple-500 ml-2">NEW</span></h4>
+    <div class="flex items-center gap-3 mb-2">
+      <span class="inline-flex items-center gap-1 bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs"><i class="ri-fire-line"></i> Откликнуться на 3 вакансии за неделю</span>
+      <button id="completeChallengeBtn" class="bg-purple-600 text-white px-3 py-1 rounded-lg text-xs hover:bg-purple-700 transition-colors" tabIndex="0" aria-label="Выполнить челлендж">Выполнено!</button>
+    </div>
+    <div id="challengeProgress" class="text-xs text-gray-500"></div>
+    <div id="challengeStatus" class="text-xs text-gray-500"></div>
+  `;
+  content.appendChild(challengeBlock);
+  // --- Логика челленджа недели (MVP: localStorage, TODO: Firestore) ---
+  const challengeKey = 'careerWeeklyChallenge';
+  const challengeDatesKey = 'careerWeeklyChallengeDates';
+  const challengeStatusEl = challengeBlock.querySelector('#challengeStatus');
+  const challengeProgressEl = challengeBlock.querySelector('#challengeProgress');
+  const completeChallengeBtn = challengeBlock.querySelector('#completeChallengeBtn');
+  let challengeDone = false;
+  try {
+    challengeDone = JSON.parse(localStorage.getItem(challengeKey) || 'false');
+  } catch { challengeDone = false; }
+  // --- Считаем отклики за 7 дней ---
+  let dates = [];
+  try {
+    dates = JSON.parse(localStorage.getItem(challengeDatesKey) || '[]');
+    if (!Array.isArray(dates)) dates = [];
+  } catch { dates = []; }
+  const now = Date.now();
+  const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+  dates = dates.filter(ts => ts > weekAgo); // только последние 7 дней
+  const progress = Math.min(dates.length, 3);
+  challengeProgressEl.textContent = `Прогресс: ${progress} из 3 откликов за неделю`;
+  // --- Автоматическое выполнение челленджа ---
+  if (progress >= 3 && !challengeDone) {
+    challengeDone = true;
+    localStorage.setItem(challengeKey, 'true');
+    completeChallengeBtn.disabled = true;
+    completeChallengeBtn.textContent = 'Завершено!';
+    challengeStatusEl.textContent = 'Вы получили бейдж "Челленджер недели"!';
+    window.showToast('Поздравляем! Вы выполнили челлендж недели и получили бейдж.', 'success');
+  }
+  if (challengeDone) {
+    completeChallengeBtn.disabled = true;
+    completeChallengeBtn.textContent = 'Завершено!';
+    challengeStatusEl.textContent = 'Вы получили бейдж "Челленджер недели"!';
+  } else {
+    challengeStatusEl.textContent = 'Выполните задание и получите уникальный бейдж.';
+  }
+  completeChallengeBtn.addEventListener('click', () => {
+    localStorage.setItem(challengeKey, 'true');
+    completeChallengeBtn.disabled = true;
+    completeChallengeBtn.textContent = 'Завершено!';
+    challengeStatusEl.textContent = 'Вы получили бейдж "Челленджер недели"!';
+    window.showToast('Поздравляем! Вы выполнили челлендж недели и получили бейдж.', 'success');
+    // TODO: Firestore sync для авторизованных
+    // TODO: добавить бейдж в секцию бейджей
+  });
+  // TODO: при отклике на вакансию добавлять Date.now() в careerWeeklyChallengeDates
+  // TODO: Firestore для авторизованных
+}
