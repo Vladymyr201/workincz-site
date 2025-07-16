@@ -22,7 +22,7 @@ jobs:
       - run: npm run test # Запускает тесты
       - run: npm run build # Сборка проекта
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@v2
+        uses: w9jds/firebase-action@v1.2.0
         with:
           args: deploy --only hosting
         env:
