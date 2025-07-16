@@ -1,0 +1,29 @@
+# CI/CD Pipeline for WorkInCZ
+name: CI/CD Pipeline
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3 # Клонирует репозиторий
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Check for package.json
+        run: |
+          if [ ! -f package.json ]; then echo "package.json not found!" && exit 1; fi # Проверяет наличие package.json
+      - run: npm ci # Устанавливает зависимости
+      - run: npm run lint # Запускает линтер
+      - run: npm run test # Запускает тесты
+      - run: npm run build # Сборка проекта
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@v13
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

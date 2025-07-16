@@ -7,6 +7,8 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3 # Клонирует репозиторий
+      - name: Install dependencies
+        run: npm ci # Устанавливает зависимости из package-lock.json
       - name: Run npm audit
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=high # Проверяет уязвимости уровня high и выше
