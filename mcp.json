@@ -5,7 +5,9 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "D:/workincz-site"
+        "D:/workincz-site",
+        "D:/workincz-site/.github",
+        "D:/workincz-site/.github/workflows"
       ]
     },
     "sequential-thinking": {

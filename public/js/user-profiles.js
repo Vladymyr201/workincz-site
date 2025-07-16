@@ -2636,7 +2636,7 @@ class UserProfileManager {
       toast.style.transition = 'opacity 0.4s, transform 0.4s';
       toast.style.opacity = '0';
       toast.style.transform = 'translateY(20px)';
-      document.body.appendChild(toast);
+    document.body.appendChild(toast);
     }
     toast.textContent = message;
     toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-white text-sm transition-all ' + (type === 'error' ? 'bg-red-600' : 'bg-primary');
@@ -3439,4 +3439,4 @@ function manageWeeklyChallenge(content) {
   });
   // TODO: при отклике на вакансию добавлять Date.now() в careerWeeklyChallengeDates
   // TODO: Firestore для авторизованных
-}
+} 
