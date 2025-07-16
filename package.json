@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:unit": "echo 'No unit tests yet'",
-    "lint": "echo 'No linter configured'"
+    "lint": "echo 'No linter configured'",
+    "build": "echo 'No build step configured'"
   },
   "keywords": [],
   "author": "",
