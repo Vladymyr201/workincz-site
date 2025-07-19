@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Гибридная модель</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <i class="fas fa-chart-line text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                    <span class="ml-3 px-2 py-1 bg-green-100 text-green-800 text-sm rounded-full">Гибридная модель</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-500">Последнее обновление: <span id="lastUpdate">Загрузка...</span></span>
+                    <button onclick="refreshData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-sync-alt mr-2"></i>Обновить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Status Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- System Status -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100">
+                        <i class="fas fa-server text-green-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Статус системы</p>
+                        <p class="text-2xl font-bold text-green-600" id="systemStatus">Онлайн</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Users -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Активных пользователей</p>
+                        <p class="text-2xl font-bold text-blue-600" id="activeUsers">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100">
+                        <i class="fas fa-coins text-yellow-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Доход сегодня</p>
+                        <p class="text-2xl font-bold text-yellow-600" id="todayRevenue">0 CZK</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Response -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100">
+                        <i class="fas fa-tachometer-alt text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">API время отклика</p>
+                        <p class="text-2xl font-bold text-purple-600" id="apiResponse">0ms</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- User Growth Chart -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Рост пользователей</h3>
+                <canvas id="userGrowthChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Revenue Chart -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Доходы</h3>
+                <canvas id="revenueChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Metrics -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Job Statistics -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-briefcase mr-2 text-blue-600"></i>Вакансии
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Прямые вакансии</span>
+                        <span class="font-semibold" id="directJobs">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Staffing requests</span>
+                        <span class="font-semibold" id="staffingRequests">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Всего вакансий</span>
+                        <span class="font-semibold text-blue-600" id="totalJobs">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Roles -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-user-tag mr-2 text-green-600"></i>Роли пользователей
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Jobseekers</span>
+                        <span class="font-semibold" id="jobseekers">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Employers</span>
+                        <span class="font-semibold" id="employers">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Agencies</span>
+                        <span class="font-semibold" id="agencies">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Admins</span>
+                        <span class="font-semibold" id="admins">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-chart-bar mr-2 text-purple-600"></i>Производительность
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Время загрузки</span>
+                        <span class="font-semibold" id="pageLoadTime">0s</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Ошибки</span>
+                        <span class="font-semibold" id="errorRate">0%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Доступность</span>
+                        <span class="font-semibold text-green-600" id="uptime">99.9%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts and Issues -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-exclamation-triangle mr-2 text-red-600"></i>Предупреждения и проблемы
+            </h3>
+            <div id="alertsContainer" class="space-y-3">
+                <div class="text-gray-500 text-center py-4">Загрузка предупреждений...</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Mock data for demonstration
+        let mockData = {
+            systemStatus: 'Онлайн',
+            activeUsers: 245,
+            todayRevenue: '46,623 CZK',
+            apiResponse: '134ms',
+            directJobs: 1800,
+            staffingRequests: 700,
+            totalJobs: 2500,
+            jobseekers: 1200,
+            employers: 800,
+            agencies: 150,
+            admins: 5,
+            pageLoadTime: '1.2s',
+            errorRate: '0.05%',
+            uptime: '99.95%',
+            alerts: [
+                { type: 'warning', message: 'Удержание пользователей ниже 80%', time: '2 часа назад' },
+                { type: 'warning', message: 'Удовлетворенность пользователей ниже 4.5', time: '1 час назад' }
+            ]
+        };
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            updateMetrics();
+            createCharts();
+            updateAlerts();
+            updateLastUpdate();
+        }
+
+        // Update metrics
+        function updateMetrics() {
+            document.getElementById('systemStatus').textContent = mockData.systemStatus;
+            document.getElementById('activeUsers').textContent = mockData.activeUsers.toLocaleString();
+            document.getElementById('todayRevenue').textContent = mockData.todayRevenue;
+            document.getElementById('apiResponse').textContent = mockData.apiResponse;
+            document.getElementById('directJobs').textContent = mockData.directJobs.toLocaleString();
+            document.getElementById('staffingRequests').textContent = mockData.staffingRequests.toLocaleString();
+            document.getElementById('totalJobs').textContent = mockData.totalJobs.toLocaleString();
+            document.getElementById('jobseekers').textContent = mockData.jobseekers.toLocaleString();
+            document.getElementById('employers').textContent = mockData.employers.toLocaleString();
+            document.getElementById('agencies').textContent = mockData.agencies.toLocaleString();
+            document.getElementById('admins').textContent = mockData.admins.toLocaleString();
+            document.getElementById('pageLoadTime').textContent = mockData.pageLoadTime;
+            document.getElementById('errorRate').textContent = mockData.errorRate;
+            document.getElementById('uptime').textContent = mockData.uptime;
+        }
+
+        // Create charts
+        function createCharts() {
+            // User Growth Chart
+            const userCtx = document.getElementById('userGrowthChart').getContext('2d');
+            new Chart(userCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                    datasets: [{
+                        label: 'Новые пользователи',
+                        data: [45, 52, 38, 67, 24, 89, 56],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                    datasets: [{
+                        label: 'Доход (CZK)',
+                        data: [35000, 42000, 38000, 55000, 46000, 62000, 48000],
+                        backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                        borderColor: 'rgb(245, 158, 11)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update alerts
+        function updateAlerts() {
+            const container = document.getElementById('alertsContainer');
+            if (mockData.alerts.length === 0) {
+                container.innerHTML = '<div class="text-green-600 text-center py-4">✅ Все системы работают нормально</div>';
+                return;
+            }
+
+            container.innerHTML = mockData.alerts.map(alert => `
+                <div class="flex items-center p-3 bg-${alert.type === 'error' ? 'red' : 'yellow'}-50 border border-${alert.type === 'error' ? 'red' : 'yellow'}-200 rounded-lg">
+                    <i class="fas fa-exclamation-triangle text-${alert.type === 'error' ? 'red' : 'yellow'}-600 mr-3"></i>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-900">${alert.message}</p>
+                        <p class="text-xs text-gray-500">${alert.time}</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Update last update time
+        function updateLastUpdate() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('cs-CZ');
+        }
+
+        // Refresh data
+        function refreshData() {
+            // Simulate data refresh
+            mockData.activeUsers = Math.floor(Math.random() * 100) + 200;
+            mockData.todayRevenue = Math.floor(Math.random() * 50000 + 30000).toLocaleString() + ' CZK';
+            mockData.apiResponse = Math.floor(Math.random() * 100 + 50) + 'ms';
+            
+            updateMetrics();
+            updateLastUpdate();
+            
+            // Show refresh notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg';
+            notification.textContent = '✅ Данные обновлены';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshData, 30000);
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html> 

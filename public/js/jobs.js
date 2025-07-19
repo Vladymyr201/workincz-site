@@ -9,6 +9,7 @@ class JobsManager {
       category: 'all',
       location: 'all',
       workType: 'all',
+      jobType: 'all', // Новый фильтр: 'all', 'direct', 'staffing_request'
       withHousing: false,
       urgent: false,
       salaryMin: null,
@@ -51,6 +52,13 @@ class JobsManager {
         this.applyToJob(jobId);
       }
       
+      if (e.target.matches('.bid-btn, .bid-btn *')) {
+        e.preventDefault();
+        const btn = e.target.closest('.bid-btn');
+        const jobId = btn.dataset.jobId;
+        this.submitBid(jobId);
+      }
+      
       if (e.target.matches('.save-btn, .save-btn *')) {
         e.preventDefault();
         const btn = e.target.closest('.save-btn');
@@ -64,6 +72,15 @@ class JobsManager {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         this.filters.category = e.target.dataset.category;
+        this.loadJobs();
+      });
+    });
+
+    // Фильтры по типу вакансии
+    document.querySelectorAll('[data-job-type]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.filters.jobType = e.target.dataset.jobType;
         this.loadJobs();
       });
     });
@@ -98,6 +115,12 @@ class JobsManager {
       const filteredJobs = allJobs.filter(job => {
         // Фильтр по статусу (активные вакансии)
         if (job.status !== 'active') return false;
+        
+        // Фильтр по типу вакансии (прямые вакансии или staffing requests)
+        if (this.filters.jobType && this.filters.jobType !== 'all') {
+          const jobType = job.job_type || 'direct'; // По умолчанию считаем старые вакансии прямыми
+          if (jobType !== this.filters.jobType) return false;
+        }
         
         // Фильтр по категории
         if (this.filters.category !== 'all' && job.category !== this.filters.category) {
@@ -194,6 +217,8 @@ class JobsManager {
     const hasHousing = job.housingProvided;
     const isUrgent = job.urgent;
     const isVipOnly = job.visibility === 'vip_only';
+    const jobType = job.job_type || 'direct'; // По умолчанию считаем старые вакансии прямыми
+    const isStaffingRequest = jobType === 'staffing_request';
     
     // Проверяем доступ к VIP вакансиям
     const canViewJob = !isVipOnly || (this.currentUser && this.currentUser.subscription?.type === 'vip');
@@ -215,6 +240,7 @@ class JobsManager {
               </div>
             </div>
             <div class="flex flex-col items-end gap-2">
+              ${isStaffingRequest ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Агентство</span>` : ''}
               ${isUrgent ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-secondary/80 to-secondary text-white">Срочно</span>` : ''}
               ${hasHousing ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">С жильём</span>` : ''}
               ${isVipOnly ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">VIP</span>` : ''}
@@ -224,12 +250,18 @@ class JobsManager {
           <div class="mb-4">
             <div class="flex items-center gap-2 mb-2">
               <i class="ri-money-czech-koruna-circle-line text-gray-500"></i>
-              <span class="font-medium">${this.formatSalary(job.salary)}</span>
+              <span class="font-medium">${isStaffingRequest ? this.formatBudget(job.budget_range) : this.formatSalary(job.salary)}</span>
             </div>
             <div class="flex items-center gap-2 mb-2">
               <i class="ri-time-line text-gray-500"></i>
-              <span>${this.formatWorkType(job.workType)}</span>
+              <span>${isStaffingRequest ? `Дедлайн: ${this.formatDeadline(job.deadline)}` : this.formatWorkType(job.workType)}</span>
             </div>
+            ${isStaffingRequest && job.candidates_count ? `
+              <div class="flex items-center gap-2">
+                <i class="ri-team-line text-gray-500"></i>
+                <span>Нужно кандидатов: ${job.candidates_count}</span>
+              </div>
+            ` : ''}
             ${job.requirements?.languages?.length ? `
               <div class="flex items-center gap-2">
                 <i class="ri-translate-2 text-gray-500"></i>
@@ -241,11 +273,18 @@ class JobsManager {
           <p class="text-gray-600 text-sm mb-4 line-clamp-3">${job.description}</p>
           
           <div class="flex justify-between gap-2">
-            <button class="apply-btn bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2 button-ripple" data-job-id="${job.id}">
-              <i class="ri-send-plane-line"></i>
-              Откликнуться
-            </button>
-            <button class="message-btn bg-green-500/10 text-green-600 border border-green-200 px-3 py-2 rounded-button text-sm font-medium hover:bg-green-500/20 whitespace-nowrap flex items-center gap-2" onclick="startChatWithUser('${job.employerId || job.companyId || 'demo-employer'}', 'Здравствуйте! Меня интересует вакансия ${job.title}', '${job.id}')" data-job-id="${job.id}">
+            ${isStaffingRequest ? `
+              <button class="bid-btn bg-blue-500 text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-blue-600 whitespace-nowrap flex items-center gap-2 button-ripple" data-job-id="${job.id}">
+                <i class="ri-auction-line"></i>
+                Подать заявку
+              </button>
+            ` : `
+              <button class="apply-btn bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2 button-ripple" data-job-id="${job.id}">
+                <i class="ri-send-plane-line"></i>
+                Откликнуться
+              </button>
+            `}
+            <button class="message-btn bg-green-500/10 text-green-600 border border-green-200 px-3 py-2 rounded-button text-sm font-medium hover:bg-green-500/20 whitespace-nowrap flex items-center gap-2" onclick="startChatWithUser('${job.client_id || job.employerId || job.companyId || 'demo-employer'}', 'Здравствуйте! Меня интересует ${isStaffingRequest ? 'заявка на персонал' : 'вакансия'} ${job.title}', '${job.id}')" data-job-id="${job.id}">
               <i class="ri-message-3-line"></i>
               Написать
             </button>
@@ -389,6 +428,58 @@ class JobsManager {
     }
   }
 
+  async submitBid(jobId) {
+    try {
+      if (!this.currentUser) {
+        this.showLoginModal();
+        return;
+      }
+
+      // Проверяем, что пользователь - агентство
+      if (this.currentUser.userData?.role !== 'agency') {
+        this.showError('Подавать заявки могут только агентства');
+        return;
+      }
+
+      // Проверяем, не подавал ли уже заявку
+      const existingBid = await this.db.collection('bids')
+        .where('job_id', '==', jobId)
+        .where('agency_id', '==', this.currentUser.uid)
+        .get();
+
+      if (!existingBid.empty) {
+        this.showError('Вы уже подавали заявку на эту вакансию');
+        return;
+      }
+
+      // Создаем заявку агентства
+      const bidData = {
+        job_id: jobId,
+        agency_id: this.currentUser.uid,
+        status: 'pending',
+        proposed_candidates: 0,
+        proposed_salary: null,
+        cover_letter: '',
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+
+      await this.db.collection('bids').add(bidData);
+
+      // Обновляем счетчик заявок в вакансии
+      const jobRef = this.db.collection('jobs').doc(jobId);
+      await jobRef.update({
+        bids_count: firebase.firestore.FieldValue.increment(1)
+      });
+
+      this.showSuccess('Заявка подана!');
+      
+    } catch (error) {
+      console.error('Ошибка при подаче заявки:', error);
+      this.showError('Не удалось подать заявку');
+    }
+  }
+
   formatSalary(salary) {
     if (!salary) return 'По договоренности';
     
@@ -415,6 +506,28 @@ class JobsManager {
     };
     
     return types[workType] || workType;
+  }
+
+  formatBudget(budgetRange) {
+    if (!budgetRange) return 'Бюджет не указан';
+    
+    const { min, max } = budgetRange;
+    if (min && max) {
+      return `${min.toLocaleString()} - ${max.toLocaleString()} Kč`;
+    } else if (min) {
+      return `от ${min.toLocaleString()} Kč`;
+    } else if (max) {
+      return `до ${max.toLocaleString()} Kč`;
+    }
+    
+    return 'Бюджет по договоренности';
+  }
+
+  formatDeadline(deadline) {
+    if (!deadline) return 'Не указан';
+    
+    const date = deadline instanceof Date ? deadline : new Date(deadline);
+    return date.toLocaleDateString('ru-RU');
   }
 
   // Функция удалена - используем кешированные данные из AuthManager

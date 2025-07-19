@@ -201,6 +201,52 @@ class AuthManager {
     return this.currentUser;
   }
 
+  // Получение роли пользователя (поддержка гибридной модели)
+  getUserRole() {
+    if (!this.currentUser?.userData) {
+      return 'jobseeker'; // Дефолтная роль
+    }
+    return this.currentUser.userData.role || 'jobseeker';
+  }
+
+  // Проверка роли пользователя
+  hasRole(role) {
+    const userRole = this.getUserRole();
+    return userRole === role;
+  }
+
+  // Проверка премиум статуса
+  isPremium() {
+    if (!this.currentUser?.userData) {
+      return false;
+    }
+    // БАЗОВАЯ АУТЕНТИФИКАЦИЯ ВСЕГДА БЕСПЛАТНА
+    // Премиум статус нужен только для дополнительных функций
+    return this.currentUser.userData.is_premium || false;
+  }
+
+  // Проверка агентства
+  isAgency() {
+    return this.hasRole('agency');
+  }
+
+  // Проверка работодателя
+  isEmployer() {
+    return this.hasRole('employer');
+  }
+
+  // Проверка соискателя
+  isJobseeker() {
+    return this.hasRole('jobseeker');
+  }
+
+  // Проверка админа
+  isAdmin() {
+    return this.hasRole('admin');
+  }
+    return this.currentUser;
+  }
+
   getUserData(uid = null) {
     const targetUid = uid || this.currentUser?.uid;
     if (!targetUid) return null;
@@ -447,95 +493,4 @@ class AuthManager {
       if (window.saveJobToFavorites) {
         window.saveJobToFavorites(context.jobId, context.jobTitle);
       }
-      console.log(`⭐ Сохранена вакансия: ${context.jobTitle}`);
-    }
-  }
-
-  // Выход из системы
-  async logout() {
-    try {
-      console.log('🚪 Выход из системы...');
-      
-      // 🔥 Sentry: отслеживаем выход пользователя
-      if (typeof Sentry !== 'undefined') {
-        Sentry.addBreadcrumb({
-          message: 'User logged out',
-          category: 'auth',
-          level: 'info'
-        });
-      }
-      
-      await this.auth.signOut();
-      
-      // Очистка кеша и состояния
-      this.clearCache();
-      this.currentUser = null;
-      
-      console.log('✅ Успешный выход из системы');
-      return true;
-    } catch (error) {
-      console.error('❌ Ошибка выхода:', error);
-      
-      // 🔥 Sentry: отслеживаем ошибки выхода
-      if (typeof Sentry !== 'undefined') {
-        Sentry.captureException(error, {
-          tags: {
-            errorType: 'auth-logout-error',
-            critical: false
-          }
-        });
-      }
-      
-      return false;
-    }
-  }
-}
-
-// Создаем глобальный экземпляр
-window.authManager = new AuthManager();
-
-// ====== FORGOT PASSWORD HANDLER (SOFT-LAUNCH) ======
-document.addEventListener('DOMContentLoaded', () => {
-  const forgotLink = document.getElementById('forgot-password-link');
-  const forgotModal = document.getElementById('forgot-password-modal');
-  const closeForgotModal = document.getElementById('close-forgot-modal');
-  const forgotForm = document.getElementById('forgot-password-form');
-  const forgotEmail = document.getElementById('forgot-password-email');
-  const forgotStatus = document.getElementById('forgot-password-status');
-  if (!forgotLink || !forgotModal || !closeForgotModal || !forgotForm) return;
-
-  forgotLink.onclick = (e) => {
-    e.preventDefault();
-    forgotModal.classList.remove('hidden');
-    forgotStatus.textContent = '';
-    forgotForm.reset();
-  };
-  closeForgotModal.onclick = () => forgotModal.classList.add('hidden');
-  forgotModal.onclick = (e) => { if (e.target === forgotModal) forgotModal.classList.add('hidden'); };
-
-  forgotForm.onsubmit = async (e) => {
-    e.preventDefault();
-    const email = forgotEmail.value.trim();
-    forgotStatus.textContent = '';
-    if (!email) {
-      forgotStatus.textContent = 'Введите email.';
-      forgotStatus.className = 'text-red-600';
-      return;
-    }
-    try {
-      if (!window.firebase || !window.firebase.auth) throw new Error('Firebase Auth не инициализирован');
-      await window.firebase.auth().sendPasswordResetEmail(email);
-      forgotStatus.textContent = 'Письмо с инструкцией отправлено! Проверьте почту.';
-      forgotStatus.className = 'text-green-600';
-      forgotForm.reset();
-    } catch (err) {
-      forgotStatus.textContent = 'Ошибка: ' + (err.message || 'Не удалось отправить письмо.');
-      forgotStatus.className = 'text-red-600';
-    }
-  };
-});
-
-// Экспорт для использования в других модулях
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = AuthManager;
-} 
+      console.log(`

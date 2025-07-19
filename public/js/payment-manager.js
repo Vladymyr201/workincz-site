@@ -1,5 +1,5 @@
 // PAYMENT MANAGER - Управление платежами Stripe для WorkInCZ
-// Этап 1 монетизации: разовые услуги
+// Гибридная модель: разовые услуги + success-fee + подписки
 
 class PaymentManager {
     constructor() {
@@ -197,7 +197,200 @@ class PaymentManager {
         }
     }
 
+    // ====== ГИБРИДНАЯ МОДЕЛЬ: SUCCESS-FEE ПЛАТЕЖИ ======
+
+    // 💰 Success-fee для агентств (5-15% от зарплаты кандидата)
+    async processSuccessFeePayment(contractId, candidateId, salaryAmount) {
+        if (!this.isStripeLoaded) {
+            throw new Error('Stripe не загружен');
+        }
+
+        // Рассчитываем success-fee (5-15% от зарплаты)
+        const successFeePercentage = 0.10; // 10% по умолчанию
+        const successFeeAmount = Math.round(salaryAmount * successFeePercentage);
+        const amountInCents = successFeeAmount * 100; // Конвертируем в центы
+
+        try {
+            const response = await fetch('/api/create-success-fee-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: amountInCents,
+                    currency: 'czk',
+                    service: 'success_fee',
+                    metadata: {
+                        contractId: contractId,
+                        candidateId: candidateId,
+                        agencyId: this.currentUser?.uid,
+                        salaryAmount: salaryAmount,
+                        successFeeAmount: successFeeAmount,
+                        successFeePercentage: successFeePercentage
+                    }
+                })
+            });
+
+            const { clientSecret } = await response.json();
+
+            const { error, paymentIntent } = await this.stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: this.cardElement,
+                    billing_details: {
+                        name: AuthManager.currentUser?.displayName || 'Агентство WorkInCZ'
+                    }
+                }
+            });
+
+            if (error) {
+                throw error;
+            }
+
+            if (paymentIntent.status === 'succeeded') {
+                // Обновляем статус контракта
+                await this.updateContractPaymentStatus(contractId, 'paid');
+                return { success: true, paymentId: paymentIntent.id, amount: successFeeAmount };
+            }
+
+        } catch (error) {
+            console.error('Ошибка обработки success-fee:', error);
+            throw error;
+        }
+    }
+
+    // 🏢 Подписка агентства (Premium Agency - 2,990 Kč/мес)
+    async subscribeAgencyPremium(agencyId) {
+        if (!this.isStripeLoaded) {
+            throw new Error('Stripe не загружен');
+        }
+
+        try {
+            const response = await fetch('/api/create-agency-subscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    agencyId: agencyId,
+                    plan: 'premium_agency',
+                    priceId: 'price_premium_agency_monthly', // ID тарифа в Stripe
+                    metadata: {
+                        agencyId: agencyId,
+                        plan: 'premium_agency'
+                    }
+                })
+            });
+
+            const { subscriptionId, clientSecret } = await response.json();
+
+            const { error, paymentIntent } = await this.stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: this.cardElement,
+                    billing_details: {
+                        name: AuthManager.currentUser?.displayName || 'Агентство WorkInCZ'
+                    }
+                }
+            });
+
+            if (error) {
+                throw error;
+            }
+
+            if (paymentIntent.status === 'succeeded') {
+                // Активируем подписку агентства
+                await this.activateAgencySubscription(agencyId, subscriptionId);
+                return { success: true, subscriptionId: subscriptionId };
+            }
+
+        } catch (error) {
+            console.error('Ошибка подписки агентства:', error);
+            throw error;
+        }
+    }
+
+    // 💳 Stripe Connect для агентств (комиссия с каждой сделки)
+    async setupStripeConnectAccount(agencyId) {
+        try {
+            const response = await fetch('/api/create-connect-account', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    agencyId: agencyId,
+                    country: 'CZ',
+                    type: 'express'
+                })
+            });
+
+            const { accountId, accountLink } = await response.json();
+
+            // Сохраняем account ID в профиле агентства
+            await this.updateAgencyStripeAccount(agencyId, accountId);
+
+            // Перенаправляем на настройку аккаунта
+            window.location.href = accountLink;
+
+        } catch (error) {
+            console.error('Ошибка создания Stripe Connect аккаунта:', error);
+            throw error;
+        }
+    }
+
     // ====== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ======
+
+    // Обновление статуса контракта после оплаты
+    async updateContractPaymentStatus(contractId, status) {
+        try {
+            const contractRef = this.db.collection('contracts').doc(contractId);
+            await contractRef.update({
+                payment_status: status,
+                paid_at: new Date(),
+                updated_at: new Date()
+            });
+
+            console.log(`✅ Статус контракта ${contractId} обновлен на ${status}`);
+        } catch (error) {
+            console.error('Ошибка обновления статуса контракта:', error);
+            throw error;
+        }
+    }
+
+    // Активация подписки агентства
+    async activateAgencySubscription(agencyId, subscriptionId) {
+        try {
+            const agencyRef = this.db.collection('users').doc(agencyId);
+            await agencyRef.update({
+                'subscription.type': 'premium_agency',
+                'subscription.stripe_subscription_id': subscriptionId,
+                'subscription.expires_at': new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 дней
+                'is_premium': true,
+                updated_at: new Date()
+            });
+
+            console.log(`✅ Подписка агентства ${agencyId} активирована`);
+        } catch (error) {
+            console.error('Ошибка активации подписки агентства:', error);
+            throw error;
+        }
+    }
+
+    // Обновление Stripe Connect аккаунта агентства
+    async updateAgencyStripeAccount(agencyId, accountId) {
+        try {
+            const agencyRef = this.db.collection('users').doc(agencyId);
+            await agencyRef.update({
+                'stripe_connect.account_id': accountId,
+                'stripe_connect.status': 'pending',
+                updated_at: new Date()
+            });
+
+            console.log(`✅ Stripe Connect аккаунт для агентства ${agencyId} сохранен`);
+        } catch (error) {
+            console.error('Ошибка сохранения Stripe Connect аккаунта:', error);
+            throw error;
+        }
+    }
 
     // Обновление статуса вакансии как "горячая"
     async updateJobAsFeatured(jobId) {

@@ -311,7 +311,7 @@
                     </div>
                     <div>
                       <div class="text-lg font-semibold text-gray-900">5</div>
-                      <div class="text-xs text-gray-500">${isEmployer ? 'Активных вакансий' : 'Откликов отправлено'}</div>
+                      <div class="text-xs text-gray-500">${getStatsDisplayName(userRole)}</div>
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
@@ -351,13 +351,20 @@
           </button>
           <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="profile">
             <i class="ri-user-line"></i>
-            <span>${isEmployer ? 'Профиль компании' : 'Мой профиль'}</span>
+            <span>${getProfileSectionTitle(userData.role)}</span>
           </button>
-          <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="${isEmployer ? 'jobs' : 'applications'}">
-            <i class="${isEmployer ? 'ri-briefcase-line' : 'ri-send-plane-line'}"></i>
-            <span>${isEmployer ? 'Мои вакансии' : 'Мои отклики'}</span>
+          <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="${getMainSection(userData.role)}">
+            <i class="${getMainSectionIcon(userData.role)}"></i>
+            <span>${getMainSectionTitle(userData.role)}</span>
             <span class="ml-auto bg-primary text-white text-xs px-2 py-1 rounded-full">3</span>
           </button>
+          ${userData.role === 'agency' ? `
+          <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="bids">
+            <i class="ri-auction-line"></i>
+            <span>Мои заявки</span>
+            <span class="ml-auto bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">5</span>
+          </button>
+          ` : ''}
             </div>
           </div>
 
@@ -393,10 +400,17 @@
                 <i class="ri-line-chart-line"></i>
                 <span>Статистика</span>
               </button>
-              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="${isEmployer ? 'candidates' : 'saved'}">
-                <i class="${isEmployer ? 'ri-team-line' : 'ri-bookmark-line'}"></i>
-                <span>${isEmployer ? 'Кандидаты' : 'Сохраненные'}</span>
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="${getToolsSection(userData.role)}">
+                <i class="${getToolsSectionIcon(userData.role)}"></i>
+                <span>${getToolsSectionTitle(userData.role)}</span>
               </button>
+              ${userData.role === 'agency' ? `
+              <button class="dashboard-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-gray-50 transition-colors" data-section="contracts">
+                <i class="ri-file-contract-line"></i>
+                <span>Контракты</span>
+                <span class="ml-auto bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">2</span>
+              </button>
+              ` : ''}
             </div>
           </div>
 
@@ -425,7 +439,7 @@
         document.querySelectorAll('.dashboard-nav-btn').forEach(btn => {
           btn.addEventListener('click', () => {
             const section = btn.dataset.section;
-            loadDashboardSection(section, userData, isEmployer);
+            loadDashboardSection(section, userData, userData.role);
             
             // Обновляем активный элемент
             document.querySelectorAll('.dashboard-nav-btn').forEach(nav => nav.classList.remove('active'));
@@ -444,7 +458,7 @@
         };
 
         // Загружаем первый раздел
-        loadDashboardSection('overview', userData, isEmployer);
+        loadDashboardSection('overview', userData, userData.role);
 
       } catch (error) {
         console.log('🔧 Проблема загрузки дашборда:', error.message);
@@ -459,6 +473,167 @@
           </div>
         `;
       }
+    }
+
+    // Вспомогательные функции для ролевой навигации
+    function getProfileSectionTitle(role) {
+      const titles = {
+        'jobseeker': 'Мой профиль',
+        'employer': 'Профиль компании',
+        'agency': 'Профиль агентства',
+        'admin': 'Админ панель'
+      };
+      return titles[role] || 'Мой профиль';
+    }
+
+    function getMainSection(role) {
+      const sections = {
+        'jobseeker': 'applications',
+        'employer': 'jobs',
+        'agency': 'staffing_requests',
+        'admin': 'management'
+      };
+      return sections[role] || 'applications';
+    }
+
+    function getMainSectionIcon(role) {
+      const icons = {
+        'jobseeker': 'ri-send-plane-line',
+        'employer': 'ri-briefcase-line',
+        'agency': 'ri-team-line',
+        'admin': 'ri-settings-3-line'
+      };
+      return icons[role] || 'ri-send-plane-line';
+    }
+
+    function getMainSectionTitle(role) {
+      const titles = {
+        'jobseeker': 'Мои отклики',
+        'employer': 'Мои вакансии',
+        'agency': 'Заявки на персонал',
+        'admin': 'Управление'
+      };
+      return titles[role] || 'Мои отклики';
+    }
+
+    function getToolsSection(role) {
+      const sections = {
+        'jobseeker': 'saved',
+        'employer': 'candidates',
+        'agency': 'candidates',
+        'admin': 'users'
+      };
+      return sections[role] || 'saved';
+    }
+
+    function getToolsSectionIcon(role) {
+      const icons = {
+        'jobseeker': 'ri-bookmark-line',
+        'employer': 'ri-team-line',
+        'agency': 'ri-team-line',
+        'admin': 'ri-user-settings-line'
+      };
+      return icons[role] || 'ri-bookmark-line';
+    }
+
+    function getToolsSectionTitle(role) {
+      const titles = {
+        'jobseeker': 'Сохраненные',
+        'employer': 'Кандидаты',
+        'agency': 'Кандидаты',
+        'admin': 'Пользователи'
+      };
+      return titles[role] || 'Сохраненные';
+    }
+
+    function getRoleDisplayName(role) {
+      const names = {
+        'jobseeker': 'Соискатель',
+        'employer': 'Работодатель',
+        'agency': 'Агентство',
+        'admin': 'Администратор'
+      };
+      return names[role] || 'Пользователь';
+    }
+
+    function getStatsDisplayName(role) {
+      const names = {
+        'jobseeker': 'Откликов отправлено',
+        'employer': 'Активных вакансий',
+        'agency': 'Активных заявок',
+        'admin': 'Управляемых пользователей'
+      };
+      return names[role] || 'Откликов отправлено';
+    }
+
+    function getQuickActions(role, userData) {
+      switch (role) {
+        case 'employer':
+          return `
+            <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              <i class="ri-add-line text-primary"></i>
+              <span>Разместить вакансию</span>
+            </button>
+            <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              <i class="ri-search-line text-primary"></i>
+              <span>Найти кандидатов</span>
+            </button>
+            <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              <i class="ri-bar-chart-line text-primary"></i>
+              <span>Посмотреть аналитику</span>
+            </button>
+          `;
+        case 'agency':
+          return `
+            <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              <i class="ri-auction-line text-primary"></i>
+              <span>Подать заявку</span>
+            </button>
+            <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              <i class="ri-team-line text-primary"></i>
+              <span>Найти кандидатов</span>
+            </button>
+            <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              <i class="ri-money-czech-koruna-circle-line text-primary"></i>
+              <span>Управление платежами</span>
+            </button>
+          `;
+        default: // jobseeker
+          return `
+            <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" onclick="window.location.href='/'">
+              <i class="ri-search-line text-primary"></i>
+              <span>Найти работу</span>
+            </button>
+            <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" onclick="loadDashboardSection('profile', ${JSON.stringify(userData)}, '${role}')">
+              <i class="ri-user-line text-primary"></i>
+              <span>Редактировать профиль</span>
+            </button>
+            <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" onclick="loadDashboardSection('subscription', ${JSON.stringify(userData)}, '${role}')">
+              <i class="ri-vip-crown-line text-primary"></i>
+              <span>Обновить до VIP</span>
+            </button>
+          `;
+      }
+    }
+
+    function getActivityMessage(role) {
+      const messages = {
+        'jobseeker': 'Отклик отправлен',
+        'employer': 'Новый отклик получен',
+        'agency': 'Новая заявка подана',
+        'admin': 'Новый пользователь зарегистрирован'
+      };
+      return messages[role] || 'Отклик отправлен';
+    }
+
+    function getFavoriteMessage(role) {
+      const messages = {
+        'jobseeker': 'Вакансия сохранена',
+        'employer': 'Кандидат добавлен в избранное',
+        'agency': 'Контракт подписан',
+        'admin': 'Настройки обновлены'
+      };
+      return messages[role] || 'Вакансия сохранена';
     }
 
     // Функция для загрузки дашборда с тестовыми данными
@@ -478,7 +653,7 @@
         };
         
         const firstName = userData.name?.split(' ')[0] || 'Пользователь';
-        const isEmployer = userData.role === 'employer';
+        const userRole = userData.role || 'jobseeker';
 
         // Обновляем информацию о пользователе в шапке
         document.getElementById('userInfo').innerHTML = `
@@ -505,7 +680,7 @@
                 <div class="flex items-center gap-4 text-sm text-gray-600">
                   <div class="flex items-center gap-1">
                     <i class="ri-user-line text-primary"></i>
-                    <span>${isEmployer ? 'Работодатель' : 'Соискатель'}</span>
+                    <span>${getRoleDisplayName(userRole)}</span>
                   </div>
                   <div class="flex items-center gap-1">
                     <i class="ri-mail-line text-primary"></i>
@@ -718,7 +893,7 @@
       };
     }
 
-    function loadDashboardSection(section, userData, isEmployer) {
+    function loadDashboardSection(section, userData, userRole) {
       const content = document.getElementById('dashboardMainContent');
       const firstName = userData.name?.split(' ')[0] || 'Пользователь';
 
@@ -750,7 +925,7 @@
                     </div>
                     <div>
                       <div class="text-2xl font-bold text-gray-900">5</div>
-                      <div class="text-sm text-gray-600">${isEmployer ? 'Активных вакансий' : 'Откликов отправлено'}</div>
+                      <div class="text-sm text-gray-600">${getStatsDisplayName(userRole)}</div>
                     </div>
                   </div>
                 </div>
@@ -762,7 +937,7 @@
                     </div>
                     <div>
                       <div class="text-2xl font-bold text-gray-900">127</div>
-                      <div class="text-sm text-gray-600">${isEmployer ? 'Просмотров вакансий' : 'Просмотров профиля'}</div>
+                      <div class="text-sm text-gray-600">${userRole === 'employer' ? 'Просмотров вакансий' : userRole === 'agency' ? 'Просмотров заявок' : 'Просмотров профиля'}</div>
                     </div>
                   </div>
                 </div>
@@ -774,7 +949,7 @@
                     </div>
                     <div>
                       <div class="text-2xl font-bold text-gray-900">12</div>
-                      <div class="text-sm text-gray-600">${isEmployer ? 'Избранных кандидатов' : 'Сохраненных вакансий'}</div>
+                      <div class="text-sm text-gray-600">${userRole === 'employer' ? 'Избранных кандидатов' : userRole === 'agency' ? 'Активных контрактов' : 'Сохраненных вакансий'}</div>
                     </div>
                   </div>
                 </div>
@@ -796,33 +971,7 @@
               <div class="bg-white rounded-lg p-6 shadow-sm">
                 <h3 class="text-lg font-semibold mb-4">Быстрые действия</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  ${isEmployer ? `
-                    <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                      <i class="ri-add-line text-primary"></i>
-                      <span>Разместить вакансию</span>
-                    </button>
-                    <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                      <i class="ri-search-line text-primary"></i>
-                      <span>Найти кандидатов</span>
-                    </button>
-                    <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                      <i class="ri-bar-chart-line text-primary"></i>
-                      <span>Посмотреть аналитику</span>
-                    </button>
-                  ` : `
-                    <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" onclick="window.location.href='/'">
-                      <i class="ri-search-line text-primary"></i>
-                      <span>Найти работу</span>
-                    </button>
-                    <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" onclick="loadDashboardSection('profile', ${JSON.stringify(userData)}, ${isEmployer})">
-                      <i class="ri-user-line text-primary"></i>
-                      <span>Редактировать профиль</span>
-                    </button>
-                    <button class="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" onclick="loadDashboardSection('subscription', ${JSON.stringify(userData)}, ${isEmployer})">
-                      <i class="ri-vip-crown-line text-primary"></i>
-                      <span>Обновить до VIP</span>
-                    </button>
-                  `}
+                  ${getQuickActions(userRole, userData)}
                 </div>
               </div>
 
@@ -845,7 +994,7 @@
                       <i class="ri-send-plane-line text-blue-600"></i>
                     </div>
                     <div class="flex-1">
-                      <div class="font-medium">${isEmployer ? 'Новый отклик получен' : 'Отклик отправлен'}</div>
+                      <div class="font-medium">${getActivityMessage(userRole)}</div>
                       <div class="text-sm text-gray-600">Вчера в 15:30</div>
                     </div>
                   </div>
@@ -855,7 +1004,7 @@
                       <i class="ri-star-line text-yellow-600"></i>
                     </div>
                     <div class="flex-1">
-                      <div class="font-medium">${isEmployer ? 'Кандидат добавлен в избранное' : 'Вакансия сохранена'}</div>
+                      <div class="font-medium">${getFavoriteMessage(userRole)}</div>
                       <div class="text-sm text-gray-600">3 дня назад</div>
                     </div>
                   </div>
@@ -868,7 +1017,7 @@
         case 'profile':
           content.innerHTML = `
             <div class="bg-white rounded-lg p-6 shadow-sm">
-              <h3 class="text-lg font-semibold mb-4">${isEmployer ? 'Профиль компании' : 'Мой профиль'}</h3>
+              <h3 class="text-lg font-semibold mb-4">${getProfileSectionTitle(userRole)}</h3>
               <p class="text-gray-600">Раздел профиля в разработке. Здесь будет возможность редактировать личные данные.</p>
             </div>
           `;
@@ -876,20 +1025,23 @@
 
         case 'applications':
         case 'jobs':
+        case 'staffing_requests':
+        case 'bids':
           content.innerHTML = `
             <div class="bg-white rounded-lg p-6 shadow-sm">
-              <h3 class="text-lg font-semibold mb-4">${isEmployer ? 'Мои вакансии' : 'Мои отклики'}</h3>
-              <p class="text-gray-600">Раздел ${isEmployer ? 'вакансий' : 'откликов'} в разработке. Здесь будет список ${isEmployer ? 'размещенных вакансий' : 'отправленных откликов'}.</p>
+              <h3 class="text-lg font-semibold mb-4">${getMainSectionTitle(userRole)}</h3>
+              <p class="text-gray-600">Раздел ${getMainSectionTitle(userRole).toLowerCase()} в разработке. Здесь будет список ${getMainSectionTitle(userRole).toLowerCase()}.</p>
             </div>
           `;
           break;
 
         case 'saved':
         case 'candidates':
+        case 'contracts':
           content.innerHTML = `
             <div class="bg-white rounded-lg p-6 shadow-sm">
-              <h3 class="text-lg font-semibold mb-4">${isEmployer ? 'Кандидаты' : 'Сохраненные вакансии'}</h3>
-              <p class="text-gray-600">Раздел ${isEmployer ? 'кандидатов' : 'сохраненных вакансий'} в разработке.</p>
+              <h3 class="text-lg font-semibold mb-4">${getToolsSectionTitle(userRole)}</h3>
+              <p class="text-gray-600">Раздел ${getToolsSectionTitle(userRole).toLowerCase()} в разработке.</p>
             </div>
           `;
           break;

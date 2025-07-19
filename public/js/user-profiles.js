@@ -174,9 +174,9 @@ class UserProfileManager {
             </div>
             <div class="mt-6">
               <label class="block text-sm font-medium text-gray-700 mb-2">Тип аккаунта *</label>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label class="role-option border-2 border-primary rounded-lg p-4 cursor-pointer hover:border-primary transition-colors bg-primary/5" data-role="worker">
-                  <input type="radio" name="role" value="worker" class="sr-only" checked>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <label class="role-option border-2 border-primary rounded-lg p-4 cursor-pointer hover:border-primary transition-colors bg-primary/5" data-role="jobseeker">
+                  <input type="radio" name="role" value="jobseeker" class="sr-only" checked>
                   <div class="text-center">
                     <i class="ri-user-line text-3xl text-primary mb-2"></i>
                     <h3 class="font-medium">Я ищу работу</h3>
@@ -191,6 +191,23 @@ class UserProfileManager {
                     <p class="text-sm text-gray-500 mt-1">Работодатель, HR</p>
                   </div>
                 </label>
+                <label class="role-option border-2 border-gray-300 rounded-lg p-4 cursor-pointer hover:border-primary transition-colors" data-role="agency">
+                  <input type="radio" name="role" value="agency" class="sr-only">
+                  <div class="text-center">
+                    <i class="ri-team-line text-3xl text-primary mb-2"></i>
+                    <h3 class="font-medium">Агентство</h3>
+                    <p class="text-sm text-gray-500 mt-1">Подбор персонала</p>
+                  </div>
+                </label>
+                <label class="role-option border-2 border-gray-300 rounded-lg p-4 cursor-pointer hover:border-primary transition-colors" data-role="admin">
+                  <input type="radio" name="role" value="admin" class="sr-only">
+                  <div class="text-center">
+                    <i class="ri-admin-line text-3xl text-primary mb-2"></i>
+                    <h3 class="font-medium">Администратор</h3>
+                    <p class="text-sm text-gray-500 mt-1">Управление платформой</p>
+                  </div>
+                </label>
+                </label>
               </div>
             </div>
           </div>
@@ -198,7 +215,7 @@ class UserProfileManager {
           <!-- Шаг 2: Профессиональная информация -->
           <div id="step-2" class="registration-step hidden">
             <!-- Для соискателей -->
-            <div id="worker-profile" class="worker-profile">
+            <div id="jobseeker-profile" class="jobseeker-profile">
               <h2 class="text-2xl font-bold mb-6 text-center">Ваш профессиональный профиль</h2>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2">
@@ -271,7 +288,7 @@ class UserProfileManager {
             </div>
 
             <!-- Для работодателей -->
-            <div id="employer-profile" class="employer-profile hidden">
+            <div id="employer-profile" class="employer-profile hidden employer-field">
               <h2 class="text-2xl font-bold mb-6 text-center">Информация о компании</h2>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2">
@@ -313,6 +330,79 @@ class UserProfileManager {
                 <div class="md:col-span-2">
                   <label class="block text-sm font-medium text-gray-700 mb-2">Описание компании</label>
                   <textarea id="companyDescription" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Расскажите о вашей компании..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Для агентств -->
+            <div id="agency-profile" class="agency-profile hidden agency-field">
+              <h2 class="text-2xl font-bold mb-6 text-center">Информация об агентстве</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Название агентства *</label>
+                  <input type="text" id="agencyName" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Лицензия *</label>
+                  <input type="text" id="license" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Номер лицензии">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Специализация *</label>
+                  <select id="agencySpecialization" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                    <option value="">Выберите специализацию</option>
+                    <option value="construction">Строительство</option>
+                    <option value="manufacturing">Производство</option>
+                    <option value="it">IT и технологии</option>
+                    <option value="healthcare">Медицина</option>
+                    <option value="logistics">Логистика</option>
+                    <option value="general">Общий подбор</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Опыт работы</label>
+                  <select id="agencyExperience" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                    <option value="1-3-years">1-3 года</option>
+                    <option value="3-5-years">3-5 лет</option>
+                    <option value="5-10-years">5-10 лет</option>
+                    <option value="10-plus">Более 10 лет</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Веб-сайт</label>
+                  <input type="url" id="agencyWebsite" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="https://example.com">
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Описание агентства</label>
+                  <textarea id="agencyDescription" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Расскажите о вашем агентстве..."></textarea>
+                </div>
+              </div>
+              <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Услуги агентства</label>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  <label class="flex items-center">
+                    <input type="checkbox" value="permanent" class="agency-service-checkbox mr-2">
+                    <span class="text-sm">Постоянный найм</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" value="temporary" class="agency-service-checkbox mr-2">
+                    <span class="text-sm">Временный найм</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" value="contract" class="agency-service-checkbox mr-2">
+                    <span class="text-sm">Контрактный найм</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" value="executive" class="agency-service-checkbox mr-2">
+                    <span class="text-sm">Executive search</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" value="assessment" class="agency-service-checkbox mr-2">
+                    <span class="text-sm">Оценка персонала</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" value="consulting" class="agency-service-checkbox mr-2">
+                    <span class="text-sm">HR консалтинг</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -554,16 +644,23 @@ class UserProfileManager {
     }
   }
 
-  toggleProfileType(role) {
-    const workerProfile = document.getElementById('worker-profile');
+    toggleProfileType(role) {
+    const jobseekerProfile = document.getElementById('jobseeker-profile');
     const employerProfile = document.getElementById('employer-profile');
-
-    if (role === 'worker') {
-      workerProfile.classList.remove('hidden');
-      employerProfile.classList.add('hidden');
-    } else {
-      workerProfile.classList.add('hidden');
+    const agencyProfile = document.getElementById('agency-profile');
+    
+    // Скрываем все профили
+    jobseekerProfile.classList.add('hidden');
+    employerProfile.classList.add('hidden');
+    agencyProfile.classList.add('hidden');
+    
+    // Показываем нужный профиль
+    if (role === 'jobseeker') {
+      jobseekerProfile.classList.remove('hidden');
+    } else if (role === 'employer') {
       employerProfile.classList.remove('hidden');
+    } else if (role === 'agency') {
+      agencyProfile.classList.remove('hidden');
     }
   }
 
@@ -578,6 +675,38 @@ class UserProfileManager {
         option.classList.add('border-gray-300');
       }
     });
+    
+    // Показываем/скрываем поля в зависимости от роли
+    this.toggleRoleSpecificFields(selectedRole);
+  }
+
+  toggleRoleSpecificFields(role) {
+    // Скрываем все специфичные поля
+    const agencyFields = document.querySelectorAll('.agency-field');
+    const employerFields = document.querySelectorAll('.employer-field');
+    const jobseekerFields = document.querySelectorAll('.jobseeker-field');
+    const adminFields = document.querySelectorAll('.admin-field');
+    
+    agencyFields.forEach(field => field.style.display = 'none');
+    employerFields.forEach(field => field.style.display = 'none');
+    jobseekerFields.forEach(field => field.style.display = 'none');
+    adminFields.forEach(field => field.style.display = 'none');
+    
+    // Показываем поля для выбранной роли
+    switch (role) {
+      case 'agency':
+        agencyFields.forEach(field => field.style.display = 'block');
+        break;
+      case 'employer':
+        employerFields.forEach(field => field.style.display = 'block');
+        break;
+      case 'jobseeker':
+        jobseekerFields.forEach(field => field.style.display = 'block');
+        break;
+      case 'admin':
+        adminFields.forEach(field => field.style.display = 'block');
+        break;
+    }
   }
 
   validateCurrentStep() {
@@ -587,7 +716,7 @@ class UserProfileManager {
     if (this.registrationStep === 2) {
       const selectedRole = this.userData.basic?.role || document.querySelector('input[name="role"]:checked')?.value;
       
-      if (selectedRole === 'worker') {
+      if (selectedRole === 'jobseeker') {
         // Для соискателей проверяем только основные поля
         const requiredFields = ['specialization', 'experience', 'location'];
         for (let fieldId of requiredFields) {
@@ -601,6 +730,28 @@ class UserProfileManager {
       } else if (selectedRole === 'employer') {
         // Для работодателей проверяем поля компании
         const requiredFields = ['companyName', 'industry'];
+        for (let fieldId of requiredFields) {
+          const field = document.getElementById(fieldId);
+          if (field && !field.value.trim()) {
+            this.showModalError(`Поле "${field.previousElementSibling?.textContent?.replace('*', '') || 'обязательное'}" не может быть пустым`);
+            field.focus();
+            return false;
+          }
+        }
+      } else if (selectedRole === 'agency') {
+        // Для агентств проверяем поля агентства
+        const requiredFields = ['agencyName', 'license', 'specialization'];
+        for (let fieldId of requiredFields) {
+          const field = document.getElementById(fieldId);
+          if (field && !field.value.trim()) {
+            this.showModalError(`Поле "${field.previousElementSibling?.textContent?.replace('*', '') || 'обязательное'}" не может быть пустым`);
+            field.focus();
+            return false;
+          }
+        }
+      } else if (selectedRole === 'admin') {
+        // Для админов проверяем поля администратора
+        const requiredFields = ['adminCode', 'department'];
         for (let fieldId of requiredFields) {
           const field = document.getElementById(fieldId);
           if (field && !field.value.trim()) {
@@ -653,7 +804,7 @@ class UserProfileManager {
     } else if (this.registrationStep === 2) {
       const role = this.userData.basic.role;
       
-      if (role === 'worker') {
+      if (role === 'jobseeker') {
         const workTypes = Array.from(document.querySelectorAll('.work-type-checkbox:checked')).map(cb => cb.value);
         
         this.userData.profile = {
@@ -668,7 +819,7 @@ class UserProfileManager {
           },
           workType: workTypes
         };
-      } else {
+      } else if (role === 'employer') {
         this.userData.profile = {
           companyName: document.getElementById('companyName').value,
           ico: document.getElementById('ico').value,
@@ -676,6 +827,22 @@ class UserProfileManager {
           size: document.getElementById('companySize').value,
           website: document.getElementById('website').value,
           description: document.getElementById('companyDescription').value
+        };
+      } else if (role === 'agency') {
+        this.userData.profile = {
+          agencyName: document.getElementById('agencyName').value,
+          license: document.getElementById('license').value,
+          specialization: document.getElementById('agencySpecialization').value,
+          experience: document.getElementById('agencyExperience').value,
+          website: document.getElementById('agencyWebsite').value,
+          description: document.getElementById('agencyDescription').value,
+          services: Array.from(document.querySelectorAll('.agency-service-checkbox:checked')).map(cb => cb.value)
+        };
+      } else if (role === 'admin') {
+        this.userData.profile = {
+          adminCode: document.getElementById('adminCode').value,
+          department: document.getElementById('department').value,
+          permissions: Array.from(document.querySelectorAll('.admin-permission-checkbox:checked')).map(cb => cb.value)
         };
       }
     } else if (this.registrationStep === 3) {
@@ -750,6 +917,10 @@ class UserProfileManager {
         email: this.userData.basic.email,
         name: `${this.userData.basic.firstName} ${this.userData.basic.lastName}`,
         role: this.userData.basic.role,
+        // Новые поля для гибридной модели
+        is_premium: false,
+        subscription_expires: null,
+        agency_id: null,
         phone: this.userData.basic.phone,
         language: this.userData.basic.language,
         verified: false,

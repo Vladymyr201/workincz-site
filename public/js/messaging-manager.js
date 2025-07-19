@@ -50,7 +50,7 @@ class MessagingManager {
     // ======== ОСНОВНЫЕ ФУНКЦИИ ЧАТА ========
 
     // Создание нового чата между пользователями
-    async createChat(participantId, initialMessage = null, jobId = null) {
+    async createChat(participantId, initialMessage = null, jobId = null, chatType = 'direct') {
         if (!this.currentUser) {
             throw new Error('Пользователь не авторизован');
         }
@@ -72,7 +72,9 @@ class MessagingManager {
                     lastMessageTime: null,
                     lastMessageBy: null,
                     jobId: jobId || null,
+                    chatType: chatType, // 'direct', 'job', 'staffing_request', 'contract'
                     isActive: true,
+                    isReadOnly: false, // Для завершенных контрактов
                     // Метаданные для участников
                     [`participant_${this.currentUser.uid}`]: await this.getUserInfo(this.currentUser.uid),
                     [`participant_${participantId}`]: await this.getUserInfo(participantId)
@@ -88,6 +90,46 @@ class MessagingManager {
             
         } catch (error) {
             console.error('Ошибка создания чата:', error);
+            throw error;
+        }
+    }
+
+    // Создание чата для агентской заявки
+    async createAgencyChat(clientId, agencyId, jobId) {
+        if (!this.currentUser) {
+            throw new Error('Пользователь не авторизован');
+        }
+
+        const participants = [clientId, agencyId].sort();
+        const chatId = `agency_${jobId}_${participants.join('_')}`;
+
+        try {
+            // Проверяем, существует ли уже чат
+            const existingChat = await db.collection('chats').doc(chatId).get();
+            
+            if (!existingChat.exists) {
+                // Создаем новый чат для агентской заявки
+                await db.collection('chats').doc(chatId).set({
+                    participants: participants,
+                    participantIds: participants,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastMessage: null,
+                    lastMessageTime: null,
+                    lastMessageBy: null,
+                    jobId: jobId,
+                    chatType: 'staffing_request',
+                    isActive: true,
+                    isReadOnly: false,
+                    // Метаданные для участников
+                    [`participant_${clientId}`]: await this.getUserInfo(clientId),
+                    [`participant_${agencyId}`]: await this.getUserInfo(agencyId)
+                });
+            }
+
+            return chatId;
+            
+        } catch (error) {
+            console.error('Ошибка создания агентского чата:', error);
             throw error;
         }
     }
@@ -301,23 +343,45 @@ class MessagingManager {
             const otherParticipant = this.getOtherParticipantInfo(chat);
             const unreadCount = chat[`unread_${this.currentUser.uid}`] || 0;
             const isOnline = this.isUserOnline(otherParticipant.id);
+            const chatType = chat.chatType || 'direct';
+            
+            // Определяем иконку и цвет для типа чата
+            const chatTypeInfo = this.getChatTypeInfo(chatType);
             
             chatsHTML += `
                 <div class="chat-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                      onclick="messagingManager.openChat('${chatId}')" data-chat-id="${chatId}">
                     <div class="flex items-center gap-3">
                         <div class="relative">
-                            <div class="w-12 h-12 bg-gradient-to-br from-primary to-primary/70 rounded-full flex items-center justify-center text-white font-semibold">
+                            <div class="w-12 h-12 bg-gradient-to-br from-${chatTypeInfo.color}-500 to-${chatTypeInfo.color}-600 rounded-full flex items-center justify-center text-white font-semibold">
                                 ${otherParticipant.name.charAt(0).toUpperCase()}
                             </div>
                             ${isOnline ? '<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>' : ''}
+                            ${chatType !== 'direct' ? `
+                                <div class="absolute -top-1 -right-1 w-5 h-5 bg-${chatTypeInfo.color}-500 border-2 border-white rounded-full flex items-center justify-center">
+                                    <i class="ri-${chatTypeInfo.icon} text-xs text-white"></i>
+                                </div>
+                            ` : ''}
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between mb-1">
-                                <h4 class="font-medium text-gray-900 truncate">${otherParticipant.name}</h4>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-medium text-gray-900 truncate">${otherParticipant.name}</h4>
+                                    ${chatType !== 'direct' ? `
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-${chatTypeInfo.color}-100 text-${chatTypeInfo.color}-800">
+                                            ${chatTypeInfo.label}
+                                        </span>
+                                    ` : ''}
+                                </div>
                                 <span class="text-xs text-gray-500">${this.formatMessageTime(chat.lastMessageTime)}</span>
                             </div>
                             <p class="text-sm text-gray-600 truncate">${chat.lastMessage || 'Начните общение...'}</p>
+                            ${chat.jobId ? `
+                                <p class="text-xs text-gray-500 mt-1">
+                                    <i class="ri-briefcase-line"></i>
+                                    ${chatType === 'staffing_request' ? 'Заявка на персонал' : 'Вакансия'}
+                                </p>
+                            ` : ''}
                         </div>
                         ${unreadCount > 0 ? `
                             <div class="bg-primary text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-medium">
@@ -340,6 +404,34 @@ class MessagingManager {
         }
 
         chatsContainer.innerHTML = chatsHTML;
+    }
+
+    // Получение информации о типе чата
+    getChatTypeInfo(chatType) {
+        const types = {
+            'direct': {
+                label: 'Личный',
+                icon: 'user-line',
+                color: 'blue'
+            },
+            'job': {
+                label: 'Вакансия',
+                icon: 'briefcase-line',
+                color: 'green'
+            },
+            'staffing_request': {
+                label: 'Агентство',
+                icon: 'team-line',
+                color: 'purple'
+            },
+            'contract': {
+                label: 'Контракт',
+                icon: 'file-text-line',
+                color: 'orange'
+            }
+        };
+        
+        return types[chatType] || types['direct'];
     }
 
     // 💬 СОВРЕМЕННОЕ ОТОБРАЖЕНИЕ СООБЩЕНИЙ С РАСШИРЕННЫМ ФУНКЦИОНАЛОМ
