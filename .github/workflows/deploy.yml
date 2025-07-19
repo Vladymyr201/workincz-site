@@ -1,47 +1,30 @@
-# 🚀 Автоматический деплой WorkInCZ на Firebase Hosting
-name: Deploy to Firebase Hosting
+name: Deploy to GitHub Pages
 
-# Запускается при push в main branch
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
-    # 1. Клонируем репозиторий
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-      
-    # 2. Устанавливаем Node.js
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
       with:
         node-version: '18'
         
-    # 3. Устанавливаем Firebase CLI
-    - name: 🔥 Install Firebase CLI
-      run: npm install -g firebase-tools
+    - name: Install dependencies
+      run: npm install
       
-    # 4. Деплоим на Firebase Hosting
-    - name: 🚀 Deploy to Firebase
-      run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
-      env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        
-    # 5. Уведомляем об успешном деплое
-    - name: ✅ Success notification
-      if: success()
-      run: |
-        echo "🎉 Деплой выполнен успешно!"
-        echo "🌐 Сайт доступен: https://workincz-759c7.web.app"
-        
-    # 6. Уведомляем об ошибке
-    - name: ❌ Error notification  
-      if: failure()
-      run: |
-        echo "💥 Ошибка деплоя! Проверьте логи." 
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/master'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+        publish_branch: gh-pages 
