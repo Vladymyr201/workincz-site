@@ -1,0 +1,168 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "D:/workincz-site"
+      ]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp"
+      ]
+    },
+    "time": {
+      "command": "python",
+      "args": [
+        "-m",
+        "mcp_server_time"
+      ]
+    },
+    "memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ]
+    },
+    "sentry": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-server-sentry",
+        "--auth-token",
+        "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"
+      ]
+    },
+    "code-runner": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-server-code-runner"
+      ]
+    },
+    "notion": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@notionhq/notion-mcp-server"
+      ]
+    },
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase"
+      ]
+    },
+    "firebase-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "firebase-tools@latest",
+        "experimental:mcp"
+      ]
+    },
+    "github-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_a3245530c96e3c0d8d23502cd462c5b3f9b0699",
+        "GITHUB_API_URL": "https://api.github.com",
+        "GH_HOST": "github.com"
+      }
+    },
+    "wikipedia": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@shelm/wikipedia-mcp-server"
+      ]
+    },
+    "youtube": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "youtube-data-mcp-server"
+      ]
+    }
+  },
+  "codeReviewChecklist": [
+    "Правильно ли реализована логика Firebase авторизации и безопасности?",
+    "Оптимальна ли структура базы данных для уведомлений, чатов и откликов?",
+    "Есть ли проверки ошибок на всех уровнях: frontend/backend?",
+    "Используется ли стандартный и понятный подход к мультиязычности (i18n)?",
+    "Корректно ли интегрирован авто-перевод сообщений?",
+    "Реализована ли безопасно интеграция оплаты через Stripe?",
+    "Адаптивна ли верстка всех ключевых экранов (Tailwind CSS)?",
+    "Используются ли Firebase Cloud Functions для автоматизации уведомлений?",
+    "Реализованы ли VIP/Premium статусы и права доступа?",
+    "Корректны ли мета-теги для SEO и соцсетей?",
+    "Проверена ли производительность ключевых операций (чаты, загрузки файлов)?",
+    "Есть ли авто-тесты на ключевые функции (через code-runner)?",
+    "Документирован ли код и понятен ли он другим разработчикам?",
+    "Проведён ли security review кода (утечки данных, XSS, инъекции)?"
+  ],
+  "rules": [
+    {
+      "name": "auto-review",
+      "trigger": "onFileChange",
+      "actions": [
+        {
+          "type": "runCodeReview",
+          "checklist": "codeReviewChecklist",
+          "mcp": [
+            "code-runner",
+            "sentry"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "performance-check",
+      "trigger": "onDeploy",
+      "actions": [
+        {
+          "type": "runPerformanceTest",
+          "mcp": [
+            "playwright"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "security-scan",
+      "trigger": "onFileChange",
+      "actions": [
+        {
+          "type": "runSecurityScan",
+          "mcp": [
+            "sentry",
+            "code-runner"
+          ]
+        }
+      ]
+    }
+  ]
+}

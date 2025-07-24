@@ -1,0 +1,33 @@
+# Автоматический бэкап PROJECT_KNOWLEDGE.md и README.md
+# Копирует файлы в ветку backup по расписанию и по кнопке
+# Для активации скопируйте этот файл в .github/workflows/
+
+name: Backup Docs
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Каждый день в 2:00 UTC
+  workflow_dispatch: # Кнопка ручного запуска
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Создать ветку backup (если нет)
+        run: |
+          git checkout backup || git checkout -b backup
+          git checkout main -- PROJECT_KNOWLEDGE.md README.md
+
+      - name: Commit и push бэкапа
+        run: |
+          git add PROJECT_KNOWLEDGE.md README.md || echo 'Нет файлов для бэкапа'
+          git commit -m "backup: автоматический бэкап PROJECT_KNOWLEDGE.md и README.md" || echo 'Нет изменений для коммита'
+          git push origin backup
+
+# Все шаги снабжены комментариями для прозрачности
+# Восстановить файлы можно из ветки backup через git checkout backup -- FILE

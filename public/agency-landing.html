@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkInCZ для кадровых агентств - Зарабатывайте на подборе персонала</title>
+    <meta name="description" content="Присоединяйтесь к WorkInCZ как кадровое агентство. Получайте заявки от работодателей, управляйте кандидатами и зарабатывайте на успешных размещениях.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+        }
+        
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-section {
+            background: #f8f9fa;
+            padding: 80px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .pricing-card {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-card.featured {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+        
+        .pricing-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-briefcase text-primary"></i> WorkInCZ
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Возможности</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#pricing">Тарифы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials">Отзывы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-gradient ms-2" href="#register">Присоединиться</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Зарабатывайте на подборе персонала в Чехии
+                    </h1>
+                    <p class="lead mb-4">
+                        Присоединяйтесь к WorkInCZ как кадровое агентство. Получайте заявки от работодателей, 
+                        управляйте кандидатами и зарабатывайте на успешных размещениях.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#register" class="btn btn-light btn-lg px-4">
+                            <i class="fas fa-rocket me-2"></i>Начать зарабатывать
+                        </a>
+                        <a href="#demo" class="btn btn-outline-light btn-lg px-4">
+                            <i class="fas fa-play me-2"></i>Смотреть демо
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="https://via.placeholder.com/600x400/667eea/ffffff?text=Agency+Dashboard" 
+                         alt="Агентский кабинет" class="img-fluid rounded-3 shadow">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <p class="text-muted">Активных агентств</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">10,000+</div>
+                        <p class="text-muted">Успешных размещений</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">50M+</div>
+                        <p class="text-muted">Заработано агентствами</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">95%</div>
+                        <p class="text-muted">Довольных агентств</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Возможности для агентств</h2>
+                <p class="lead text-muted">Все инструменты для успешного подбора персонала</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="fas fa-handshake fa-2x text-primary"></i>
+                            </div>
+                            <h5 class="card-title">Получайте заявки</h5>
+                            <p class="card-text">
+                                Работодатели сами обращаются к вам с заявками на подбор персонала. 
+                                Никаких холодных звонков и поиска клиентов.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="fas fa-users fa-2x text-success"></i>
+                            </div>
+                            <h5 class="card-title">Управляйте кандидатами</h5>
+                            <p class="card-text">
+                                База кандидатов, система оценки, отслеживание статусов. 
+                                Все в одном удобном кабинете.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="fas fa-chart-line fa-2x text-warning"></i>
+                            </div>
+                            <h5 class="card-title">Аналитика и отчеты</h5>
+                            <p class="card-text">
+                                Подробная аналитика по всем проектам, прогнозы доходов, 
+                                рекомендации по оптимизации работы.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="fas fa-credit-card fa-2x text-info"></i>
+                            </div>
+                            <h5 class="card-title">Автоматические выплаты</h5>
+                            <p class="card-text">
+                                Получайте деньги автоматически после успешного размещения. 
+                                Прозрачная система комиссий.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="fas fa-comments fa-2x text-danger"></i>
+                            </div>
+                            <h5 class="card-title">Встроенный чат</h5>
+                            <p class="card-text">
+                                Общайтесь с работодателями и кандидатами прямо в системе. 
+                                Никаких внешних мессенджеров.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-secondary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="fas fa-mobile-alt fa-2x text-secondary"></i>
+                            </div>
+                            <h5 class="card-title">Мобильное приложение</h5>
+                            <p class="card-text">
+                                Работайте с любого устройства. Получайте уведомления 
+                                о новых заявках и кандидатах.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="bg-light py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Как это работает</h2>
+                <p class="lead text-muted">Простой процесс работы с платформой</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-3 text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                        <span class="display-6 fw-bold text-primary">1</span>
+                    </div>
+                    <h5>Регистрация</h5>
+                    <p class="text-muted">Зарегистрируйтесь как агентство и заполните профиль</p>
+                </div>
+                
+                <div class="col-md-3 text-center">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                        <span class="display-6 fw-bold text-success">2</span>
+                    </div>
+                    <h5>Получение заявок</h5>
+                    <p class="text-muted">Работодатели отправляют вам заявки на подбор персонала</p>
+                </div>
+                
+                <div class="col-md-3 text-center">
+                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                        <span class="display-6 fw-bold text-warning">3</span>
+                    </div>
+                    <h5>Подбор кандидатов</h5>
+                    <p class="text-muted">Находите подходящих кандидатов и представляйте их работодателю</p>
+                </div>
+                
+                <div class="col-md-3 text-center">
+                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                        <span class="display-6 fw-bold text-info">4</span>
+                    </div>
+                    <h5>Получение оплаты</h5>
+                    <p class="text-muted">После успешного размещения получаете комиссию автоматически</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Тарифы для агентств</h2>
+                <p class="lead text-muted">Выберите подходящий план для вашего бизнеса</p>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-4">
+                    <div class="pricing-card">
+                        <h4>Старт</h4>
+                        <div class="display-4 fw-bold text-primary mb-3">Бесплатно</div>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>5 заявок в месяц</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>База кандидатов</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Базовый чат</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Email поддержка</li>
+                        </ul>
+                        <a href="#register" class="btn btn-outline-primary w-100">Начать бесплатно</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="pricing-card featured">
+                        <div class="badge bg-primary mb-2">Популярный</div>
+                        <h4>Профессионал</h4>
+                        <div class="display-4 fw-bold text-primary mb-3">2,000 ₽</div>
+                        <div class="text-muted mb-3">в месяц</div>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Неограниченные заявки</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Расширенная аналитика</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Приоритетная поддержка</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>API доступ</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Мобильное приложение</li>
+                        </ul>
+                        <a href="#register" class="btn btn-gradient w-100">Выбрать план</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="pricing-card">
+                        <h4>Премиум</h4>
+                        <div class="display-4 fw-bold text-primary mb-3">5,000 ₽</div>
+                        <div class="text-muted mb-3">в месяц</div>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Все возможности Профессионал</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Персональный менеджер</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Приоритет в поиске</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Белый лейбл</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Интеграции с CRM</li>
+                        </ul>
+                        <a href="#register" class="btn btn-outline-primary w-100">Выбрать план</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="bg-light py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Отзывы агентств</h2>
+                <p class="lead text-muted">Что говорят о нас партнеры</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://via.placeholder.com/60x60/667eea/ffffff?text=А" 
+                                 alt="Анна" class="rounded-circle me-3">
+                            <div>
+                                <h6 class="mb-0">Анна Петрова</h6>
+                                <small class="text-muted">HR Solutions Prague</small>
+                            </div>
+                        </div>
+                        <p class="mb-3">
+                            "WorkInCZ помог нам увеличить количество клиентов в 3 раза. 
+                            Система очень удобная, а поддержка всегда на связи."
+                        </p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://via.placeholder.com/60x60/059669/ffffff?text=М" 
+                                 alt="Михаил" class="rounded-circle me-3">
+                            <div>
+                                <h6 class="mb-0">Михаил Соколов</h6>
+                                <small class="text-muted">Talent Hunters</small>
+                            </div>
+                        </div>
+                        <p class="mb-3">
+                            "Отличная платформа для кадровых агентств. Аналитика помогает 
+                            оптимизировать работу, а автоматические выплаты экономят время."
+                        </p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://via.placeholder.com/60x60/dc2626/ffffff?text=Е" 
+                                 alt="Елена" class="rounded-circle me-3">
+                            <div>
+                                <h6 class="mb-0">Елена Козлова</h6>
+                                <small class="text-muted">Career Partners</small>
+                            </div>
+                        </div>
+                        <p class="mb-3">
+                            "Работаем с WorkInCZ уже год. Доходы выросли на 40%, 
+                            а процесс подбора стал намного эффективнее."
+                        </p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="register" class="cta-section">
+        <div class="container text-center">
+            <h2 class="display-4 fw-bold mb-4">Готовы начать зарабатывать?</h2>
+            <p class="lead mb-4">
+                Присоединяйтесь к сотням успешных кадровых агентств уже сегодня
+            </p>
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <form id="agencyRegistrationForm" class="row g-3">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control form-control-lg" placeholder="Название агентства" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="email" class="form-control form-control-lg" placeholder="Email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="tel" class="form-control form-control-lg" placeholder="Телефон" required>
+                        </div>
+                        <div class="col-md-6">
+                            <select class="form-select form-select-lg" required>
+                                <option value="">Выберите план</option>
+                                <option value="start">Старт (Бесплатно)</option>
+                                <option value="pro">Профессионал (2,000 ₽/мес)</option>
+                                <option value="premium">Премиум (5,000 ₽/мес)</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-light btn-lg px-5">
+                                <i class="fas fa-rocket me-2"></i>Зарегистрироваться
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <h5><i class="fas fa-briefcase text-primary"></i> WorkInCZ</h5>
+                    <p class="text-muted">
+                        Платформа для поиска работы в Чехии. 
+                        Соединяем работодателей, соискателей и кадровые агентства.
+                    </p>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Для агентств</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted text-decoration-none">Возможности</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Тарифы</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">API</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Поддержка</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Ресурсы</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted text-decoration-none">Блог</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Документация</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">FAQ</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Компания</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted text-decoration-none">О нас</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Карьера</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Пресс-центр</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Партнеры</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Поддержка</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted text-decoration-none">Помощь</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Сообщество</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Статус</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Безопасность</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted">&copy; 2024 WorkInCZ. Все права защищены.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-muted text-decoration-none me-3">Политика конфиденциальности</a>
+                    <a href="#" class="text-muted text-decoration-none">Условия использования</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Плавная прокрутка для якорных ссылок
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Обработка формы регистрации
+        document.getElementById('agencyRegistrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Здесь будет логика регистрации агентства
+            alert('Спасибо за заявку! Мы свяжемся с вами в ближайшее время.');
+            
+            // Очищаем форму
+            this.reset();
+        });
+
+        // Анимация при скролле
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Наблюдаем за элементами для анимации
+        document.querySelectorAll('.feature-card, .pricing-card, .testimonial-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html> 

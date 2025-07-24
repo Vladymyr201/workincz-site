@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет работодателя - JobBridge.cz</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#F59E0B',
+                        success: '#10B981'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center gap-2">
+                        <span class="text-2xl font-pacifico text-primary">JobBridge</span>
+                        <span class="text-sm text-gray-500">.cz</span>
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="text-gray-700 hover:text-primary">Главная</a>
+                    <a href="#" class="text-gray-700 hover:text-primary">Вакансии</a>
+                    <a href="#" class="text-gray-700 hover:text-primary">Кандидаты</a>
+                    <a href="#" class="text-gray-700 hover:text-primary">Агентства</a>
+                </div>
+
+                <!-- User Menu -->
+                <div class="flex items-center gap-4">
+                    <div id="roleSwitcherContainer" class="hidden">
+                        <button id="roleSwitcherBtn" class="flex items-center gap-2 bg-primary/10 text-primary px-3 py-2 rounded-lg hover:bg-primary/20 transition-colors">
+                            <i class="ri-building-line"></i>
+                            <span id="currentRoleText">Работодатель</span>
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                    </div>
+                    
+                    <button id="logoutBtn" class="text-gray-700 hover:text-primary">
+                        <i class="ri-logout-box-line text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Личный кабинет работодателя</h1>
+                    <p class="text-gray-600 mt-2">Управляйте вакансиями и наймом сотрудников</p>
+                </div>
+                <button class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
+                    <i class="ri-add-line"></i>
+                    Разместить вакансию
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-6 shadow-sm border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Активные вакансии</p>
+                        <p class="text-2xl font-bold text-gray-900" id="activeJobs">8</p>
+                    </div>
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <i class="ri-briefcase-line text-primary text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-sm text-success">+12%</span>
+                    <span class="text-sm text-gray-600">за месяц</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-sm border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Получено откликов</p>
+                        <p class="text-2xl font-bold text-gray-900" id="totalApplications">45</p>
+                    </div>
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
+                        <i class="ri-user-add-line text-secondary text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-sm text-success">+8%</span>
+                    <span class="text-sm text-gray-600">за неделю</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-sm border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Новые кандидаты</p>
+                        <p class="text-2xl font-bold text-gray-900" id="newCandidates">12</p>
+                    </div>
+                    <div class="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                        <i class="ri-user-star-line text-success text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-sm text-success">+25%</span>
+                    <span class="text-sm text-gray-600">за неделю</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-sm border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Успешные наймы</p>
+                        <p class="text-2xl font-bold text-gray-900" id="successfulHires">6</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="ri-check-double-line text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-sm text-success">+15%</span>
+                    <span class="text-sm text-gray-600">за месяц</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Applications Chart -->
+            <div class="bg-white rounded-xl p-6 shadow-sm border">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Отклики на вакансии</h3>
+                <canvas id="applicationsChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Job Performance Chart -->
+            <div class="bg-white rounded-xl p-6 shadow-sm border">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Эффективность вакансий</h3>
+                <canvas id="jobPerformanceChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Recent Applications -->
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border">
+                <div class="p-6 border-b">
+                    <h3 class="text-lg font-semibold text-gray-900">Последние отклики</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4" id="recentApplications">
+                        <!-- Application items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-sm border">
+                <div class="p-6 border-b">
+                    <h3 class="text-lg font-semibold text-gray-900">Быстрые действия</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-3">
+                        <button class="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-3">
+                            <i class="ri-add-line"></i>
+                            Разместить вакансию
+                        </button>
+                        <button class="w-full bg-secondary text-white py-3 px-4 rounded-lg hover:bg-secondary/90 transition-colors flex items-center gap-3">
+                            <i class="ri-search-line"></i>
+                            Найти кандидатов
+                        </button>
+                        <button class="w-full bg-success text-white py-3 px-4 rounded-lg hover:bg-success/90 transition-colors flex items-center gap-3">
+                            <i class="ri-team-line"></i>
+                            Обратиться к агентству
+                        </button>
+                        <button class="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-3">
+                            <i class="ri-settings-line"></i>
+                            Настройки профиля
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Switcher Modal -->
+    <div id="roleSwitcherModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full shadow-2xl">
+                <div class="bg-gradient-to-r from-primary to-secondary p-6 text-white rounded-t-xl">
+                    <h3 class="text-xl font-bold">Переключение роли</h3>
+                    <p class="text-primary-100 text-sm mt-1">Выберите роль для просмотра</p>
+                </div>
+                
+                <div class="p-6">
+                    <div class="space-y-3">
+                        <button onclick="switchRole('candidate')" class="w-full border-2 border-gray-200 rounded-lg p-4 text-left hover:border-primary transition-all">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                    <i class="ri-user-line text-primary text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h5 class="font-medium text-gray-900">Соискатель</h5>
+                                    <p class="text-sm text-gray-600">Личный кабинет соискателя</p>
+                                </div>
+                                <i class="ri-arrow-right-line text-gray-400"></i>
+                            </div>
+                        </button>
+                        
+                        <button onclick="switchRole('client')" class="w-full border-2 border-primary rounded-lg p-4 text-left bg-primary/5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                                    <i class="ri-building-line text-secondary text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h5 class="font-medium text-gray-900">Работодатель</h5>
+                                    <p class="text-sm text-gray-600">Личный кабинет работодателя</p>
+                                </div>
+                                <i class="ri-check-line text-primary"></i>
+                            </div>
+                        </button>
+                        
+                        <button onclick="switchRole('agency')" class="w-full border-2 border-gray-200 rounded-lg p-4 text-left hover:border-primary transition-all">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-success/10 rounded-full flex items-center justify-center">
+                                    <i class="ri-team-line text-success text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h5 class="font-medium text-gray-900">Кадровое агентство</h5>
+                                    <p class="text-sm text-gray-600">Личный кабинет агентства</p>
+                                </div>
+                                <i class="ri-arrow-right-line text-gray-400"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-6 border-t border-gray-200 text-center">
+                    <button onclick="hideRoleSwitcher()" class="text-gray-600 hover:text-gray-800 text-sm">
+                        Закрыть
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Scripts -->
+    <script src="js/firebase-init.js"></script>
+    <script src="js/dashboard-auth.js"></script>
+    
+    <script>
+        // Firebase инициализация через общий файл firebase-init.js
+        
+        // Initialize dashboard auth
+        window.dashboardAuth = new DashboardAuth();
+
+        // Charts
+        function initCharts() {
+            // Applications Chart
+            const applicationsCtx = document.getElementById('applicationsChart').getContext('2d');
+            new Chart(applicationsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                    datasets: [{
+                        label: 'Отклики',
+                        data: [12, 19, 15, 25, 22, 18, 24],
+                        borderColor: '#4F46E5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Job Performance Chart
+            const performanceCtx = document.getElementById('jobPerformanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Строительство', 'Логистика', 'IT', 'Рестораны'],
+                    datasets: [{
+                        data: [35, 25, 20, 20],
+                        backgroundColor: ['#4F46E5', '#F59E0B', '#10B981', '#EF4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load recent applications
+        function loadRecentApplications() {
+            const applications = [
+                {
+                    name: 'Александр Петров',
+                    position: 'Строитель',
+                    time: '2 часа назад',
+                    status: 'new'
+                },
+                {
+                    name: 'Мария Иванова',
+                    position: 'Официант',
+                    time: '4 часа назад',
+                    status: 'reviewed'
+                },
+                {
+                    name: 'Дмитрий Сидоров',
+                    position: 'Водитель',
+                    time: '6 часов назад',
+                    status: 'new'
+                },
+                {
+                    name: 'Елена Козлова',
+                    position: 'Уборщица',
+                    time: '1 день назад',
+                    status: 'accepted'
+                }
+            ];
+
+            const container = document.getElementById('recentApplications');
+            container.innerHTML = applications.map(app => `
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <i class="ri-user-line text-primary"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">${app.name}</p>
+                            <p class="text-sm text-gray-600">${app.position}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">${app.time}</p>
+                        <span class="inline-block px-2 py-1 text-xs rounded-full ${
+                            app.status === 'new' ? 'bg-blue-100 text-blue-800' :
+                            app.status === 'reviewed' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-green-100 text-green-800'
+                        }">
+                            ${app.status === 'new' ? 'Новый' : app.status === 'reviewed' ? 'Рассмотрен' : 'Принят'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Role switching functions
+        function switchRole(role) {
+            const dashboards = {
+                candidate: '/dashboard.html',
+                client: '/employer-dashboard.html',
+                agency: '/agency-dashboard.html'
+            };
+            window.location.href = dashboards[role];
+        }
+
+        function showRoleSwitcher() {
+            document.getElementById('roleSwitcherModal').classList.remove('hidden');
+        }
+
+        function hideRoleSwitcher() {
+            document.getElementById('roleSwitcherModal').classList.add('hidden');
+        }
+
+        // Event listeners
+        document.getElementById('roleSwitcherBtn').addEventListener('click', showRoleSwitcher);
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            firebase.auth().signOut().then(() => {
+                window.location.href = '/';
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            loadRecentApplications();
+            
+            // Show role switcher for authenticated users
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    document.getElementById('roleSwitcherContainer').classList.remove('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobBridge.cz - Платформа для трудовых мигрантов в Чехии</title>
+    <meta name="description" content="Найдите работу в Чехии быстро и безопасно. JobBridge.cz соединяет трудовых мигрантов с проверенными работодателями.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="js/tailwindcss.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js" crossorigin="anonymous"></script>
+    
+    <!-- Dev Login (только для разработки) -->
+    <script src="js/dev-login.js"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#F59E0B',
+                        success: '#10B981'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Styles -->
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        .live-activity-dot {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .live-users-banner {
+            transition: all 0.3s ease;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
+        }
+        
+        .hero-parallax {
+            transform: translateY(var(--parallax-offset, 0));
+            transition: transform 0.1s ease-out;
+        }
+        
+        .card-3d {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: all 0.3s ease;
+        }
+        
+        .card-3d:hover {
+            transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y)) scale(1.02);
+        }
+        
+        .button-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .button-ripple::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 60%);
+            transform: scale(5);
+            opacity: 0;
+            transition: transform 0.5s, opacity 0.5s;
+        }
+        
+        .button-ripple:active::after {
+            transform: scale(0);
+            opacity: 1;
+            transition: 0s;
+        }
+        
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-count-up {
+            animation: countUp 1s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            visibility: hidden;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            will-change: opacity, visibility;
+        }
+        
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: none;
+            visibility: visible;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fadeInUp {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .animate-delay-1 { animation-delay: 0.1s; }
+        .animate-delay-2 { animation-delay: 0.2s; }
+        .animate-delay-3 { animation-delay: 0.3s; }
+        .animate-delay-4 { animation-delay: 0.4s; }
+        .animate-delay-5 { animation-delay: 0.5s; }
+        .animate-delay-6 { animation-delay: 0.6s; }
+        
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        .custom-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .custom-checkbox:checked {
+            background-color: #4F46E5;
+            border-color: #4F46E5;
+        }
+        
+        .custom-checkbox:checked::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 1px;
+            background-color: white;
+        }
+        
+        .custom-switch {
+            position: relative;
+            display: inline-block;
+            width: 3rem;
+            height: 1.5rem;
+        }
+        
+        .custom-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e2e8f0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 1.1rem;
+            width: 1.1rem;
+            left: 0.2rem;
+            bottom: 0.2rem;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .switch-slider {
+            background-color: #4F46E5;
+        }
+        
+        input:checked + .switch-slider:before {
+            transform: translateX(1.5rem);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Live Statistics Widget -->
+    <div class="fixed bottom-4 left-4 bg-white rounded-lg shadow-lg p-4 z-50 w-64 border border-gray-100">
+        <div class="flex items-center justify-between mb-3">
+            <div class="text-sm font-medium text-gray-700">Статистика платформы</div>
+            <div class="flex items-center gap-1">
+                <span class="w-2 h-2 bg-success rounded-full animate-pulse"></span>
+                <span class="text-xs text-success">Live</span>
+            </div>
+        </div>
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-primary/10">
+                        <i class="ri-user-3-line text-primary"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Онлайн</div>
+                        <div class="font-medium online-users-count">2,458</div>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-400">человек</div>
+            </div>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-secondary/10">
+                        <i class="ri-file-list-3-line text-secondary"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Активных вакансий</div>
+                        <div class="font-medium active-jobs-count">3,450</div>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-400">шт.</div>
+            </div>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-900/10">
+                        <i class="ri-vip-crown-line text-gray-900"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Ваш статус</div>
+                        <div class="font-medium">Базовый</div>
+                    </div>
+                </div>
+                <button class="text-xs text-primary hover:underline">Улучшить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="live-users-banner bg-gradient-to-r from-primary/10 to-transparent py-1 text-center text-sm">
+            <span class="inline-flex items-center gap-2">
+                <i class="ri-user-voice-line text-primary"></i>
+                <span class="live-users-count font-medium">2,458</span> человек сейчас на сайте
+                <span class="live-activity-dot ml-2 inline-block w-2 h-2 bg-success rounded-full"></span>
+            </span>
+        </div>
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-10">
+                <a href="#" class="text-2xl font-['Pacifico'] text-primary">JobBridge</a>
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="#jobs" class="text-gray-700 hover:text-primary font-medium">Поиск работы</a>
+                    <a href="#agencies" class="text-gray-700 hover:text-primary font-medium">Биржа услуг</a>
+                    <a href="#legal" class="text-gray-700 hover:text-primary font-medium">Юридическая помощь</a>
+                    <a href="#education" class="text-gray-700 hover:text-primary font-medium">Образование</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2">
+                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
+                        <i class="ri-global-line text-gray-600"></i>
+                    </div>
+                    <select class="bg-transparent text-sm font-medium text-gray-700 border-none focus:outline-none pr-8">
+                        <option value="ru">🇷🇺 Русский</option>
+                        <option value="cz">🇨🇿 Čeština</option>
+                        <option value="ua">🇺🇦 Українська</option>
+                        <option value="by">🇧🇾 Беларуская</option>
+                        <option value="vn">🇻🇳 Tiếng Việt</option>
+                    </select>
+                </div>
+                <button id="loginBtn" class="hidden md:block text-sm font-medium text-gray-700 hover:text-primary">Войти</button>
+                <button id="registerBtn" class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap">Регистрация</button>
+                <button class="md:hidden w-10 h-10 flex items-center justify-center">
+                    <i class="ri-menu-line text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0 z-0" style="background-image: url('https://readdy.ai/api/search-image?query=Professional%20diverse%20people%20working%20in%20modern%20office%20space%2C%20bright%20and%20airy%20environment%2C%20showing%20collaboration%20between%20different%20nationalities%2C%20people%20looking%20at%20computers%20and%20documents%2C%20soft%20natural%20lighting%2C%20clean%20and%20modern%20workspace&width=1600&height=800&seq=hero1&orientation=landscape'); background-size: cover; background-position: center right;"></div>
+        <div class="absolute inset-0 z-10 hero-gradient"></div>
+        <div class="container mx-auto px-4 py-16 md:py-24 relative z-20">
+            <div class="w-full max-w-2xl">
+                <h1 class="text-4xl md:text-5xl font-['Pacifico'] text-gray-900 mb-6">Найдите работу в Чехии быстро и безопасно</h1>
+                <p class="text-lg md:text-xl text-gray-700 mb-8">JobBridge.cz — это платформа, которая соединяет трудовых мигрантов с проверенными работодателями. Мы помогаем найти работу, жильё и юридическую поддержку в Чехии.</p>
+                
+                <!-- Search Form -->
+                <div class="bg-white p-5 rounded-lg shadow-lg mb-8">
+                    <form id="jobSearchForm">
+                        <div class="flex flex-col md:flex-row gap-4 mb-4">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Профессия или ключевые слова</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="ri-search-line text-gray-400"></i>
+                                    </div>
+                                    <input type="text" id="searchKeywords" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm" placeholder="Строитель, водитель, программист...">
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Город</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="ri-map-pin-line text-gray-400"></i>
+                                    </div>
+                                    <input type="text" id="searchLocation" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm" placeholder="Прага, Брно, Острава...">
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Категория</label>
+                                <select id="searchCategory" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm">
+                                    <option value="all">Все категории</option>
+                                    <option value="construction">Строительство</option>
+                                    <option value="warehouse">Склады</option>
+                                    <option value="cleaning">Уборка</option>
+                                    <option value="transport">Транспорт</option>
+                                    <option value="it">IT</option>
+                                    <option value="restaurant">Рестораны</option>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Тип работы</label>
+                                <select id="searchWorkType" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm">
+                                    <option value="all">Любой</option>
+                                    <option value="full-time">Полный день</option>
+                                    <option value="part-time">Частичная</option>
+                                    <option value="contract">Контракт</option>
+                                    <option value="freelance">Фриланс</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-4 mb-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="filterHousing" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">С жильём</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="filterUrgent" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">Срочные вакансии</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="filterNoLanguage" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">Без знания языка</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Найти работу</button>
+                    </form>
+                </div>
+                
+                <div class="flex flex-wrap gap-4 text-sm">
+                    <span class="text-gray-600">Популярные запросы:</span>
+                    <a href="#" class="text-primary hover:underline">Строительство</a>
+                    <a href="#" class="text-primary hover:underline">Склады</a>
+                    <a href="#" class="text-primary hover:underline">Уборка</a>
+                    <a href="#" class="text-primary hover:underline">Транспорт</a>
+                    <a href="#" class="text-primary hover:underline">IT</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="bg-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center stats-section">
+                <div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-1">
+                    <div class="text-3xl font-bold text-primary mb-2 animate-number" data-target="3450">0+</div>
+                    <div class="text-gray-600">Активных вакансий</div>
+                </div>
+                <div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-2">
+                    <div class="text-3xl font-bold text-primary mb-2">1,200+</div>
+                    <div class="text-gray-600">Проверенных работодателей</div>
+                </div>
+                <div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-3">
+                    <div class="text-3xl font-bold text-primary mb-2">15,000+</div>
+                    <div class="text-gray-600">Успешных трудоустройств</div>
+                </div>
+                <div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-4">
+                    <div class="text-3xl font-bold text-primary mb-2">5</div>
+                    <div class="text-gray-600">Языков интерфейса</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Job Categories -->
+    <section id="jobs" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Популярные категории вакансий</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                <a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+                        <i class="ri-building-line text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-medium mb-2">Строительство</h3>
+                    <p class="text-sm text-gray-500">856 вакансий</p>
+                </a>
+                <a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+                        <i class="ri-store-3-line text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-medium mb-2">Склады</h3>
+                    <p class="text-sm text-gray-500">642 вакансии</p>
+                </a>
+                <a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+                        <i class="ri-home-gear-line text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-medium mb-2">Уборка</h3>
+                    <p class="text-sm text-gray-500">534 вакансии</p>
+                </a>
+                <a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+                        <i class="ri-truck-line text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-medium mb-2">Транспорт</h3>
+                    <p class="text-sm text-gray-500">423 вакансии</p>
+                </a>
+                <a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+                        <i class="ri-computer-line text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-medium mb-2">IT</h3>
+                    <p class="text-sm text-gray-500">312 вакансий</p>
+                </a>
+                <a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+                    <div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+                        <i class="ri-restaurant-line text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-medium mb-2">Рестораны</h3>
+                    <p class="text-sm text-gray-500">298 вакансий</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Почему JobBridge?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center p-6 hover-scale">
+                    <div class="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-shield-check-line text-2xl text-primary"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Безопасность</h4>
+                    <p class="text-gray-600">Проверенные работодатели и агентства с гарантией качества услуг</p>
+                </div>
+                <div class="text-center p-6 hover-scale">
+                    <div class="bg-secondary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-translate-2 text-2xl text-secondary"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Многоязычность</h4>
+                    <p class="text-gray-600">Поддержка 5 языков для комфортного использования</p>
+                </div>
+                <div class="text-center p-6 hover-scale">
+                    <div class="bg-success/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-customer-service-2-line text-2xl text-success"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Поддержка</h4>
+                    <p class="text-gray-600">Юридическая помощь и сопровождение процесса трудоустройства</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-['Pacifico'] text-primary mb-4">JobBridge</h3>
+                    <p class="text-gray-400 mb-4">Платформа для трудовых мигрантов в Чехии</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="ri-facebook-fill"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="ri-telegram-fill"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="ri-instagram-fill"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Для соискателей</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Поиск работы</a></li>
+                        <li><a href="#" class="hover:text-white">Создать резюме</a></li>
+                        <li><a href="#" class="hover:text-white">Юридическая помощь</a></li>
+                        <li><a href="#" class="hover:text-white">Образование</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Для работодателей</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Разместить вакансию</a></li>
+                        <li><a href="#" class="hover:text-white">Кадровые агентства</a></li>
+                        <li><a href="#" class="hover:text-white">Аналитика рынка</a></li>
+                        <li><a href="#" class="hover:text-white">Консультации</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Поддержка</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Помощь</a></li>
+                        <li><a href="#" class="hover:text-white">Контакты</a></li>
+                        <li><a href="#" class="hover:text-white">Политика конфиденциальности</a></li>
+                        <li><a href="#" class="hover:text-white">Условия использования</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 JobBridge.cz. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/firebase-app-compat.js"></script>
+    <script src="js/firebase-auth-compat.js"></script>
+    <script src="js/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-init.js"></script>
+    <script src="js/auth-manager.js?v=2"></script>
+    <script src="js/jobs.js?v=4"></script>
+    <script src="js/enhanced-auth-system.js?v=2"></script>
+    <script src="js/registration-system.js"></script>
+    
+    <!-- Demo Login System (после всех зависимостей) -->
+    <script src="js/demo-login-system.js?v=3"></script>
+    
+    <!-- Role Middleware (после всех зависимостей) -->
+    <script src="js/role-middleware.js"></script>
+    <script>
+        // Initialize Firebase
+        // Firebase инициализация через общий файл firebase-init.js
+
+                            // Инициализируем системы после полной загрузки DOM
+                    const initSystems = () => {
+                        if (document.readyState === 'complete') {
+                            console.log('🚀 Инициализация всех систем...');
+                            window.authManager = new AuthManager();
+                            window.jobsManager = new JobsManager();
+                            window.enhancedAuthSystem = new EnhancedAuthSystem();
+                            window.demoLoginSystem = new DemoLoginSystem();
+                            window.roleMiddleware = new RoleMiddleware();
+                            
+                            // Настраиваем обработчики событий после инициализации
+                            setupEventHandlers();
+                        } else {
+                            console.log('⏳ Ждем полной загрузки DOM...');
+                            setTimeout(initSystems, 100);
+                        }
+                    };
+                    
+                    // Функция настройки обработчиков событий
+                    const setupEventHandlers = () => {
+                        document.getElementById('loginBtn')?.addEventListener('click', () => {
+                            if (window.enhancedAuthSystem) {
+                                window.enhancedAuthSystem.showEnhancedLoginModal();
+                            }
+                        });
+
+                        document.getElementById('registerBtn')?.addEventListener('click', () => {
+                            if (window.registrationSystem) {
+                                window.registrationSystem.showRegistrationModal();
+                            }
+                        });
+
+                        // Добавляем кнопку Demo-входа
+                        const demoLoginBtn = document.createElement('button');
+                        demoLoginBtn.id = 'demoLoginBtn';
+                        demoLoginBtn.className = 'bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg font-medium hover:from-primary/90 hover:to-secondary/90 transition-all transform hover:scale-105 shadow-lg';
+                        demoLoginBtn.innerHTML = '🚀 Demo-вход';
+                        demoLoginBtn.addEventListener('click', () => {
+                            if (window.demoLoginSystem) {
+                                window.demoLoginSystem.showDemoLoginModal();
+                            }
+                        });
+
+                        // Вставляем кнопку после кнопки входа
+                        const loginBtn = document.getElementById('loginBtn');
+                        if (loginBtn && loginBtn.parentElement) {
+                            loginBtn.parentElement.insertBefore(demoLoginBtn, loginBtn.nextSibling);
+                        }
+                    };
+                    
+                    initSystems();
+
+        // Live statistics update
+        function updateLiveStats() {
+            const onlineUsers = Math.floor(Math.random() * 1000) + 2000;
+            const activeJobs = Math.floor(Math.random() * 500) + 3000;
+            document.querySelectorAll('.online-users-count').forEach(el => {
+                el.textContent = onlineUsers.toLocaleString();
+            });
+            document.querySelectorAll('.live-users-count').forEach(el => {
+                el.textContent = onlineUsers.toLocaleString();
+            });
+            document.querySelectorAll('.active-jobs-count').forEach(el => {
+                el.textContent = activeJobs.toLocaleString();
+            });
+        }
+        setInterval(updateLiveStats, 30000);
+        updateLiveStats();
+        
+        // Animate numbers
+        function animateNumbers() {
+            const numbers = document.querySelectorAll('.animate-number');
+            numbers.forEach(number => {
+                const target = parseInt(number.dataset.target);
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    number.textContent = Math.floor(current).toLocaleString() + '+';
+                }, 16);
+            });
+        }
+        
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    if (entry.target.classList.contains('stats-section')) {
+                        animateNumbers();
+                    }
+                }
+            });
+        });
+        
+        document.querySelectorAll('.fade-in-section').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Event listeners - ждем загрузки DOM
+        // После успешного входа — редирект в ЛК
+        if (window.registrationSystem) {
+            const origSubmitLogin = window.registrationSystem.submitLogin.bind(window.registrationSystem);
+            window.registrationSystem.submitLogin = async function() {
+                await origSubmitLogin();
+                // Если пользователь авторизован — редирект
+                setTimeout(() => {
+                    if (firebase.auth().currentUser) {
+                        window.location.href = '/dashboard.html';
+                    }
+                }, 500);
+            };
+        }
+    </script>
+</body>
+</html>

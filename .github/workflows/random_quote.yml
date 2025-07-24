@@ -1,0 +1,75 @@
+name: Random Programming Quote Badge
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  quote-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Get random programming quote
+        id: quote
+        run: |
+          # Попробуем несколько API endpoints
+          QUOTE_DATA=""
+          
+          # API 1: quotable.io (более надежный)
+          if [ -z "$QUOTE_DATA" ]; then
+            QUOTE_DATA=$(curl -s --max-time 10 "https://api.quotable.io/random?tags=technology|programming" 2>/dev/null || echo "")
+          fi
+          
+          # API 2: backup - локальные цитаты
+          if [ -z "$QUOTE_DATA" ]; then
+            QUOTE_DATA='{"content":"Code is like humor. When you have to explain it, it is bad.","author":"Cory House"}'
+          fi
+          
+          # Извлекаем цитату и автора
+          QUOTE_TEXT=$(echo "$QUOTE_DATA" | jq -r '.content // .quote // .text // "Code is poetry."' 2>/dev/null || echo "Code is poetry.")
+          QUOTE_AUTHOR=$(echo "$QUOTE_DATA" | jq -r '.author // "Unknown"' 2>/dev/null || echo "Unknown")
+          
+          # Очищаем и обрезаем цитату (максимум 50 символов для badge)
+          QUOTE_TEXT=$(echo "$QUOTE_TEXT" | tr -d '"' | sed 's/[^a-zA-Z0-9 ]//g' | cut -c1-50)
+          QUOTE_AUTHOR=$(echo "$QUOTE_AUTHOR" | tr -d '"' | sed 's/[^a-zA-Z0-9 ]//g' | cut -c1-20)
+          
+          # Проверяем что получили данные
+          if [ -z "$QUOTE_TEXT" ]; then
+            QUOTE_TEXT="Code is poetry"
+            QUOTE_AUTHOR="Unknown"
+          fi
+          
+          echo "QUOTE=$QUOTE_TEXT" >> $GITHUB_ENV
+          echo "AUTHOR=$QUOTE_AUTHOR" >> $GITHUB_ENV
+          echo "Quote: $QUOTE_TEXT"
+          echo "Author: $QUOTE_AUTHOR"
+      
+      - name: Generate badge
+        run: |
+          # Создаем безопасный URL для badge
+          QUOTE_URL=$(echo "$QUOTE" | sed 's/ /%20/g' | sed 's/[^a-zA-Z0-9%]//g')
+          AUTHOR_URL=$(echo "$AUTHOR" | sed 's/ /%20/g' | sed 's/[^a-zA-Z0-9%]//g')
+          
+          BADGE_URL="https://img.shields.io/badge/quote-${QUOTE_URL}--${AUTHOR_URL}-blue"
+          
+          echo "![Random Quote](${BADGE_URL})" > random-quote-badge.md
+          echo "Generated badge URL: ${BADGE_URL}"
+      
+      - name: Commit badge
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Проверяем есть ли изменения
+          if git diff --quiet random-quote-badge.md; then
+            echo "No changes to commit"
+          else
+            git add random-quote-badge.md
+            git commit -m "chore: update random programming quote badge" || echo "Commit failed"
+            git push origin HEAD:${{ github.ref }} || echo "Push failed"
+          fi

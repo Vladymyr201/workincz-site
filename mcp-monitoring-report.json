@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-07-24T15:48:52.892Z",
+  "project": "WorkInCZ",
+  "servers": {
+    "code-runner": {
+      "status": "healthy",
+      "timestamp": "2025-07-24T15:48:53.849Z"
+    },
+    "sentry": {
+      "status": "healthy",
+      "timestamp": "2025-07-24T15:48:56.491Z"
+    },
+    "playwright": {
+      "status": "healthy",
+      "timestamp": "2025-07-24T15:48:57.706Z"
+    },
+    "sequential-thinking": {
+      "status": "healthy",
+      "timestamp": "2025-07-24T15:48:58.391Z"
+    }
+  },
+  "alerts": [],
+  "summary": {
+    "total": 4,
+    "healthy": 4,
+    "unhealthy": 0
+  }
+}

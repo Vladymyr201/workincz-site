@@ -1,0 +1,32 @@
+{
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/dashboard",
+        "destination": "/dashboard.html"
+      },
+      {
+        "source": "/employer-dashboard",
+        "destination": "/employer-dashboard.html"
+      },
+      {
+        "source": "/agency-dashboard",
+        "destination": "/agency-dashboard.html"
+      },
+      {
+        "source": "/admin-dashboard",
+        "destination": "/admin-dashboard.html"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

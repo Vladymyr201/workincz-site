@@ -1,0 +1,5092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>WorkInCZ Employer Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+primary: '#4F46E5',
+secondary: '#F59E0B',
+success: '#10B981',
+gray: {
+50: '#F9FAFB',
+100: '#F3F4F6',
+200: '#E5E7EB',
+300: '#D1D5DB',
+400: '#9CA3AF',
+500: '#6B7280',
+600: '#4B5563',
+700: '#374151',
+800: '#1F2937',
+900: '#111827'
+}
+},
+borderRadius: {
+'none': '0px',
+'sm': '4px',
+DEFAULT: '8px',
+'md': '12px',
+'lg': '16px',
+'xl': '20px',
+'2xl': '24px',
+'3xl': '32px',
+'full': '9999px',
+'button': '8px'
+},
+fontFamily: {
+sans: ['Inter', 'sans-serif'],
+}
+}
+}
+}
+</script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+-webkit-tap-highlight-color: transparent;
+}
+/* Mobile optimizations */
+@media (max-width: 640px) {
+.container {
+padding-left: 1rem;
+padding-right: 1rem;
+}
+input, select, textarea {
+font-size: 16px !important; /* Prevent iOS zoom on focus */
+}
+.custom-checkbox {
+min-width: 20px;
+min-height: 20px;
+}
+.custom-switch {
+transform: scale(1.1);
+}
+}
+/* Improve touch targets */
+button,
+a,
+input[type="checkbox"],
+input[type="radio"] {
+min-height: 44px;
+min-width: 44px;
+}
+/* Fix iOS rubber band effect */
+html {
+overflow: hidden;
+height: 100%;
+}
+body {
+overflow: auto;
+height: 100%;
+overscroll-behavior-y: none;
+}
+@keyframes slideInFromLeft {
+0% {
+transform: translateX(-100%);
+opacity: 0;
+}
+100% {
+transform: translateX(0);
+opacity: 1;
+}
+}
+@keyframes slideInFromRight {
+0% {
+transform: translateX(100%);
+opacity: 0;
+}
+100% {
+transform: translateX(0);
+opacity: 1;
+}
+}
+@keyframes fillProgress {
+0% { width: 0; }
+100% { width: var(--progress); }
+}
+@keyframes scaleIn {
+0% {
+transform: scale(0.8);
+opacity: 0;
+}
+100% {
+transform: scale(1);
+opacity: 1;
+}
+}
+@keyframes fadeInUp {
+from {
+opacity: 0;
+transform: translateY(20px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+.animate-fadeInUp {
+animation: fadeInUp 0.6s ease-out forwards;
+}
+.animate-delay-1 { animation-delay: 0.1s; }
+.animate-delay-2 { animation-delay: 0.2s; }
+.animate-delay-3 { animation-delay: 0.3s; }
+.animate-delay-4 { animation-delay: 0.4s; }
+.animate-delay-5 { animation-delay: 0.5s; }
+.profile-photo-container {
+position: relative;
+transition: transform 0.3s ease;
+}
+.profile-photo-container:hover {
+transform: scale(1.02);
+}
+.profile-photo-overlay {
+background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.profile-photo-container:hover .profile-photo-overlay {
+opacity: 1;
+}
+.skill-bar {
+position: relative;
+height: 8px;
+background: #E5E7EB;
+border-radius: 4px;
+overflow: hidden;
+}
+.skill-bar::after {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+height: 100%;
+background: linear-gradient(90deg, #4F46E5, rgba(79, 70, 229, 0.8));
+border-radius: 4px;
+animation: fillProgress 1.5s ease-out forwards;
+}
+.timeline-item {
+opacity: 0;
+transform: translateY(20px);
+transition: all 0.6s ease-out;
+}
+.timeline-item.visible {
+opacity: 1;
+transform: translateY(0);
+}
+.language-level {
+transition: all 0.3s ease;
+}
+.language-level:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+0% {
+transform: translateX(-100%);
+opacity: 0;
+}
+100% {
+transform: translateX(0);
+opacity: 1;
+}
+}
+@keyframes slideInFromRight {
+0% {
+transform: translateX(100%);
+opacity: 0;
+}
+100% {
+transform: translateX(0);
+opacity: 1;
+}
+}
+@keyframes fillProgress {
+0% { width: 0; }
+100% { width: var(--progress); }
+}
+@keyframes scaleIn {
+0% {
+transform: scale(0.8);
+opacity: 0;
+}
+100% {
+transform: scale(1);
+opacity: 1;
+}
+}
+.animate-slide-left {
+animation: slideInFromLeft 0.6s ease-out forwards;
+}
+.animate-slide-right {
+animation: slideInFromRight 0.6s ease-out forwards;
+}
+.progress-bar {
+position: relative;
+height: 8px;
+background: #E5E7EB;
+border-radius: 4px;
+overflow: hidden;
+}
+.progress-bar::after {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+height: 100%;
+background: #4F46E5;
+border-radius: 4px;
+animation: fillProgress 1s ease-out forwards;
+}
+.skill-bar {
+position: relative;
+height: 6px;
+background: #E5E7EB;
+border-radius: 3px;
+overflow: hidden;
+}
+.skill-bar::after {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+height: 100%;
+background: #4F46E5;
+border-radius: 3px;
+animation: fillProgress 1s ease-out forwards;
+}
+.timeline-item {
+opacity: 0;
+transform: translateY(20px);
+transition: all 0.6s ease-out;
+}
+.timeline-item.visible {
+opacity: 1;
+transform: translateY(0);
+}
+.profile-photo-container:hover .profile-photo-overlay {
+opacity: 1;
+}
+.language-level {
+transition: all 0.3s ease;
+}
+.language-level:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+@keyframes pulse {
+0% { opacity: 0.5; }
+50% { opacity: 1; }
+100% { opacity: 0.5; }
+}
+.live-activity-dot {
+animation: pulse 2s ease-in-out infinite;
+}
+.live-users-banner {
+transition: all 0.3s ease;
+}
+.hero-gradient {
+background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
+}
+.hero-parallax {
+transform: translateY(var(--parallax-offset, 0));
+transition: transform 0.1s ease-out;
+}
+.card-3d {
+transform-style: preserve-3d;
+perspective: 1000px;
+transition: all 0.3s ease;
+}
+.card-3d:hover {
+transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y)) scale(1.02);
+}
+.button-ripple {
+position: relative;
+overflow: hidden;
+}
+.button-ripple::after {
+content: '';
+position: absolute;
+width: 100%;
+height: 100%;
+top: 0;
+left: 0;
+pointer-events: none;
+background-image: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 60%);
+transform: scale(5);
+opacity: 0;
+transition: transform 0.5s, opacity 0.5s;
+}
+.button-ripple:active::after {
+transform: scale(0);
+opacity: 1;
+transition: 0s;
+}
+@keyframes countUp {
+from {
+opacity: 0;
+transform: translateY(20px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+.animate-count-up {
+animation: countUp 1s ease-out forwards;
+opacity: 0;
+}
+.fade-in-section {
+opacity: 0;
+transform: translateY(20px);
+visibility: hidden;
+transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+will-change: opacity, visibility;
+}
+.fade-in-section.is-visible {
+opacity: 1;
+transform: none;
+visibility: visible;
+}
+@keyframes fadeInUp {
+from {
+opacity: 0;
+transform: translateY(20px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+.animate-fadeInUp {
+animation: fadeInUp 0.6s ease-out forwards;
+}
+.animate-delay-1 { animation-delay: 0.1s; }
+.animate-delay-2 { animation-delay: 0.2s; }
+.animate-delay-3 { animation-delay: 0.3s; }
+.animate-delay-4 { animation-delay: 0.4s; }
+.animate-delay-5 { animation-delay: 0.5s; }
+.animate-delay-6 { animation-delay: 0.6s; }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+.custom-checkbox {
+appearance: none;
+-webkit-appearance: none;
+width: 1.25rem;
+height: 1.25rem;
+border: 2px solid #e2e8f0;
+border-radius: 4px;
+background-color: white;
+cursor: pointer;
+position: relative;
+}
+.custom-checkbox:checked {
+background-color: #4F46E5;
+border-color: #4F46E5;
+}
+.custom-checkbox:checked::after {
+content: "";
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 0.5rem;
+height: 0.5rem;
+border-radius: 1px;
+background-color: white;
+}
+.custom-switch {
+position: relative;
+display: inline-block;
+width: 3rem;
+height: 1.5rem;
+}
+.custom-switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.switch-slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #e2e8f0;
+transition: .4s;
+border-radius: 34px;
+}
+.switch-slider:before {
+position: absolute;
+content: "";
+height: 1.1rem;
+width: 1.1rem;
+left: 0.2rem;
+bottom: 0.2rem;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+input:checked + .switch-slider {
+background-color: #4F46E5;
+}
+input:checked + .switch-slider:before {
+transform: translateX(1.5rem);
+}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+<div class="min-h-screen flex">
+<!-- Sidebar -->
+<aside class="w-64 bg-white border-r border-gray-200 fixed h-full z-40">
+<div class="p-6">
+<a href="#" class="text-2xl font-['Pacifico'] text-primary">WorkInCZ</a>
+</div>
+<nav class="mt-2">
+<a href="#" class="flex items-center gap-3 px-6 py-3 text-primary bg-primary/5 border-r-2 border-primary font-medium">
+<i class="ri-dashboard-line"></i>
+<span>Dashboard</span>
+</a>
+<a href="#" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-add-circle-line"></i>
+<span>Post Job</span>
+</a>
+<a href="#" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-briefcase-4-line"></i>
+<span>My Vacancies</span>
+</a>
+<a href="#" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-team-line"></i>
+<span>Candidates</span>
+</a>
+<a href="#" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-bar-chart-2-line"></i>
+<span>Analytics</span>
+</a>
+</nav>
+</aside>
+
+<!-- Main Content -->
+<main class="flex-1 ml-64 p-8">
+<div class="max-w-5xl mx-auto">
+<!-- Header -->
+<div class="flex items-center justify-between mb-8">
+<div>
+<h1 class="text-2xl font-bold mb-1">Post a New Job</h1>
+<p class="text-gray-600">Create a job posting to find the perfect candidate</p>
+</div>
+<button class="bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2">
+<i class="ri-eye-line"></i>
+Preview Job
+</button>
+</div>
+
+<!-- Job Posting Form -->
+<form class="space-y-8">
+<!-- Basic Info -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-lg font-semibold mb-6">Basic Information</h2>
+<div class="grid grid-cols-2 gap-6">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+<input type="text" class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" placeholder="e.g. Senior Frontend Developer">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+<select class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none">
+<option>Select Department</option>
+<option>IT & Development</option>
+<option>Sales & Marketing</option>
+<option>Operations</option>
+<option>Human Resources</option>
+</select>
+</div>
+</div>
+</div>
+
+<!-- Job Details -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-lg font-semibold mb-6">Job Details</h2>
+<div class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Job Description</label>
+<div class="border border-gray-300 rounded">
+<div class="flex items-center gap-1 border-b border-gray-300 p-2">
+<button type="button" class="p-1 hover:bg-gray-100 rounded">
+<i class="ri-bold"></i>
+</button>
+<button type="button" class="p-1 hover:bg-gray-100 rounded">
+<i class="ri-italic"></i>
+</button>
+<button type="button" class="p-1 hover:bg-gray-100 rounded">
+<i class="ri-list-unordered"></i>
+</button>
+<button type="button" class="p-1 hover:bg-gray-100 rounded">
+<i class="ri-list-ordered"></i>
+</button>
+<span class="w-px h-4 bg-gray-300 mx-2"></span>
+<button type="button" class="p-1 hover:bg-gray-100 rounded">
+<i class="ri-link"></i>
+</button>
+</div>
+<textarea class="w-full px-4 py-3 border-none focus:ring-0" rows="6" placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-6">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
+<select class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none">
+<option>Select Type</option>
+<option>Full-time</option>
+<option>Part-time</option>
+<option>Contract</option>
+<option>Temporary</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Experience Level</label>
+<select class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none">
+<option>Select Level</option>
+<option>Entry Level</option>
+<option>Mid Level</option>
+<option>Senior Level</option>
+<option>Lead / Manager</option>
+</select>
+</div>
+</div>
+
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Salary Range (CZK)</label>
+<div class="relative pt-6">
+<div class="slider-track h-2 bg-gray-200 rounded-full absolute left-0 right-0 top-8"></div>
+<div class="slider-range h-2 bg-primary rounded-full absolute top-8"></div>
+<input type="range" min="20000" max="200000" value="20000" class="absolute w-full top-8 h-2 opacity-0 cursor-pointer" id="minSalary">
+<input type="range" min="20000" max="200000" value="200000" class="absolute w-full top-8 h-2 opacity-0 cursor-pointer" id="maxSalary">
+<div class="flex justify-between mt-8">
+<span class="min-value">20,000 CZK</span>
+<span class="max-value">200,000 CZK</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Location & Benefits -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-lg font-semibold mb-6">Location & Benefits</h2>
+<div class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+<div class="relative">
+<input type="text" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" placeholder="Search location...">
+<i class="ri-map-pin-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+</div>
+
+<div class="space-y-4">
+<label class="block text-sm font-medium text-gray-700">Benefits</label>
+<div class="grid grid-cols-2 gap-4">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Housing Provided</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Relocation Assistance</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Health Insurance</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Meal Vouchers</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Requirements -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-lg font-semibold mb-6">Requirements</h2>
+<div class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Skills</label>
+<div class="flex flex-wrap gap-2 p-2 border border-gray-300 rounded min-h-[80px]" id="skillTags">
+<input type="text" class="flex-1 min-w-[120px] border-none focus:ring-0" placeholder="Type a skill and press Enter">
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-6">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Education Level</label>
+<select class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none">
+<option>Select Level</option>
+<option>High School</option>
+<option>Bachelor's Degree</option>
+<option>Master's Degree</option>
+<option>PhD</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Language Requirements</label>
+<select class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none">
+<option>Select Level</option>
+<option>Czech Not Required</option>
+<option>Basic Czech</option>
+<option>Fluent Czech</option>
+<option>English Required</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Submit Buttons -->
+<div class="flex items-center justify-between">
+<button type="button" class="px-6 py-2 border border-gray-300 rounded-button font-medium hover:bg-gray-50 whitespace-nowrap">
+Save as Draft
+</button>
+<div class="flex items-center gap-4">
+<button type="button" class="px-6 py-2 border border-gray-300 rounded-button font-medium hover:bg-gray-50 whitespace-nowrap">
+Cancel
+</button>
+<button type="submit" class="bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2">
+<i class="ri-send-plane-line"></i>
+Post Job
+</button>
+</div>
+</div>
+</form>
+</div>
+</main>
+</div>
+<div class="min-h-screen">
+<!-- Header -->
+<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+<div class="container mx-auto px-4 py-4">
+<div class="flex items-center justify-between gap-2 sm:gap-4">
+<button class="lg:hidden w-10 h-10 flex items-center justify-center" id="menuToggle">
+<i class="ri-menu-line text-xl"></i>
+</button>
+<a href="#" class="text-xl sm:text-2xl font-['Pacifico'] text-primary">WorkInCZ</a>
+<div class="flex-1 max-w-2xl relative hidden sm:block">
+<div class="relative">
+<input type="text" id="jobSearch" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" placeholder="Search jobs by title, company or keyword...">
+<i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+<div id="searchSuggestions" class="absolute w-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 hidden">
+<div class="p-2 space-y-1">
+<div class="p-2 hover:bg-gray-50 rounded cursor-pointer flex items-center gap-2">
+<i class="ri-briefcase-4-line text-gray-400"></i>
+<span>Frontend Developer</span>
+</div>
+<div class="p-2 hover:bg-gray-50 rounded cursor-pointer flex items-center gap-2">
+<i class="ri-building-2-line text-gray-400"></i>
+<span>Škoda Auto a.s.</span>
+</div>
+<div class="p-2 hover:bg-gray-50 rounded cursor-pointer flex items-center gap-2">
+<i class="ri-map-pin-line text-gray-400"></i>
+<span>Prague</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-gray-600 hover:text-gray-900 relative">
+<i class="ri-notification-3-line text-xl"></i>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+</button>
+<button class="text-gray-600 hover:text-gray-900">
+<i class="ri-bookmark-line text-xl"></i>
+</button>
+<div class="relative">
+<button class="flex items-center gap-2">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20male%20with%20short%20dark%20hair%2C%20friendly%20smile%2C%20wearing%20casual%20business%20attire%2C%20clean%20background&width=40&height=40&seq=profile1&orientation=squarish" alt="Profile" class="w-10 h-10 rounded-full object-cover">
+<i class="ri-arrow-down-s-line text-gray-600"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<div class="flex min-h-screen bg-gray-50">
+<!-- Settings Sidebar -->
+<aside class="w-64 bg-white border-r border-gray-200 fixed h-full z-40 transition-transform duration-300 transform -translate-x-full lg:translate-x-0">
+<div class="p-6">
+<div class="flex items-center justify-between">
+<a href="#" class="text-2xl font-['Pacifico'] text-primary">WorkInCZ</a>
+<button class="lg:hidden w-10 h-10 flex items-center justify-center -mr-2" id="closeSidebar">
+<i class="ri-close-line text-xl"></i>
+</button>
+</div>
+</div>
+<nav class="mt-2">
+<a href="#account" class="flex items-center gap-3 px-6 py-3 text-primary bg-primary/5 border-r-2 border-primary font-medium">
+<i class="ri-user-settings-line"></i>
+<span>Account Settings</span>
+</a>
+<a href="#privacy" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-shield-keyhole-line"></i>
+<span>Privacy & Security</span>
+</a>
+<a href="#notifications" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-notification-3-line"></i>
+<span>Notifications</span>
+</a>
+<a href="#subscription" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-vip-crown-line"></i>
+<span>Subscription</span>
+</a>
+<a href="#language" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-translate-2"></i>
+<span>Language</span>
+</a>
+</nav>
+</aside>
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-lg font-semibold">Filters</h2>
+<button class="text-gray-400 hover:text-gray-600" id="clearFilters">
+<i class="ri-refresh-line"></i>
+Clear all
+</button>
+</div>
+<!-- Salary Range -->
+<div class="mb-6">
+<h3 class="text-sm font-medium text-gray-700 mb-2">Salary Range (CZK)</h3>
+<div class="relative pt-6">
+<div class="slider-track h-2 bg-gray-200 rounded-full absolute left-0 right-0 top-8"></div>
+<div class="slider-range h-2 bg-primary rounded-full absolute top-8"></div>
+<input type="range" min="20000" max="200000" value="20000" class="absolute w-full top-8 h-2 opacity-0 cursor-pointer" id="minSalary">
+<input type="range" min="20000" max="200000" value="200000" class="absolute w-full top-8 h-2 opacity-0 cursor-pointer" id="maxSalary">
+<div class="flex justify-between mt-8">
+<span class="min-value">20,000 CZK</span>
+<span class="max-value">200,000 CZK</span>
+</div>
+</div>
+</div>
+<!-- Work Type -->
+<div class="mb-6">
+<h3 class="text-sm font-medium text-gray-700 mb-3">Work Type</h3>
+<div class="space-y-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Full-time</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Part-time</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Contract</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Temporary</span>
+</label>
+</div>
+</div>
+<!-- Location -->
+<div class="mb-6">
+<h3 class="text-sm font-medium text-gray-700 mb-3">Location</h3>
+<div class="relative">
+<input type="text" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm" placeholder="Search location...">
+<i class="ri-map-pin-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+<div class="mt-3 space-y-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Prague</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Brno</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Ostrava</span>
+</label>
+</div>
+</div>
+<!-- Benefits -->
+<div class="mb-6">
+<h3 class="text-sm font-medium text-gray-700 mb-3">Benefits</h3>
+<div class="space-y-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Housing Provided</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Relocation Assistance</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Visa Sponsorship</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Health Insurance</span>
+</label>
+</div>
+</div>
+<!-- Experience Level -->
+<div class="mb-6">
+<h3 class="text-sm font-medium text-gray-700 mb-3">Experience Level</h3>
+<div class="space-y-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Entry Level</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Mid Level</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Senior Level</span>
+</label>
+</div>
+</div>
+<!-- Language Requirements -->
+<div class="mb-6">
+<h3 class="text-sm font-medium text-gray-700 mb-3">Language Requirements</h3>
+<div class="space-y-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Czech Not Required</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">Basic Czech</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-600 group-hover:text-gray-900">English Required</span>
+</label>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 lg:ml-64 p-4 sm:p-8">
+<div class="max-w-4xl mx-auto">
+<!-- Account Settings -->
+<section id="account" class="mb-12">
+<div class="flex items-center justify-between mb-8">
+<h1 class="text-2xl font-bold">Account Settings</h1>
+<button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap">Save Changes</button>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<div class="flex items-start gap-8">
+<div class="flex flex-col items-center">
+<div class="w-32 h-32 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center mb-3 relative overflow-hidden group cursor-pointer">
+<input type="file" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+<img id="preview-image" class="absolute inset-0 w-full h-full object-cover object-center hidden">
+<div class="text-center">
+<i class="ri-camera-line text-2xl text-gray-400 mb-1"></i>
+<p class="text-xs text-gray-500">Upload photo</p>
+</div>
+<div class="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<i class="ri-pencil-line text-xl"></i>
+</div>
+</div>
+<p class="text-sm text-gray-500">Max 2MB</p>
+</div>
+<div class="flex-1 space-y-6">
+<div class="grid grid-cols-2 gap-6">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+<input type="text" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" value="Mikhail">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+<input type="text" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" value="Petrov">
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+<input type="email" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" value="m.petrov@gmail.com">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+<input type="tel" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" value="+420 777 888 999">
+</div>
+</div>
+</div>
+</div>
+<!-- Privacy Settings -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<h2 class="text-lg font-semibold mb-6">Privacy & Security</h2>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">Profile Visibility</h3>
+<p class="text-sm text-gray-500">Make your profile visible to employers</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox" checked>
+<span class="switch-slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">Two-Factor Authentication</h3>
+<p class="text-sm text-gray-500">Add an extra layer of security</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox">
+<span class="switch-slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">Show Salary Preferences</h3>
+<p class="text-sm text-gray-500">Display your salary expectations</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox" checked>
+<span class="switch-slider"></span>
+</label>
+</div>
+</div>
+</div>
+<!-- Notification Settings -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<h2 class="text-lg font-semibold mb-6">Notification Preferences</h2>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">Email Notifications</h3>
+<p class="text-sm text-gray-500">Receive job alerts via email</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox" checked>
+<span class="switch-slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">SMS Notifications</h3>
+<p class="text-sm text-gray-500">Get urgent updates via SMS</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox">
+<span class="switch-slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">Push Notifications</h3>
+<p class="text-sm text-gray-500">Browser notifications for new messages</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox" checked>
+<span class="switch-slider"></span>
+</label>
+</div>
+</div>
+</div>
+<!-- Subscription Status -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h2 class="text-lg font-semibold">Current Plan</h2>
+<p class="text-sm text-gray-500">Manage your subscription</p>
+</div>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
+Active
+</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-primary/5 rounded-lg mb-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-vip-crown-fill text-primary text-xl"></i>
+</div>
+<div>
+<h3 class="font-medium">VIP Plan</h3>
+<p class="text-sm text-gray-500">399 CZK/month</p>
+</div>
+</div>
+<button class="text-primary hover:text-primary/80 font-medium text-sm">Change Plan</button>
+</div>
+<div class="flex items-center gap-6 text-sm text-gray-600">
+<div class="flex items-center gap-2">
+<i class="ri-calendar-line text-gray-400"></i>
+<span>Renews on July 28, 2025</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-bank-card-line text-gray-400"></i>
+<span>•••• 4242</span>
+</div>
+</div>
+</div>
+<!-- Language Settings -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-lg font-semibold mb-6">Language Settings</h2>
+<div class="max-w-xs">
+<label class="block text-sm font-medium text-gray-700 mb-1">Interface Language</label>
+<select class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none appearance-none bg-white pr-10 relative">
+<option value="ru">🇷🇺 Русский</option>
+<option value="cz">🇨🇿 Čeština</option>
+<option value="ua">🇺🇦 Українська</option>
+<option value="by">🇧🇾 Беларуская</option>
+<option value="en">🇬🇧 English</option>
+<option value="vn">🇻🇳 Tiếng Việt</option>
+<option value="pl">🇵🇱 Polski</option>
+<option value="bg">🇧🇬 Български</option>
+<option value="ro">🇷🇴 Română</option>
+</select>
+<div class="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none">
+<i class="ri-arrow-down-s-line text-gray-400"></i>
+</div>
+</div>
+</div>
+</section>
+<!-- View Toggle and Sort -->
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-4">
+<button class="bg-primary text-white px-3 py-2 rounded-button text-sm font-medium hover:bg-primary/90">
+<i class="ri-list-check-2"></i>
+List View
+</button>
+<button class="bg-white text-gray-700 px-3 py-2 rounded-button text-sm font-medium hover:bg-gray-50">
+<i class="ri-map-2-line"></i>
+Map View
+</button>
+</div>
+<div class="flex items-center gap-4">
+<select class="pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm">
+<option>Most Recent</option>
+<option>Highest Paid</option>
+<option>Most Relevant</option>
+</select>
+</div>
+</div>
+<!-- Job Results Count -->
+<div class="bg-white rounded-lg p-4 mb-6 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-medium">2,458</span>
+<span class="text-gray-600">jobs found</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-gray-600">
+<i class="ri-time-line"></i>
+<span>Updated 5 minutes ago</span>
+</div>
+</div>
+<!-- Job Cards Grid -->
+<div class="grid grid-cols-1 gap-6" id="jobsList">
+<!-- Profile Header -->
+<div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+<div class="flex flex-col md:flex-row items-center gap-8">
+<div class="relative group">
+<div class="w-48 h-48 rounded-full overflow-hidden profile-photo-container border-4 border-white shadow-lg">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20male%20with%20short%20dark%20hair%2C%20friendly%20smile%2C%20wearing%20casual%20business%20attire%2C%20clean%20background&width=192&height=192&seq=profile2&orientation=squarish" alt="Profile Photo" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110">
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
+<label class="cursor-pointer text-white text-center transform translate-y-4 transition-transform duration-300 group-hover:translate-y-0">
+<div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm mb-2 mx-auto">
+<i class="ri-camera-line text-2xl"></i>
+</div>
+<p class="text-sm font-medium">Update Photo</p>
+<p class="text-xs opacity-80">Max 2MB</p>
+<input type="file" class="hidden" accept="image/*">
+</label>
+</div>
+</div>
+<div class="absolute -bottom-2 -right-2">
+<div class="w-10 h-10 bg-success rounded-full flex items-center justify-center text-white shadow-lg">
+<i class="ri-verified-badge-fill"></i>
+</div>
+</div>
+</div>
+<div class="flex-1 text-center md:text-left">
+<h1 class="text-3xl font-bold mb-2">Mikhail Petrov</h1>
+<p class="text-xl text-gray-600 mb-4">Senior Frontend Developer</p>
+<div class="flex flex-wrap gap-4 justify-center md:justify-start">
+<div class="flex items-center gap-2 text-gray-600">
+<i class="ri-map-pin-line"></i>
+<span>Prague, Czech Republic</span>
+</div>
+<div class="flex items-center gap-2 text-gray-600">
+<i class="ri-time-line"></i>
+<span>Available for work</span>
+</div>
+<div class="flex items-center gap-2 text-gray-600">
+<i class="ri-global-line"></i>
+<span>Remote preferred</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Profile Completion -->
+<div class="mt-8">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-profile-line text-primary"></i>
+</div>
+<span class="text-sm font-medium text-gray-600">Profile Completion</span>
+</div>
+<span class="text-sm font-medium text-primary">85%</span>
+</div>
+<div class="relative">
+<div class="progress-bar" style="--progress: 85%"></div>
+<div class="absolute top-full left-0 mt-1 flex gap-4 text-xs text-gray-500">
+<span class="flex items-center gap-1">
+<i class="ri-checkbox-circle-fill text-success"></i>
+Basic Info
+</span>
+<span class="flex items-center gap-1">
+<i class="ri-checkbox-circle-fill text-success"></i>
+Experience
+</span>
+<span class="flex items-center gap-1">
+<i class="ri-checkbox-circle-fill text-success"></i>
+Skills
+</span>
+<span class="flex items-center gap-1">
+<i class="ri-checkbox-circle-line text-gray-400"></i>
+Documents
+</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Skills Section -->
+<div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6">Skills</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-6">
+<div class="transform hover:-translate-y-1 transition-transform duration-300">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-reactjs-line text-primary"></i>
+</div>
+<span class="font-medium">React.js</span>
+</div>
+<span class="text-sm font-medium text-primary">95%</span>
+</div>
+<div class="skill-bar overflow-hidden rounded-full bg-gray-100" style="--progress: 95%">
+<div class="h-2 bg-gradient-to-r from-primary to-primary/80 rounded-full transform transition-transform duration-1000 ease-out" style="width: 0%"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-medium">TypeScript</span>
+<span>90%</span>
+</div>
+<div class="skill-bar" style="--progress: 90%"></div>
+</div>
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-medium">Node.js</span>
+<span>85%</span>
+</div>
+<div class="skill-bar" style="--progress: 85%"></div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors cursor-default">HTML5</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors cursor-default">CSS3</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors cursor-default">JavaScript</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors cursor-default">React</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors cursor-default">TypeScript</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors cursor-default">Node.js</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors cursor-default">Git</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors cursor-default">REST API</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors cursor-default">GraphQL</span>
+</div>
+</div>
+<!-- Experience Timeline -->
+<div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+<h2 class="text-2xl font-bold mb-6">Experience</h2>
+<div class="space-y-8">
+<div class="timeline-item">
+<div class="flex gap-4">
+<div class="w-12 h-12 flex-shrink-0 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-briefcase-4-line text-xl text-primary"></i>
+</div>
+<div>
+<h3 class="font-semibold text-lg">Senior Frontend Developer</h3>
+<p class="text-gray-600 mb-2">Tech Solutions s.r.o. • Prague</p>
+<p class="text-sm text-gray-500">Jan 2023 - Present</p>
+<p class="mt-2 text-gray-700">Leading the frontend development team, implementing new features, and improving application performance.</p>
+</div>
+</div>
+</div>
+<div class="timeline-item">
+<div class="flex gap-4">
+<div class="w-12 h-12 flex-shrink-0 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-briefcase-4-line text-xl text-primary"></i>
+</div>
+<div>
+<h3 class="font-semibold text-lg">Frontend Developer</h3>
+<p class="text-gray-600 mb-2">Digital Agency a.s. • Brno</p>
+<p class="text-sm text-gray-500">Mar 2021 - Dec 2022</p>
+<p class="mt-2 text-gray-700">Developed and maintained multiple client projects using React and TypeScript.</p>
+</div>
+</div>
+</div>
+<div class="timeline-item">
+<div class="flex gap-4">
+<div class="w-12 h-12 flex-shrink-0 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-briefcase-4-line text-xl text-primary"></i>
+</div>
+<div>
+<h3 class="font-semibold text-lg">Junior Developer</h3>
+<p class="text-gray-600 mb-2">StartUp s.r.o. • Remote</p>
+<p class="text-sm text-gray-500">Jun 2020 - Feb 2021</p>
+<p class="mt-2 text-gray-700">Started career as a junior developer working on various web applications.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Languages Section -->
+<div class="bg-white rounded-lg shadow-sm p-8">
+<h2 class="text-2xl font-bold mb-6">Languages</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="language-level p-4 bg-gray-50 rounded-lg">
+<div class="flex items-center justify-between mb-2">
+<span class="font-medium">English</span>
+<span class="text-sm text-gray-600">Professional</span>
+</div>
+<div class="progress-bar" style="--progress: 90%"></div>
+</div>
+<div class="language-level p-4 bg-gray-50 rounded-lg">
+<div class="flex items-center justify-between mb-2">
+<span class="font-medium">Czech</span>
+<span class="text-sm text-gray-600">Intermediate</span>
+</div>
+<div class="progress-bar" style="--progress: 60%"></div>
+</div>
+<div class="language-level p-4 bg-gray-50 rounded-lg">
+<div class="flex items-center justify-between mb-2">
+<span class="font-medium">Russian</span>
+<span class="text-sm text-gray-600">Native</span>
+</div>
+<div class="progress-bar" style="--progress: 100%"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<div class="p-6">
+<a href="#" class="text-2xl font-['Pacifico'] text-primary">WorkInCZ</a>
+</div>
+<nav class="mt-2">
+<a href="#" class="flex items-center gap-3 px-6 py-3 text-primary bg-primary/5 border-r-2 border-primary font-medium">
+<i class="ri-bar-chart-2-line"></i>
+<span>Analytics</span>
+</a>
+<a href="#" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-briefcase-4-line"></i>
+<span>Jobs</span>
+</a>
+<a href="#" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-team-line"></i>
+<span>Candidates</span>
+</a>
+<a href="#" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-message-3-line"></i>
+<span>Messages</span>
+</a>
+<a href="#" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-settings-3-line"></i>
+<span>Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 ml-64 p-8">
+<div class="max-w-7xl mx-auto">
+<!-- Header -->
+<div class="flex items-center justify-between mb-8">
+<div>
+<h1 class="text-2xl font-bold mb-1">Analytics Dashboard</h1>
+<p class="text-gray-600">Track your recruitment performance and insights</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<select class="pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm appearance-none">
+<option>Last 7 days</option>
+<option>Last 30 days</option>
+<option>Last 3 months</option>
+<option>Last year</option>
+</select>
+<i class="ri-arrow-down-s-line absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+<button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-button text-sm font-medium hover:bg-gray-50 whitespace-nowrap flex items-center gap-2">
+<i class="ri-download-2-line"></i>
+Export Report
+</button>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<select class="pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm appearance-none">
+<option>Last 7 days</option>
+<option>Last 30 days</option>
+<option>Last 3 months</option>
+<option>Last year</option>
+</select>
+<i class="ri-arrow-down-s-line absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+<button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-button text-sm font-medium hover:bg-gray-50 whitespace-nowrap flex items-center gap-2">
+<i class="ri-download-2-line"></i>
+Export Report
+</button>
+</div>
+</div>
+<!-- Metrics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-white rounded-lg p-6 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-briefcase-4-line text-xl text-primary"></i>
+</div>
+<span class="inline-flex items-center px-2 py-1 rounded text-sm font-medium text-success bg-success/10">
+<i class="ri-arrow-up-line mr-1"></i>
+12%
+</span>
+</div>
+<h3 class="text-gray-600 mb-1">Active Jobs</h3>
+<div class="text-2xl font-bold">24</div>
+</div>
+<div class="bg-white rounded-lg p-6 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-file-list-3-line text-xl text-primary"></i>
+</div>
+<span class="inline-flex items-center px-2 py-1 rounded text-sm font-medium text-success bg-success/10">
+<i class="ri-arrow-up-line mr-1"></i>
+8%
+</span>
+</div>
+<h3 class="text-gray-600 mb-1">Total Applications</h3>
+<div class="text-2xl font-bold">847</div>
+</div>
+<div class="bg-white rounded-lg p-6 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-eye-line text-xl text-primary"></i>
+</div>
+<span class="inline-flex items-center px-2 py-1 rounded text-sm font-medium text-success bg-success/10">
+<i class="ri-arrow-up-line mr-1"></i>
+15%
+</span>
+</div>
+<h3 class="text-gray-600 mb-1">Profile Views</h3>
+<div class="text-2xl font-bold">3,642</div>
+</div>
+<div class="bg-white rounded-lg p-6 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-chat-1-line text-xl text-primary"></i>
+</div>
+<span class="inline-flex items-center px-2 py-1 rounded text-sm font-medium text-success bg-success/10">
+<i class="ri-arrow-up-line mr-1"></i>
+5%
+</span>
+</div>
+<h3 class="text-gray-600 mb-1">Response Rate</h3>
+<div class="text-2xl font-bold">92%</div>
+</div>
+</div>
+<!-- Charts Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+<!-- Application Funnel -->
+<div class="bg-white rounded-lg p-6 shadow-sm">
+<h3 class="font-semibold mb-6">Application Funnel</h3>
+<div id="funnelChart" class="w-full h-80"></div>
+</div>
+<!-- Applications Map -->
+<div class="bg-white rounded-lg p-6 shadow-sm">
+<h3 class="font-semibold mb-6">Applications by Region</h3>
+<div class="relative w-full h-80 bg-center bg-no-repeat bg-contain" style="background-image: url('https://public.readdy.ai/gen_page/map_placeholder_1280x720.png')">
+<div class="absolute top-1/4 left-1/3 w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center cursor-pointer group">
+<div class="w-3 h-3 bg-primary rounded-full"></div>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap opacity-0 group-hover:opacity-100">
+Prague: 425 applications
+</div>
+</div>
+<div class="absolute top-1/3 left-1/2 w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center cursor-pointer group">
+<div class="w-2.5 h-2.5 bg-primary rounded-full"></div>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap opacity-0 group-hover:opacity-100">
+Brno: 215 applications
+</div>
+</div>
+<div class="absolute top-1/2 right-1/3 w-4 h-4 bg-primary/20 rounded-full flex items-center justify-center cursor-pointer group">
+<div class="w-2 h-2 bg-primary rounded-full"></div>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap opacity-0 group-hover:opacity-100">
+Ostrava: 156 applications
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Activity Charts Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+<!-- Applications Timeline -->
+<div class="bg-white rounded-lg p-6 shadow-sm">
+<h3 class="font-semibold mb-6">Applications Timeline</h3>
+<div id="timelineChart" class="w-full h-80"></div>
+</div>
+<!-- Peak Hours -->
+<div class="bg-white rounded-lg p-6 shadow-sm">
+<h3 class="font-semibold mb-6">Peak Activity Hours</h3>
+<div id="peakHoursChart" class="w-full h-80"></div>
+</div>
+</div>
+<!-- Jobs Performance Table -->
+<div class="bg-white rounded-lg shadow-sm mb-8">
+<div class="p-6 border-b border-gray-200">
+<h3 class="font-semibold">Jobs Performance</h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead>
+<tr class="bg-gray-50 text-left">
+<th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Job Title</th>
+<th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
+<th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Applications</th>
+<th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Conversion</th>
+<th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+<th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-200">
+<tr>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<div class="w-8 h-8 flex items-center justify-center rounded bg-primary/10 mr-3">
+<i class="ri-code-s-slash-line text-primary"></i>
+</div>
+<div>
+<div class="font-medium">Senior React Developer</div>
+<div class="text-sm text-gray-500">Full-time • Prague</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">1,245</td>
+<td class="px-6 py-4">86</td>
+<td class="px-6 py-4">6.9%</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+Active
+</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-gray-400 hover:text-gray-600">
+<i class="ri-more-2-fill"></i>
+</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<div class="w-8 h-8 flex items-center justify-center rounded bg-primary/10 mr-3">
+<i class="ri-palette-line text-primary"></i>
+</div>
+<div>
+<div class="font-medium">UI/UX Designer</div>
+<div class="text-sm text-gray-500">Remote • Brno</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">892</td>
+<td class="px-6 py-4">45</td>
+<td class="px-6 py-4">5.0%</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+Active
+</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-gray-400 hover:text-gray-600">
+<i class="ri-more-2-fill"></i>
+</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<div class="w-8 h-8 flex items-center justify-center rounded bg-primary/10 mr-3">
+<i class="ri-database-2-line text-primary"></i>
+</div>
+<div>
+<div class="font-medium">Data Analyst</div>
+<div class="text-sm text-gray-500">Full-time • Ostrava</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">654</td>
+<td class="px-6 py-4">32</td>
+<td class="px-6 py-4">4.9%</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+Closed
+</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-gray-400 hover:text-gray-600">
+<i class="ri-more-2-fill"></i>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script id="imageUpload">
+document.addEventListener('DOMContentLoaded', function() {
+const fileInput = document.querySelector('input[type="file"]');
+const previewImage = document.querySelector('#preview-image');
+fileInput.addEventListener('change', function(e) {
+const file = e.target.files[0];
+if (file) {
+if (file.size > 2 * 1024 * 1024) {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-error-warning-line text-xl"></i>
+<div>
+<p class="font-medium">File too large</p>
+<p class="text-sm opacity-90">Please select an image under 2MB</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+return;
+}
+const reader = new FileReader();
+reader.onload = function(e) {
+previewImage.src = e.target.result;
+previewImage.classList.remove('hidden');
+};
+reader.readAsDataURL(file);
+}
+});
+});
+</script>
+<script id="settingsInteractions">
+document.addEventListener('DOMContentLoaded', function() {
+const saveButton = document.querySelector('button.bg-primary');
+if (saveButton) {
+saveButton.addEventListener('click', function() {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-success text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-checkbox-circle-line text-xl"></i>
+<div>
+<p class="font-medium">Settings saved</p>
+<p class="text-sm opacity-90">Your changes have been saved successfully</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+});
+}
+const navLinks = document.querySelectorAll('aside a');
+navLinks.forEach(link => {
+link.addEventListener('click', function(e) {
+e.preventDefault();
+navLinks.forEach(l => {
+l.classList.remove('text-primary', 'bg-primary/5', 'border-r-2', 'border-primary', 'font-medium');
+l.classList.add('text-gray-600');
+});
+this.classList.remove('text-gray-600');
+this.classList.add('text-primary', 'bg-primary/5', 'border-r-2', 'border-primary', 'font-medium');
+const targetId = this.getAttribute('href').substring(1);
+const targetSection = document.getElementById(targetId);
+if (targetSection) {
+targetSection.scrollIntoView({ behavior: 'smooth' });
+}
+});
+});
+});
+</script>
+document.addEventListener('DOMContentLoaded', function() {
+// Search Suggestions
+const searchInput = document.getElementById('jobSearch');
+const searchSuggestions = document.getElementById('searchSuggestions');
+if (searchInput) {
+searchInput.addEventListener('focus', () => {
+searchSuggestions.classList.remove('hidden');
+});
+searchInput.addEventListener('blur', () => {
+setTimeout(() => {
+searchSuggestions.classList.add('hidden');
+}, 200);
+});
+searchInput.addEventListener('input', () => {
+if (searchInput.value.length > 0) {
+searchSuggestions.classList.remove('hidden');
+} else {
+searchSuggestions.classList.add('hidden');
+}
+});
+}
+// Salary Range Slider
+const minSalary = document.getElementById('minSalary');
+const maxSalary = document.getElementById('maxSalary');
+const sliderTrack = document.querySelector('.slider-track');
+const sliderRange = document.querySelector('.slider-range');
+const minValue = document.querySelector('.min-value');
+const maxValue = document.querySelector('.max-value');
+function updateSlider() {
+const min = parseInt(minSalary.value);
+const max = parseInt(maxSalary.value);
+const percent1 = ((min - 20000) / (200000 - 20000)) * 100;
+const percent2 = ((max - 20000) / (200000 - 20000)) * 100;
+sliderRange.style.left = percent1 + '%';
+sliderRange.style.width = (percent2 - percent1) + '%';
+minValue.textContent = min.toLocaleString() + ' CZK';
+maxValue.textContent = max.toLocaleString() + ' CZK';
+}
+if (minSalary && maxSalary) {
+minSalary.addEventListener('input', updateSlider);
+maxSalary.addEventListener('input', updateSlider);
+}
+// Clear Filters
+const clearFiltersBtn = document.getElementById('clearFilters');
+if (clearFiltersBtn) {
+clearFiltersBtn.addEventListener('click', () => {
+document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+checkbox.checked = false;
+});
+if (minSalary && maxSalary) {
+minSalary.value = 20000;
+maxSalary.value = 200000;
+updateSlider();
+}
+});
+}
+// Job Cards Loading
+const jobsList = document.getElementById('jobsList');
+const jobsData = [
+{
+title: 'Senior Frontend Developer',
+company: 'Tech Solutions s.r.o.',
+location: 'Prague',
+salary: '80,000 - 120,000 CZK',
+type: 'Full-time',
+urgent: true,
+housing: true,
+logo: 'https://readdy.ai/api/search-image?query=Modern%20tech%20company%20logo%2C%20minimalist%20design%2C%20blue%20and%20white%20color%20scheme&width=50&height=50&seq=company1&orientation=squarish'
+},
+{
+title: 'Warehouse Operator',
+company: 'Logistics Pro a.s.',
+location: 'Brno',
+salary: '35,000 - 45,000 CZK',
+type: 'Full-time',
+urgent: false,
+housing: true,
+logo: 'https://readdy.ai/api/search-image?query=Logistics%20company%20logo%2C%20professional%20design%2C%20orange%20and%20gray%20color%20scheme&width=50&height=50&seq=company2&orientation=squarish'
+},
+{
+title: 'Restaurant Manager',
+company: 'Fine Dining s.r.o.',
+location: 'Prague',
+salary: '45,000 - 55,000 CZK',
+type: 'Full-time',
+urgent: true,
+housing: false,
+logo: 'https://readdy.ai/api/search-image?query=Restaurant%20logo%2C%20elegant%20design%2C%20gold%20and%20black%20color%20scheme&width=50&height=50&seq=company3&orientation=squarish'
+}
+];
+function createJobCard(job) {
+return `
+<div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+<div class="flex items-start gap-4">
+<img src="${job.logo}" alt="${job.company}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
+<div class="flex-1">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="font-semibold text-lg">${job.title}</h3>
+<p class="text-gray-600">${job.company}</p>
+</div>
+<div class="flex flex-col items-end gap-2">
+${job.urgent ? `
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full mr-1"></span>
+Urgent
+</span>
+` : ''}
+${job.housing ? `
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+<i class="ri-home-4-line mr-1"></i>
+Housing
+</span>
+` : ''}
+</div>
+</div>
+<div class="flex flex-wrap gap-4 mt-4">
+<div class="flex items-center gap-2 text-gray-600">
+<i class="ri-map-pin-line"></i>
+<span>${job.location}</span>
+</div>
+<div class="flex items-center gap-2 text-gray-600">
+<i class="ri-money-czech-koruna-circle-line"></i>
+<span>${job.salary}</span>
+</div>
+<div class="flex items-center gap-2 text-gray-600">
+<i class="ri-time-line"></i>
+<span>${job.type}</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-6">
+<button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2">
+<i class="ri-send-plane-line"></i>
+Apply Now
+</button>
+<button class="bg-gray-100 text-gray-700 p-2 rounded-button hover:bg-gray-200">
+<i class="ri-bookmark-line"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+`;
+}
+function loadJobs() {
+if (jobsList) {
+jobsList.innerHTML = '';
+jobsData.forEach(job => {
+jobsList.innerHTML += createJobCard(job);
+});
+// Add job card interactions
+document.querySelectorAll('.bg-white.rounded-lg.border').forEach(card => {
+card.addEventListener('mouseenter', () => {
+card.classList.add('shadow-lg', '-translate-y-1');
+});
+card.addEventListener('mouseleave', () => {
+card.classList.remove('shadow-lg', '-translate-y-1');
+});
+});
+// Add bookmark button interactions
+document.querySelectorAll('button:has(.ri-bookmark-line)').forEach(button => {
+button.addEventListener('click', function() {
+const icon = this.querySelector('i');
+if (icon.classList.contains('ri-bookmark-line')) {
+icon.classList.remove('ri-bookmark-line');
+icon.classList.add('ri-bookmark-fill');
+icon.classList.add('text-primary');
+} else {
+icon.classList.remove('ri-bookmark-fill', 'text-primary');
+icon.classList.add('ri-bookmark-line');
+}
+});
+});
+}
+}
+loadJobs();
+// Infinite Scroll
+let loading = false;
+window.addEventListener('scroll', () => {
+if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && !loading) {
+loading = true;
+// Simulate loading more jobs
+setTimeout(() => {
+loadJobs();
+loading = false;
+}, 1000);
+}
+});
+</script>
+<script id="profileAnimations">
+document.addEventListener('DOMContentLoaded', function() {
+// Timeline animations
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+entry.target.classList.add('visible');
+}
+});
+}, {
+threshold: 0.1
+});
+document.querySelectorAll('.timeline-item').forEach(item => {
+observer.observe(item);
+});
+// Profile photo upload
+const fileInput = document.querySelector('input[type="file"]');
+if (fileInput) {
+fileInput.addEventListener('change', function(e) {
+const file = e.target.files[0];
+if (file) {
+if (file.size > 2 * 1024 * 1024) {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-error-warning-line text-xl"></i>
+<div>
+<p class="font-medium">File too large</p>
+<p class="text-sm opacity-90">Please select an image under 2MB</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+return;
+}
+const reader = new FileReader();
+reader.onload = function(e) {
+const profileImage = document.querySelector('.profile-photo-container img');
+if (profileImage) {
+profileImage.src = e.target.result;
+}
+};
+reader.readAsDataURL(file);
+}
+});
+}
+// Skill tags hover animation
+document.querySelectorAll('.skill-bar').forEach(bar => {
+bar.style.opacity = '0';
+bar.style.transform = 'translateX(-20px)';
+});
+const skillObserver = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+entry.target.style.opacity = '1';
+entry.target.style.transform = 'translateX(0)';
+entry.target.style.transition = 'all 0.6s ease-out';
+}
+});
+}, {
+threshold: 0.1
+});
+document.querySelectorAll('.skill-bar').forEach(bar => {
+skillObserver.observe(bar);
+});
+});
+document.addEventListener('DOMContentLoaded', function() {
+// Funnel Chart
+const funnelChart = echarts.init(document.getElementById('funnelChart'));
+const funnelOption = {
+animation: false,
+tooltip: {
+trigger: 'item',
+formatter: '{b}: {c}'
+},
+series: [{
+type: 'funnel',
+left: '10%',
+top: 0,
+bottom: 0,
+width: '80%',
+minSize: '0%',
+maxSize: '100%',
+sort: 'descending',
+gap: 2,
+label: {
+show: true,
+position: 'right'
+},
+labelLine: {
+length: 10,
+lineStyle: {
+width: 1,
+type: 'solid'
+}
+},
+itemStyle: {
+borderColor: '#fff',
+borderWidth: 1
+},
+emphasis: {
+label: {
+fontSize: 14
+}
+},
+data: [
+{value: 847, name: 'Posted', itemStyle: {color: 'rgba(87, 181, 231, 1)'}},
+{value: 625, name: 'Viewed', itemStyle: {color: 'rgba(141, 211, 199, 1)'}},
+{value: 425, name: 'Applied', itemStyle: {color: 'rgba(251, 191, 114, 1)'}},
+{value: 148, name: 'Interviewed', itemStyle: {color: 'rgba(252, 141, 98, 1)'}},
+{value: 52, name: 'Hired', itemStyle: {color: '#4F46E5'}}
+]
+}]
+};
+funnelChart.setOption(funnelOption);
+// Timeline Chart
+const timelineChart = echarts.init(document.getElementById('timelineChart'));
+const timelineOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.9)',
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+top: 10,
+right: 10,
+bottom: 20,
+left: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+axisLine: {
+lineStyle: {
+color: '#e5e7eb'
+}
+},
+axisLabel: {
+color: '#1f2937'
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937'
+},
+splitLine: {
+lineStyle: {
+color: '#e5e7eb'
+}
+}
+},
+series: [{
+data: [120, 132, 101, 134, 90, 50, 45],
+type: 'line',
+smooth: true,
+symbolSize: 6,
+lineStyle: {
+color: 'rgba(87, 181, 231, 1)',
+width: 2
+},
+areaStyle: {
+color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+offset: 0,
+color: 'rgba(87, 181, 231, 0.1)'
+}, {
+offset: 1,
+color: 'rgba(87, 181, 231, 0)'
+}])
+},
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)'
+}
+}]
+};
+timelineChart.setOption(timelineOption);
+// Peak Hours Chart
+const peakHoursChart = echarts.init(document.getElementById('peakHoursChart'));
+const peakHoursOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.9)',
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+top: 10,
+right: 10,
+bottom: 20,
+left: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm'],
+axisLine: {
+lineStyle: {
+color: '#e5e7eb'
+}
+},
+axisLabel: {
+color: '#1f2937'
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937'
+},
+splitLine: {
+lineStyle: {
+color: '#e5e7eb'
+}
+}
+},
+series: [{
+data: [10, 45, 78, 56, 89, 120, 92, 45],
+type: 'bar',
+barWidth: '60%',
+itemStyle: {
+color: 'rgba(141, 211, 199, 1)',
+borderRadius: [4, 4, 0, 0]
+}
+}]
+};
+peakHoursChart.setOption(peakHoursOption);
+// Handle window resize
+window.addEventListener('resize', function() {
+funnelChart.resize();
+timelineChart.resize();
+peakHoursChart.resize();
+});
+});
+</script>
+<!-- Sidebar -->
+<aside class="w-64 bg-white border-r border-gray-200 fixed h-full z-40 transition-transform duration-300 transform -translate-x-full lg:translate-x-0">
+<div class="p-6">
+<div class="flex items-center justify-between">
+<a href="#" class="text-2xl font-['Pacifico'] text-primary">WorkInCZ</a>
+<button class="lg:hidden w-10 h-10 flex items-center justify-center -mr-2" id="closeSidebar">
+<i class="ri-close-line text-xl"></i>
+</button>
+</div>
+</div>
+<nav class="mt-2">
+<a href="#account" class="flex items-center gap-3 px-6 py-3 text-primary bg-primary/5 border-r-2 border-primary font-medium">
+<i class="ri-user-settings-line"></i>
+<span>Account Settings</span>
+</a>
+<a href="#privacy" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-shield-keyhole-line"></i>
+<span>Privacy & Security</span>
+</a>
+<a href="#notifications" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-notification-3-line"></i>
+<span>Notifications</span>
+</a>
+<a href="#subscription" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-vip-crown-line"></i>
+<span>Subscription</span>
+</a>
+<a href="#language" class="flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50">
+<i class="ri-translate-2"></i>
+<span>Language</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 lg:ml-64 p-4 sm:p-8">
+<div class="max-w-4xl mx-auto">
+<!-- Account Settings -->
+<section id="account" class="mb-12">
+<div class="flex items-center justify-between mb-8">
+<h1 class="text-2xl font-bold">Account Settings</h1>
+<button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap">Save Changes</button>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<div class="flex items-start gap-8">
+<div class="flex flex-col items-center">
+<div class="w-32 h-32 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center mb-3 relative overflow-hidden group cursor-pointer">
+<input type="file" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+<img id="preview-image" class="absolute inset-0 w-full h-full object-cover object-center hidden">
+<div class="text-center">
+<i class="ri-camera-line text-2xl text-gray-400 mb-1"></i>
+<p class="text-xs text-gray-500">Upload photo</p>
+</div>
+<div class="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<i class="ri-pencil-line text-xl"></i>
+</div>
+</div>
+<p class="text-sm text-gray-500">Max 2MB</p>
+</div>
+<div class="flex-1 space-y-6">
+<div class="grid grid-cols-2 gap-6">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+<input type="text" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" value="Mikhail">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+<input type="text" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" value="Petrov">
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+<input type="email" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" value="m.petrov@gmail.com">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+<input type="tel" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" value="+420 777 888 999">
+</div>
+</div>
+</div>
+</div>
+<!-- Privacy Settings -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<h2 class="text-lg font-semibold mb-6">Privacy & Security</h2>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">Profile Visibility</h3>
+<p class="text-sm text-gray-500">Make your profile visible to employers</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox" checked>
+<span class="switch-slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">Two-Factor Authentication</h3>
+<p class="text-sm text-gray-500">Add an extra layer of security</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox">
+<span class="switch-slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">Show Salary Preferences</h3>
+<p class="text-sm text-gray-500">Display your salary expectations</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox" checked>
+<span class="switch-slider"></span>
+</label>
+</div>
+</div>
+</div>
+<!-- Notification Settings -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<h2 class="text-lg font-semibold mb-6">Notification Preferences</h2>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">Email Notifications</h3>
+<p class="text-sm text-gray-500">Receive job alerts via email</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox" checked>
+<span class="switch-slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">SMS Notifications</h3>
+<p class="text-sm text-gray-500">Get urgent updates via SMS</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox">
+<span class="switch-slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-medium">Push Notifications</h3>
+<p class="text-sm text-gray-500">Browser notifications for new messages</p>
+</div>
+<label class="custom-switch">
+<input type="checkbox" checked>
+<span class="switch-slider"></span>
+</label>
+</div>
+</div>
+</div>
+<!-- Subscription Status -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h2 class="text-lg font-semibold">Current Plan</h2>
+<p class="text-sm text-gray-500">Manage your subscription</p>
+</div>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
+Active
+</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-primary/5 rounded-lg mb-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-vip-crown-fill text-primary text-xl"></i>
+</div>
+<div>
+<h3 class="font-medium">VIP Plan</h3>
+<p class="text-sm text-gray-500">399 CZK/month</p>
+</div>
+</div>
+<button class="text-primary hover:text-primary/80 font-medium text-sm">Change Plan</button>
+</div>
+<div class="flex items-center gap-6 text-sm text-gray-600">
+<div class="flex items-center gap-2">
+<i class="ri-calendar-line text-gray-400"></i>
+<span>Renews on July 28, 2025</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-bank-card-line text-gray-400"></i>
+<span>•••• 4242</span>
+</div>
+</div>
+</div>
+<!-- Language Settings -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-lg font-semibold mb-6">Language Settings</h2>
+<div class="max-w-xs">
+<label class="block text-sm font-medium text-gray-700 mb-1">Interface Language</label>
+<select class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none appearance-none bg-white pr-10 relative">
+<option value="ru">🇷🇺 Русский</option>
+<option value="cz">🇨🇿 Čeština</option>
+<option value="ua">🇺🇦 Українська</option>
+<option value="by">🇧🇾 Беларуская</option>
+<option value="en">🇬🇧 English</option>
+<option value="vn">🇻🇳 Tiếng Việt</option>
+<option value="pl">🇵🇱 Polski</option>
+<option value="bg">🇧🇬 Български</option>
+<option value="ro">🇷🇴 Română</option>
+</select>
+<div class="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none">
+<i class="ri-arrow-down-s-line text-gray-400"></i>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<script id="imageUpload">
+document.addEventListener('DOMContentLoaded', function() {
+const fileInput = document.querySelector('input[type="file"]');
+const previewImage = document.querySelector('#preview-image');
+fileInput.addEventListener('change', function(e) {
+const file = e.target.files[0];
+if (file) {
+if (file.size > 2 * 1024 * 1024) {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-error-warning-line text-xl"></i>
+<div>
+<p class="font-medium">File too large</p>
+<p class="text-sm opacity-90">Please select an image under 2MB</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+return;
+}
+const reader = new FileReader();
+reader.onload = function(e) {
+previewImage.src = e.target.result;
+previewImage.classList.remove('hidden');
+};
+reader.readAsDataURL(file);
+}
+});
+});
+</script>
+<script id="settingsInteractions">
+document.addEventListener('DOMContentLoaded', function() {
+const saveButton = document.querySelector('button.bg-primary');
+if (saveButton) {
+saveButton.addEventListener('click', function() {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-success text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-checkbox-circle-line text-xl"></i>
+<div>
+<p class="font-medium">Settings saved</p>
+<p class="text-sm opacity-90">Your changes have been saved successfully</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+});
+}
+const navLinks = document.querySelectorAll('aside a');
+navLinks.forEach(link => {
+link.addEventListener('click', function(e) {
+e.preventDefault();
+navLinks.forEach(l => {
+l.classList.remove('text-primary', 'bg-primary/5', 'border-r-2', 'border-primary', 'font-medium');
+l.classList.add('text-gray-600');
+});
+this.classList.remove('text-gray-600');
+this.classList.add('text-primary', 'bg-primary/5', 'border-r-2', 'border-primary', 'font-medium');
+const targetId = this.getAttribute('href').substring(1);
+const targetSection = document.getElementById(targetId);
+if (targetSection) {
+targetSection.scrollIntoView({ behavior: 'smooth' });
+}
+});
+});
+});
+</script>
+<div class="flex items-center justify-between mb-3">
+<div class="text-sm font-medium text-gray-700">Статистика платформы</div>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 bg-success rounded-full animate-pulse"></span>
+<span class="text-xs text-success">Live</span>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 flex items-center justify-center rounded-full bg-primary/10">
+<i class="ri-user-3-line text-primary"></i>
+</div>
+<div>
+<div class="text-xs text-gray-500">Онлайн</div>
+<div class="font-medium online-users-count">2,458</div>
+</div>
+</div>
+<div class="text-xs text-gray-400">человек</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 flex items-center justify-center rounded-full bg-secondary/10">
+<i class="ri-file-list-3-line text-secondary"></i>
+</div>
+<div>
+<div class="text-xs text-gray-500">Активных вакансий</div>
+<div class="font-medium active-jobs-count">3,450</div>
+</div>
+</div>
+<div class="text-xs text-gray-400">шт.</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-900/10">
+<i class="ri-vip-crown-line text-gray-900"></i>
+</div>
+<div>
+<div class="text-xs text-gray-500">Ваш статус</div>
+<div class="font-medium">Базовый</div>
+</div>
+</div>
+<button class="text-xs text-primary hover:underline">Улучшить</button>
+</div>
+</div>
+</div>
+<!-- Навигация -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+<div class="live-users-banner bg-gradient-to-r from-primary/10 to-transparent py-1 text-center text-sm">
+<span class="inline-flex items-center gap-2">
+<i class="ri-user-voice-line text-primary"></i>
+<span class="live-users-count font-medium">2,458</span> человек сейчас на сайте
+<span class="live-activity-dot ml-2 inline-block w-2 h-2 bg-success rounded-full"></span>
+</span>
+</div>
+<div class="container mx-auto px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-10">
+<a href="#" class="text-2xl font-['Pacifico'] text-primary">JobBridge</a>
+<nav class="hidden md:flex items-center space-x-6">
+<a href="#" class="text-gray-700 hover:text-primary font-medium">Поиск работы</a>
+<a href="#" class="text-gray-700 hover:text-primary font-medium">Биржа услуг</a>
+<a href="#" class="text-gray-700 hover:text-primary font-medium">Юридическая помощь</a>
+<a href="#" class="text-gray-700 hover:text-primary font-medium">Образование</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-2">
+<div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
+<i class="ri-global-line text-gray-600"></i>
+</div>
+<select class="bg-transparent text-sm font-medium text-gray-700 border-none focus:outline-none pr-8">
+<option value="ru">🇷🇺 Русский</option>
+<option value="cz">🇨🇿 Čeština</option>
+<option value="ua">🇺🇦 Українська</option>
+<option value="by">🇧🇾 Беларуская</option>
+<option value="vn">🇻🇳 Tiếng Việt</option>
+</select>
+</div>
+<a href="#" class="hidden md:block text-sm font-medium text-gray-700 hover:text-primary">Войти</a>
+<button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap">Регистрация</button>
+<button class="md:hidden w-10 h-10 flex items-center justify-center">
+<i class="ri-menu-line text-xl"></i>
+</button>
+</div>
+</div>
+</header>
+<!-- Hero секция -->
+<section class="relative overflow-hidden">
+<div class="absolute inset-0 z-0" style="background-image: url('https://readdy.ai/api/search-image?query=Professional%20diverse%20people%20working%20in%20modern%20office%20space%2C%20bright%20and%20airy%20environment%20with%20large%20windows%2C%20showing%20collaboration%20between%20different%20nationalities%2C%20people%20looking%20at%20computers%20and%20documents%2C%20soft%20natural%20lighting%2C%20clean%20and%20modern%20workspace&width=1600&height=800&seq=hero1&orientation=landscape'); background-size: cover; background-position: center right;"></div>
+<div class="absolute inset-0 z-10 hero-gradient"></div>
+<div class="container mx-auto px-4 py-16 md:py-24 relative z-20">
+<div class="w-full max-w-2xl">
+<h1 class="text-4xl md:text-5xl font-['Pacifico'] text-gray-900 mb-6">Найдите работу в Чехии быстро и безопасно</h1>
+<p class="text-lg md:text-xl text-gray-700 mb-8">JobBridge.cz — это платформа, которая соединяет трудовых мигрантов с проверенными работодателями. Мы помогаем найти работу, жильё и юридическую поддержку в Чехии.</p>
+<div class="bg-white p-5 rounded-lg shadow-lg mb-8">
+<div class="flex flex-col md:flex-row gap-4 mb-4">
+<div class="flex-1">
+<label class="block text-sm font-medium text-gray-700 mb-1">Профессия или ключевые слова</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="ri-search-line text-gray-400"></i>
+</div>
+<input type="text" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm" placeholder="Строитель, водитель, программист...">
+</div>
+</div>
+<div class="flex-1">
+<label class="block text-sm font-medium text-gray-700 mb-1">Город</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="ri-map-pin-line text-gray-400"></i>
+</div>
+<input type="text" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm" placeholder="Прага, Брно, Острава...">
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 mb-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-700">С жильём</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-700">Срочные вакансии</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm text-gray-700">Без знания языка</span>
+</label>
+</div>
+<button class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Найти работу</button>
+</div>
+<div class="flex flex-wrap gap-4 text-sm">
+<span class="text-gray-600">Популярные запросы:</span>
+<a href="#" class="text-primary hover:underline">Строительство</a>
+<a href="#" class="text-primary hover:underline">Склады</a>
+<a href="#" class="text-primary hover:underline">Уборка</a>
+<a href="#" class="text-primary hover:underline">Транспорт</a>
+<a href="#" class="text-primary hover:underline">IT</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Статистика -->
+<section class="bg-white py-12">
+<div class="container mx-auto px-4">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center stats-section">
+<div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-1">
+<div class="text-3xl font-bold text-primary mb-2 animate-number" data-target="3450">0+</div>
+<div class="text-gray-600">Активных вакансий</div>
+</div>
+<div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-2">
+<div class="text-3xl font-bold text-primary mb-2">1,200+</div>
+<div class="text-gray-600">Проверенных работодателей</div>
+</div>
+<div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-3">
+<div class="text-3xl font-bold text-primary mb-2">15,000+</div>
+<div class="text-gray-600">Успешных трудоустройств</div>
+</div>
+<div class="p-4 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp animate-delay-4">
+<div class="text-3xl font-bold text-primary mb-2">5</div>
+<div class="text-gray-600">Языков интерфейса</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Категории вакансий -->
+<section class="py-16 bg-gray-50">
+<div class="container mx-auto px-4">
+<h2 class="text-3xl font-['Nunito'] font-bold text-center mb-12">Популярные категории вакансий</h2>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+<a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-building-line text-2xl text-primary"></i>
+</div>
+<h3 class="font-medium mb-2">Строительство</h3>
+<p class="text-sm text-gray-500">856 вакансий</p>
+</a>
+<a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-store-3-line text-2xl text-primary"></i>
+</div>
+<h3 class="font-medium mb-2">Склады</h3>
+<p class="text-sm text-gray-500">642 вакансии</p>
+</a>
+<a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-home-gear-line text-2xl text-primary"></i>
+</div>
+<h3 class="font-medium mb-2">Уборка</h3>
+<p class="text-sm text-gray-500">529 вакансий</p>
+</a>
+<a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-truck-line text-2xl text-primary"></i>
+</div>
+<h3 class="font-medium mb-2">Транспорт</h3>
+<p class="text-sm text-gray-500">487 вакансий</p>
+</a>
+<a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-code-s-slash-line text-2xl text-primary"></i>
+</div>
+<h3 class="font-medium mb-2">IT</h3>
+<p class="text-sm text-gray-500">324 вакансии</p>
+</a>
+<a href="#" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-more-line text-2xl text-primary"></i>
+</div>
+<h3 class="font-medium mb-2">Все категории</h3>
+<p class="text-sm text-gray-500">3450+ вакансий</p>
+</a>
+</div>
+</div>
+</section>
+<!-- Горячие вакансии -->
+<section class="py-16 bg-gradient-to-b from-gray-50/50 to-white">
+<div class="container mx-auto px-4">
+<div class="flex justify-between items-center mb-10">
+<h2 class="text-3xl font-bold">Срочные вакансии</h2>
+<a href="#" class="text-primary font-medium hover:underline flex items-center gap-1">
+Смотреть все
+<i class="ri-arrow-right-line"></i>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Вакансия 1 -->
+<div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 card-3d">
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-xl font-semibold mb-1">Разнорабочий на стройку</h3>
+<p class="text-gray-600 mb-1">Stavební firma Novák</p>
+<div class="flex items-center gap-2 text-sm text-gray-500">
+<i class="ri-map-pin-line"></i>
+<span>Прага</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-secondary/80 to-secondary text-white mb-2">
+Срочно
+</span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+С жильём
+</span>
+</div>
+</div>
+<div class="mb-4">
+<div class="flex items-center gap-2 mb-2">
+<i class="ri-money-czech-koruna-circle-line text-gray-500"></i>
+<span class="font-medium">140-160 Kč/час</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<i class="ri-time-line text-gray-500"></i>
+<span>Полный рабочий день</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-translate-2 text-gray-500"></i>
+<span>Русский, Базовый чешский</span>
+</div>
+</div>
+<p class="text-gray-600 text-sm mb-4">Требуются разнорабочие на строительный объект в Праге. Опыт работы не обязателен. Предоставляем жильё и помощь с документами.</p>
+<div class="flex justify-between">
+<button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2 button-ripple">
+<i class="ri-send-plane-line"></i>
+Откликнуться
+</button>
+<button class="bg-secondary/10 text-secondary border-none px-3 py-2 rounded-button text-sm font-medium hover:bg-secondary/20 whitespace-nowrap flex items-center gap-2">
+<i class="ri-bookmark-line"></i>
+Сохранить
+</button>
+</div>
+</div>
+</div>
+<!-- Вакансия 2 -->
+<div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 card-3d">
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-xl font-semibold mb-1">Оператор производства</h3>
+<p class="text-gray-600 mb-1">Škoda Auto a.s.</p>
+<div class="flex items-center gap-2 text-sm text-gray-500">
+<i class="ri-map-pin-line"></i>
+<span>Млада-Болеслав</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-secondary/80 to-secondary text-white mb-2">
+Срочно
+</span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+С жильём
+</span>
+</div>
+</div>
+<div class="mb-4">
+<div class="flex items-center gap-2 mb-2">
+<i class="ri-money-czech-koruna-circle-line text-gray-500"></i>
+<span class="font-medium">32 000 - 38 000 Kč/месяц</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<i class="ri-time-line text-gray-500"></i>
+<span>Сменный график</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-translate-2 text-gray-500"></i>
+<span>Базовый чешский</span>
+</div>
+</div>
+<p class="text-gray-600 text-sm mb-4">Работа на автомобильном производстве. Сборка компонентов, контроль качества. Предоставляем общежитие, транспорт до работы и социальный пакет.</p>
+<div class="flex justify-between">
+<button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2 button-ripple">
+<i class="ri-send-plane-line"></i>
+Откликнуться
+</button>
+<button class="bg-secondary/10 text-secondary border-none px-3 py-2 rounded-button text-sm font-medium hover:bg-secondary/20 whitespace-nowrap flex items-center gap-2">
+<i class="ri-bookmark-line"></i>
+Сохранить
+</button>
+</div>
+</div>
+</div>
+<!-- Вакансия 3 -->
+<div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 card-3d">
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-xl font-semibold mb-1">Кладовщик-комплектовщик</h3>
+<p class="text-gray-600 mb-1">Alza.cz a.s.</p>
+<div class="flex items-center gap-2 text-sm text-gray-500">
+<i class="ri-map-pin-line"></i>
+<span>Прага</span>
+</div>
+</div>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
+Срочно
+</span>
+</div>
+<div class="mb-4">
+<div class="flex items-center gap-2 mb-2">
+<i class="ri-money-czech-koruna-circle-line text-gray-500"></i>
+<span class="font-medium">130 Kč/час</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<i class="ri-time-line text-gray-500"></i>
+<span>Полный рабочий день</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-translate-2 text-gray-500"></i>
+<span>Русский, Английский</span>
+</div>
+</div>
+<p class="text-gray-600 text-sm mb-4">Работа на складе интернет-магазина. Комплектация заказов, сортировка товаров. Требуется внимательность и ответственность. Бонусы за выполнение плана.</p>
+<div class="flex justify-between">
+<button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2 button-ripple">
+<i class="ri-send-plane-line"></i>
+Откликнуться
+</button>
+<button class="bg-secondary/10 text-secondary border-none px-3 py-2 rounded-button text-sm font-medium hover:bg-secondary/20 whitespace-nowrap flex items-center gap-2">
+<i class="ri-bookmark-line"></i>
+Сохранить
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Преимущества -->
+<section class="py-16 bg-gradient-to-b from-white to-gray-50/50">
+<div class="container mx-auto px-4">
+<h2 class="text-3xl font-bold text-center mb-12">Почему JobBridge?</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fadeInUp animate-delay-1">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-shield-check-line text-xl text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold mb-3">Проверенные работодатели</h3>
+<p class="text-gray-600">Мы проверяем каждую компанию по IČO в реестре ARES. Вы можете быть уверены, что работаете с легальным бизнесом.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-translate-2 text-xl text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold mb-3">Многоязычный интерфейс</h3>
+<p class="text-gray-600">Сайт доступен на 5 языках: русском, чешском, украинском, белорусском и вьетнамском. Вакансии автоматически переводятся.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-home-4-line text-xl text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold mb-3">Вакансии с жильём</h3>
+<p class="text-gray-600">Многие работодатели предлагают жильё. Используйте специальный фильтр, чтобы найти такие вакансии.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-chat-1-line text-xl text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold mb-3">Встроенный чат</h3>
+<p class="text-gray-600">Общайтесь с работодателями напрямую через встроенный чат. Отправляйте документы и получайте ответы быстро.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-scales-3-line text-xl text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold mb-3">Юридическая поддержка</h3>
+<p class="text-gray-600">Получите доступ к базе знаний и контактам бесплатных юристов, которые помогают мигрантам с документами.</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-star-line text-xl text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold mb-3">Рейтинг и отзывы</h3>
+<p class="text-gray-600">Читайте отзывы о работодателях от других сотрудников. Оставляйте свои отзывы после работы.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Биржа услуг -->
+<!-- Marketplace Header -->
+<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+<div class="container mx-auto px-4 py-4">
+<div class="flex items-center justify-between gap-4">
+<a href="#" class="text-2xl font-['Pacifico'] text-primary">WorkInCZ</a>
+<div class="flex-1 max-w-2xl">
+<div class="relative">
+<input type="text" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" placeholder="Search freelancers by skill, name or keyword...">
+<i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+</div>
+<button class="bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2">
+<i class="ri-add-line"></i>
+Post a Project
+</button>
+</div>
+</div>
+</header>
+<!-- Marketplace Content -->
+<div class="container mx-auto px-4 py-8">
+<div class="flex gap-8">
+<!-- Filters Sidebar -->
+<aside class="w-64 flex-shrink-0">
+<div class="bg-white rounded-lg border border-gray-200 p-6 sticky top-24">
+<h3 class="font-semibold mb-4">Filters</h3>
+<!-- Skills Filter -->
+<div class="mb-6">
+<label class="block text-sm font-medium text-gray-700 mb-2">Skills</label>
+<div class="space-y-2">
+<label class="flex items-center gap-2">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm">Web Development</span>
+</label>
+<label class="flex items-center gap-2">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm">Design</span>
+</label>
+<label class="flex items-center gap-2">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm">Translation</span>
+</label>
+<label class="flex items-center gap-2">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm">Marketing</span>
+</label>
+</div>
+</div>
+<!-- Hourly Rate -->
+<div class="mb-6">
+<label class="block text-sm font-medium text-gray-700 mb-2">Hourly Rate (CZK)</label>
+<div class="flex items-center gap-2">
+<input type="number" class="w-24 px-3 py-1 border border-gray-300 rounded text-sm" placeholder="50" min="50" max="500">
+<span>-</span>
+<input type="number" class="w-24 px-3 py-1 border border-gray-300 rounded text-sm" placeholder="500" min="50" max="500">
+</div>
+</div>
+<!-- Rating Filter -->
+<div class="mb-6">
+<label class="block text-sm font-medium text-gray-700 mb-2">Minimum Rating</label>
+<div class="flex items-center gap-1">
+<button class="text-yellow-400 hover:text-yellow-500">
+<i class="ri-star-fill"></i>
+</button>
+<button class="text-yellow-400 hover:text-yellow-500">
+<i class="ri-star-fill"></i>
+</button>
+<button class="text-yellow-400 hover:text-yellow-500">
+<i class="ri-star-fill"></i>
+</button>
+<button class="text-gray-300 hover:text-yellow-500">
+<i class="ri-star-fill"></i>
+</button>
+<button class="text-gray-300 hover:text-yellow-500">
+<i class="ri-star-fill"></i>
+</button>
+</div>
+</div>
+<!-- Availability -->
+<div class="mb-6">
+<label class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+<label class="flex items-center gap-2">
+<input type="checkbox" class="custom-checkbox">
+<span class="text-sm">Available Now</span>
+</label>
+</div>
+<!-- Location -->
+<div class="mb-6">
+<label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+<select class="w-full px-3 py-2 border border-gray-300 rounded text-sm">
+<option value="">All Locations</option>
+<option value="prague">Prague</option>
+<option value="brno">Brno</option>
+<option value="ostrava">Ostrava</option>
+</select>
+</div>
+<button class="w-full bg-primary text-white px-4 py-2 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">
+Apply Filters
+</button>
+</div>
+</aside>
+<!-- Freelancers Grid -->
+<div class="flex-1">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Freelancer Card 1 -->
+<div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+<div class="flex items-start gap-4">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20male%20freelancer%20with%20glasses%2C%20wearing%20a%20casual%20business%20attire%2C%20friendly%20smile%2C%20clean%20background&width=100&height=100&seq=freelancer1&orientation=squarish" alt="Martin Novák" class="w-16 h-16 rounded-full object-cover">
+<div class="flex-1">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="font-semibold">Martin Novák</h3>
+<p class="text-sm text-gray-600">Senior Web Developer</p>
+</div>
+<div class="flex items-center gap-1">
+<i class="ri-verified-badge-fill text-primary"></i>
+<span class="text-sm font-medium text-primary">Verified</span>
+</div>
+</div>
+<div class="flex items-center gap-1 mt-1">
+<div class="flex text-yellow-400">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-half-fill"></i>
+</div>
+<span class="text-sm text-gray-600">(4.8)</span>
+</div>
+</div>
+</div>
+<div class="mt-4">
+<div class="flex items-center gap-2 mb-3">
+<i class="ri-money-czech-koruna-circle-line text-gray-500"></i>
+<span class="font-medium">450 CZK/hour</span>
+</div>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="px-2 py-1 bg-primary/10 text-primary rounded text-sm">React</span>
+<span class="px-2 py-1 bg-primary/10 text-primary rounded text-sm">Node.js</span>
+<span class="px-2 py-1 bg-primary/10 text-primary rounded text-sm">TypeScript</span>
+</div>
+<p class="text-sm text-gray-600 mb-4">Full-stack developer with 8+ years of experience. Specialized in React and Node.js. Available for long-term projects.</p>
+<!-- Portfolio Preview -->
+<div class="flex gap-2 mb-4">
+<img src="https://readdy.ai/api/search-image?query=Modern%20website%20interface%20design%2C%20clean%20and%20minimal%2C%20blue%20color%20scheme&width=80&height=60&seq=portfolio1&orientation=landscape" alt="Portfolio 1" class="w-20 h-15 rounded object-cover">
+<img src="https://readdy.ai/api/search-image?query=Mobile%20app%20interface%20design%2C%20dark%20mode%2C%20modern%20UI%20elements&width=80&height=60&seq=portfolio2&orientation=landscape" alt="Portfolio 2" class="w-20 h-15 rounded object-cover">
+<img src="https://readdy.ai/api/search-image?query=E-commerce%20website%20design%2C%20product%20grid%20layout%2C%20white%20background&width=80&height=60&seq=portfolio3&orientation=landscape" alt="Portfolio 3" class="w-20 h-15 rounded object-cover">
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
+<span class="w-1.5 h-1.5 bg-success rounded-full mr-1"></span>
+Available Now
+</span>
+<span class="text-sm text-gray-500">Prague</span>
+</div>
+<div class="flex gap-2">
+<button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap">
+Contact
+</button>
+<button class="bg-gray-100 text-gray-700 px-3 py-2 rounded-button text-sm font-medium hover:bg-gray-200 whitespace-nowrap">
+<i class="ri-heart-line"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Freelancer Card 2 -->
+<div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+<div class="flex items-start gap-4">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20female%20designer%2C%20creative%20style%2C%20friendly%20smile%2C%20clean%20background&width=100&height=100&seq=freelancer2&orientation=squarish" alt="Jana Svobodová" class="w-16 h-16 rounded-full object-cover">
+<div class="flex-1">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="font-semibold">Jana Svobodová</h3>
+<p class="text-sm text-gray-600">UI/UX Designer</p>
+</div>
+<div class="flex items-center gap-1">
+<i class="ri-verified-badge-fill text-primary"></i>
+<span class="text-sm font-medium text-primary">Verified</span>
+</div>
+</div>
+<div class="flex items-center gap-1 mt-1">
+<div class="flex text-yellow-400">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+</div>
+<span class="text-sm text-gray-600">(5.0)</span>
+</div>
+</div>
+</div>
+<div class="mt-4">
+<div class="flex items-center gap-2 mb-3">
+<i class="ri-money-czech-koruna-circle-line text-gray-500"></i>
+<span class="font-medium">380 CZK/hour</span>
+</div>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="px-2 py-1 bg-primary/10 text-primary rounded text-sm">Figma</span>
+<span class="px-2 py-1 bg-primary/10 text-primary rounded text-sm">UI Design</span>
+<span class="px-2 py-1 bg-primary/10 text-primary rounded text-sm">Webflow</span>
+</div>
+<p class="text-sm text-gray-600 mb-4">Creative designer focused on user-centered design. Expert in Figma and design systems. Available for UI/UX projects.</p>
+<!-- Portfolio Preview -->
+<div class="flex gap-2 mb-4">
+<img src="https://readdy.ai/api/search-image?query=Mobile%20app%20design%2C%20gradient%20colors%2C%20modern%20UI%20elements&width=80&height=60&seq=portfolio4&orientation=landscape" alt="Portfolio 1" class="w-20 h-15 rounded object-cover">
+<img src="https://readdy.ai/api/search-image?query=Website%20landing%20page%20design%2C%20colorful%20and%20modern&width=80&height=60&seq=portfolio5&orientation=landscape" alt="Portfolio 2" class="w-20 h-15 rounded object-cover">
+<img src="https://readdy.ai/api/search-image?query=Dashboard%20interface%20design%2C%20data%20visualization%2C%20dark%20theme&width=80&height=60&seq=portfolio6&orientation=landscape" alt="Portfolio 3" class="w-20 h-15 rounded object-cover">
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
+<span class="w-1.5 h-1.5 bg-success rounded-full mr-1"></span>
+Available Now
+</span>
+<span class="text-sm text-gray-500">Brno</span>
+</div>
+<div class="flex gap-2">
+<button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap">
+Contact
+</button>
+<button class="bg-gray-100 text-gray-700 px-3 py-2 rounded-button text-sm font-medium hover:bg-gray-200 whitespace-nowrap">
+<i class="ri-heart-line"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p class="text-lg text-gray-600 mb-6">Вы работаете на себя и имеете IČO? Разместите свои услуги на нашей платформе и находите клиентов. Электрики, сантехники, мастера, няни, репетиторы и многие другие.</p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2">
+<i class="ri-add-circle-line"></i>
+Разместить услугу
+</button>
+<button class="border border-gray-300 text-gray-700 px-6 py-3 rounded-button font-medium hover:bg-gray-50 whitespace-nowrap flex items-center gap-2">
+<i class="ri-search-line"></i>
+Найти специалиста
+</button>
+</div>
+</div>
+<div class="md:w-1/2">
+<img src="https://readdy.ai/api/search-image?query=Professional%20freelancers%20working%20on%20laptops%20in%20a%20modern%20cafe%2C%20diverse%20group%20of%20people%2C%20some%20talking%20on%20phone%2C%20others%20typing%2C%20bright%20and%20airy%20environment%2C%20soft%20natural%20lighting%2C%20clean%20and%20modern%20workspace&width=600&height=400&seq=freelancer1&orientation=landscape" alt="Биржа услуг" class="rounded-lg shadow-md w-full h-auto object-cover">
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<div class="p-4 text-center">
+<div class="w-16 h-16 mx-auto flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-tools-line text-2xl text-primary"></i>
+</div>
+<h3 class="font-medium mb-1">Ремонт и строительство</h3>
+<p class="text-sm text-gray-500">320+ специалистов</p>
+</div>
+<div class="p-4 text-center">
+<div class="w-16 h-16 mx-auto flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-truck-line text-2xl text-primary"></i>
+</div>
+<h3 class="font-medium mb-1">Перевозки и доставка</h3>
+<p class="text-sm text-gray-500">185+ специалистов</p>
+</div>
+<div class="p-4 text-center">
+<div class="w-16 h-16 mx-auto flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-computer-line text-2xl text-primary"></i>
+</div>
+<h3 class="font-medium mb-1">IT и дизайн</h3>
+<p class="text-sm text-gray-500">210+ специалистов</p>
+</div>
+<div class="p-4 text-center">
+<div class="w-16 h-16 mx-auto flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-user-heart-line text-2xl text-primary"></i>
+</div>
+<h3 class="font-medium mb-1">Уход и помощь</h3>
+<p class="text-sm text-gray-500">150+ специалистов</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Отзывы -->
+<section class="py-16 bg-gray-50">
+<div class="container mx-auto px-4">
+<h2 class="text-3xl font-bold text-center mb-12">Истории успеха</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fadeInUp animate-delay-1">
+<div class="flex items-center mb-4">
+<div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-4">
+<img src="https://readdy.ai/api/search-image?query=Portrait%20of%20a%20smiling%20Eastern%20European%20man%20in%20his%2030s%20with%20short%20brown%20hair%2C%20casual%20clothing%2C%20neutral%20background%2C%20professional%20headshot%20style&width=100&height=100&seq=user1&orientation=squarish" alt="Алексей Петров" class="w-full h-full object-cover object-top">
+</div>
+<div>
+<h3 class="font-medium">Алексей Петров</h3>
+<p class="text-sm text-gray-500">Разнорабочий, Прага</p>
+</div>
+</div>
+<p class="text-gray-600 mb-4">«Благодаря JobBridge я нашел работу на стройке в Праге всего за 3 дня. Работодатель помог с жильем и оформлением документов. Уже 8 месяцев работаю в стабильной компании с хорошей зарплатой.»</p>
+<div class="flex text-yellow-400">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+</div>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm">
+<div class="flex items-center mb-4">
+<div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-4">
+<img src="https://readdy.ai/api/search-image?query=Portrait%20of%20a%20smiling%20Ukrainian%20woman%20in%20her%2020s%20with%20blonde%20hair%2C%20casual%20professional%20clothing%2C%20neutral%20background%2C%20professional%20headshot%20style&width=100&height=100&seq=user2&orientation=squarish" alt="Ольга Ковальчук" class="w-full h-full object-cover object-top">
+</div>
+<div>
+<h3 class="font-medium">Ольга Ковальчук</h3>
+<p class="text-sm text-gray-500">Оператор колл-центра, Брно</p>
+</div>
+</div>
+<p class="text-gray-600 mb-4">«Переехала в Чехию из Украины в 2022 году. На JobBridge нашла работу в международной компании, где могу использовать знание языков. Платформа помогла с юридическими вопросами и адаптацией.»</p>
+<div class="flex text-yellow-400">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-half-fill"></i>
+</div>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm">
+<div class="flex items-center mb-4">
+<div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-4">
+<img src="https://readdy.ai/api/search-image?query=Portrait%20of%20a%20Vietnamese%20man%20in%20his%2040s%20with%20glasses%2C%20business%20casual%20attire%2C%20neutral%20background%2C%20professional%20headshot%20style&width=100&height=100&seq=user3&orientation=squarish" alt="Нгуен Ван Хай" class="w-full h-full object-cover object-top">
+</div>
+<div>
+<h3 class="font-medium">Нгуен Ван Хай</h3>
+<p class="text-sm text-gray-500">Электрик, Острава</p>
+</div>
+</div>
+<p class="text-gray-600 mb-4">«Я зарегистрировался как самозанятый с IČO и разместил свои услуги на бирже JobBridge. Теперь у меня стабильный поток клиентов и я могу планировать свое время. Очень удобная платформа!»</p>
+<div class="flex text-yellow-400">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-line"></i>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Тарифы -->
+<section class="py-16 bg-gradient-to-b from-white to-gray-50/50">
+<div class="container mx-auto px-4">
+<div class="text-center mb-12">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary mb-4">
+<i class="ri-flashlight-line mr-1"></i>
+Special Launch Offer
+</span>
+<h2 class="text-4xl font-bold mb-4">Choose Your Plan</h2>
+<p class="text-lg text-gray-600 max-w-3xl mx-auto">Select the perfect subscription plan to unlock more opportunities and boost your success on WorkInCZ</p>
+<div class="flex items-center justify-center gap-2 mt-6">
+<span class="text-sm font-medium">Monthly</span>
+<label class="custom-switch">
+<input type="checkbox" id="billingToggle">
+<span class="switch-slider"></span>
+</label>
+<span class="text-sm font-medium">Annual</span>
+<span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-success/10 text-success ml-2">
+Save 20%
+</span>
+</div>
+</div>
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto relative">
+<!-- Special Offer Timer -->
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+<i class="ri-time-line"></i>
+<span>Offer ends in:</span>
+<span id="offerTimer" class="font-mono">23:59:59</span>
+</div>
+<!-- Basic Plan -->
+<div class="bg-white border border-gray-200 rounded-lg p-8 hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/20 to-primary transform origin-left scale-x-0 transition-transform group-hover:scale-x-100"></div>
+<div class="text-center mb-8">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 transform group-hover:scale-110 transition-transform">
+<i class="ri-user-line text-2xl text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Basic</h3>
+<div class="relative">
+<div class="text-3xl font-bold mb-2 monthly-price">Free</div>
+<div class="text-3xl font-bold mb-2 annual-price hidden">Free</div>
+</div>
+<p class="text-gray-600">Perfect for getting started</p>
+<div class="flex items-center justify-center gap-2 mt-2">
+<i class="ri-shield-check-line text-success"></i>
+<span class="text-sm text-success">No credit card required</span>
+</div>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>5 job applications per month</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Basic resume builder</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Job search & filters</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Email notifications</span>
+</li>
+<li class="flex items-center gap-3 text-gray-400">
+<i class="ri-close-circle-line"></i>
+<span>Priority support</span>
+</li>
+</ul>
+<button class="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-button font-medium hover:bg-gray-200 whitespace-nowrap">Current Plan</button>
+</div>
+<!-- VIP Plan -->
+<div class="bg-white border-2 border-primary rounded-lg p-8 hover:shadow-xl transition-all duration-300 relative group transform hover:-translate-y-1">
+<div class="absolute -top-4 left-1/2 -translate-x-1/2">
+<span class="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+<i class="ri-fire-line"></i>
+Most Popular
+</span>
+</div>
+<div class="absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 bg-primary/5 rounded-full transform group-hover:scale-150 transition-transform duration-500"></div>
+<div class="text-center mb-8 relative">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 transform group-hover:scale-110 transition-transform">
+<i class="ri-vip-crown-line text-2xl text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">VIP</h3>
+<div class="relative">
+<div class="monthly-price">
+<div class="text-3xl font-bold mb-1">399 CZK</div>
+<p class="text-gray-600">per month</p>
+</div>
+<div class="annual-price hidden">
+<div class="text-3xl font-bold mb-1">319 CZK</div>
+<p class="text-gray-600">per month, billed annually</p>
+<p class="text-sm text-success">Save 960 CZK per year</p>
+</div>
+</div>
+<div class="flex items-center justify-center gap-2 mt-2">
+<i class="ri-shield-check-line text-success"></i>
+<span class="text-sm text-success">30-day money-back guarantee</span>
+</div>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Unlimited job applications</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Priority in search results</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Automated application responses</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Access to premium projects</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>24/7 priority support</span>
+</li>
+</ul>
+<button class="w-full bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap flex items-center justify-center gap-2">
+<i class="ri-vip-crown-line"></i>
+Upgrade to VIP
+</button>
+</div>
+<!-- Premium Plan -->
+<div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-8 hover:shadow-xl transition-all duration-300 text-white">
+<div class="text-center mb-8">
+<div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-building-line text-2xl text-white"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Premium</h3>
+<div class="text-3xl font-bold mb-2">1999 CZK</div>
+<p class="text-gray-300">per month</p>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>5 job posts + 10 freelance posts</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Advanced candidate search</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Analytics & reporting</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Top placement in search</span>
+</li>
+<li class="flex items-center gap-3">
+<i class="ri-checkbox-circle-line text-success"></i>
+<span>Dedicated account manager</span>
+</li>
+</ul>
+<button class="w-full bg-white text-gray-900 px-6 py-3 rounded-button font-medium hover:bg-gray-100 whitespace-nowrap flex items-center justify-center gap-2">
+<i class="ri-shield-star-line"></i>
+Get Premium
+</button>
+</div>
+</div>
+<div class="mt-12 text-center">
+<p class="text-gray-600 mb-4">Have a promo code?</p>
+<div class="flex items-center justify-center gap-4">
+<input type="text" class="px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm" placeholder="Enter promo code">
+<button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-button text-sm font-medium hover:bg-gray-200 whitespace-nowrap">Apply</button>
+</div>
+</div>
+<div class="mt-8 text-center">
+<div class="flex items-center justify-center gap-6 text-sm text-gray-600">
+<div class="flex items-center gap-2">
+<i class="ri-secure-payment-line text-primary"></i>
+<span>Secure payment</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-refresh-line text-primary"></i>
+<span>Cancel anytime</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-customer-service-2-line text-primary"></i>
+<span>24/7 Support</span>
+</div>
+</div>
+<div class="flex items-center justify-center gap-3 mt-4">
+<i class="ri-visa-fill text-2xl text-gray-400"></i>
+<i class="ri-mastercard-fill text-2xl text-gray-400"></i>
+<i class="ri-paypal-fill text-2xl text-gray-400"></i>
+<i class="ri-apple-fill text-2xl text-gray-400"></i>
+<i class="ri-google-pay-fill text-2xl text-gray-400"></i>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA -->
+<section class="py-16 bg-primary text-white">
+<div class="container mx-auto px-4 text-center">
+<h2 class="text-3xl font-bold mb-6">Готовы найти работу в Чехии?</h2>
+<p class="text-xl mb-8 max-w-3xl mx-auto">Присоединяйтесь к тысячам людей, которые уже нашли работу через нашу платформу. Регистрация занимает всего 2 минуты.</p>
+<div class="flex flex-wrap justify-center gap-4">
+<button class="bg-white text-primary px-6 py-3 rounded-button font-medium hover:bg-gray-100 whitespace-nowrap">Регистрация для соискателей</button>
+<button class="bg-primary border border-white text-white px-6 py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap">Для работодателей</button>
+</div>
+</div>
+</section>
+<!-- Educational Platform -->
+<section class="py-16 bg-gradient-to-b from-gray-50/50 to-white">
+<div class="container mx-auto px-4">
+<!-- Hero Section -->
+<div class="text-center mb-16">
+<h1 class="text-4xl font-bold mb-4">Learn & Adapt to Czech Life</h1>
+<p class="text-xl text-gray-600 max-w-3xl mx-auto">Master the Czech language, understand local culture, and navigate legal requirements through our interactive learning platform.</p>
+</div>
+<!-- Course Categories -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+<div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-translate-2 text-xl text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold mb-2">Language Learning</h3>
+<p class="text-gray-600 mb-4">Interactive Czech language courses from beginner to advanced levels.</p>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-500">12 Courses</span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+Most Popular
+</span>
+</div>
+</div>
+<div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-file-text-line text-xl text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold mb-2">Document Guide</h3>
+<p class="text-gray-600 mb-4">Step-by-step wizards for visa, work permits, and residence documents.</p>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-500">8 Guides</span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
+Essential
+</span>
+</div>
+</div>
+<div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-community-line text-xl text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold mb-2">Cultural Integration</h3>
+<p class="text-gray-600 mb-4">Learn about Czech culture, customs, and daily life essentials.</p>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-500">6 Modules</span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+New
+</span>
+</div>
+</div>
+<div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-scales-3-line text-xl text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold mb-2">Legal Basics</h3>
+<p class="text-gray-600 mb-4">Understanding Czech labor laws and employee rights.</p>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-500">4 Courses</span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+Updated
+</span>
+</div>
+</div>
+</div>
+<!-- Featured Course -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden mb-16">
+<div class="flex flex-col md:flex-row">
+<div class="md:w-1/2 p-8">
+<div class="flex items-center gap-2 mb-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+Beginner Friendly
+</span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+Most Popular
+</span>
+</div>
+<h2 class="text-2xl font-bold mb-4">Essential Czech for Work</h2>
+<p class="text-gray-600 mb-6">Master the basic Czech phrases and vocabulary needed for workplace communication. Interactive lessons with audio pronunciation guides.</p>
+<div class="space-y-4 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 flex items-center justify-center rounded-full bg-success/10">
+<i class="ri-time-line text-success"></i>
+</div>
+<div>
+<p class="font-medium">Course Duration</p>
+<p class="text-sm text-gray-500">6 weeks • 2-3 hours/week</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 flex items-center justify-center rounded-full bg-secondary/10">
+<i class="ri-trophy-line text-secondary"></i>
+</div>
+<div>
+<p class="font-medium">Certificate Included</p>
+<p class="text-sm text-gray-500">Recognized by Czech employers</p>
+</div>
+</div>
+</div>
+<button class="bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2">
+<i class="ri-play-circle-line"></i>
+Start Learning
+</button>
+</div>
+<div class="md:w-1/2 relative">
+<img src="https://readdy.ai/api/search-image?query=Modern%20classroom%20setting%20with%20interactive%20whiteboard%20showing%20Czech%20language%20lesson%2C%20students%20engaged%20in%20learning%2C%20bright%20and%20welcoming%20atmosphere&width=600&height=400&seq=course1&orientation=landscape" alt="Czech Language Course" class="w-full h-full object-cover">
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end p-6">
+<div class="flex items-center gap-4 text-white">
+<div class="text-center">
+<div class="text-2xl font-bold">4.8</div>
+<div class="text-sm">Rating</div>
+</div>
+<div class="text-center">
+<div class="text-2xl font-bold">12K+</div>
+<div class="text-sm">Students</div>
+</div>
+<div class="text-center">
+<div class="text-2xl font-bold">95%</div>
+<div class="text-sm">Completion</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Progress Tracking -->
+<div class="bg-white rounded-lg p-6 shadow-sm mb-16">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-bold">Your Learning Progress</h2>
+<button class="text-primary hover:text-primary/80 font-medium">View All Courses</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="border border-gray-200 rounded-lg p-4">
+<div class="flex items-start gap-4 mb-4">
+<div class="w-12 h-12 flex-shrink-0 bg-primary/10 rounded-lg flex items-center justify-center">
+<i class="ri-translate-2 text-xl text-primary"></i>
+</div>
+<div class="flex-1">
+<h3 class="font-medium mb-1">Basic Czech A1</h3>
+<p class="text-sm text-gray-500">Module 3 of 5</p>
+</div>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
+In Progress
+</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-sm">
+<span class="text-gray-600">Progress</span>
+<span class="font-medium">60%</span>
+</div>
+<div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 60%; transition: width 1s ease-out;"></div>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-4">
+<button class="flex-1 bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 whitespace-nowrap">
+Continue Learning
+</button>
+<button class="w-10 h-10 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-gray-50">
+<i class="ri-more-2-fill text-gray-600"></i>
+</button>
+</div>
+</div>
+<div class="border border-gray-200 rounded-lg p-4">
+<div class="flex items-start gap-4 mb-4">
+<div class="w-12 h-12 flex-shrink-0 bg-primary/10 rounded-lg flex items-center justify-center">
+<i class="ri-file-text-line text-xl text-primary"></i>
+</div>
+<div class="flex-1">
+<h3 class="font-medium mb-1">Work Permit Guide</h3>
+<p class="text-sm text-gray-500">Step 2 of 4</p>
+</div>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
+New Update
+</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-sm">
+<span class="text-gray-600">Progress</span>
+<span class="font-medium">40%</span>
+</div>
+<div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 40%; transition: width 1s ease-out;"></div>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-4">
+<button class="flex-1 bg-secondary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-secondary/90 whitespace-nowrap">
+Continue Guide
+</button>
+<button class="w-10 h-10 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-gray-50">
+<i class="ri-more-2-fill text-gray-600"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Achievement Badges -->
+<div class="text-center mb-16">
+<h2 class="text-2xl font-bold mb-8">Your Achievements</h2>
+<div class="flex flex-wrap justify-center gap-6">
+<div class="w-24 text-center">
+<div class="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-2">
+<i class="ri-award-line text-2xl text-primary"></i>
+</div>
+<p class="text-sm font-medium">Quick Learner</p>
+</div>
+<div class="w-24 text-center">
+<div class="w-16 h-16 mx-auto bg-secondary/10 rounded-full flex items-center justify-center mb-2">
+<i class="ri-flag-line text-2xl text-secondary"></i>
+</div>
+<p class="text-sm font-medium">5 Day Streak</p>
+</div>
+<div class="w-24 text-center">
+<div class="w-16 h-16 mx-auto bg-success/10 rounded-full flex items-center justify-center mb-2">
+<i class="ri-chat-1-line text-2xl text-success"></i>
+</div>
+<p class="text-sm font-medium">First Dialog</p>
+</div>
+<div class="w-24 text-center opacity-50">
+<div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-2">
+<i class="ri-file-paper-2-line text-2xl text-gray-400"></i>
+</div>
+<p class="text-sm font-medium">Document Pro</p>
+</div>
+</div>
+</div>
+<!-- Call to Action -->
+<div class="bg-primary/5 rounded-lg p-8 text-center">
+<h2 class="text-2xl font-bold mb-4">Ready to Start Learning?</h2>
+<p class="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">Join thousands of migrants who have successfully adapted to life in the Czech Republic through our educational platform.</p>
+<button class="bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap inline-flex items-center gap-2">
+<i class="ri-user-add-line"></i>
+Create Free Account
+</button>
+</div>
+</div>
+</section>
+<!-- Подписка на новости -->
+<section class="py-16 bg-gradient-to-b from-white to-gray-50/50">
+<div class="container mx-auto px-4 max-w-3xl text-center">
+<h2 class="text-3xl font-bold mb-6">Получайте новые вакансии на почту</h2>
+<p class="text-lg text-gray-600 mb-8">Подпишитесь на нашу рассылку и получайте уведомления о новых вакансиях, соответствующих вашим критериям поиска.</p>
+<div class="flex flex-col sm:flex-row gap-4 mb-4">
+<div class="flex-1 relative">
+<input type="email" class="w-full px-4 py-3 pr-12 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" placeholder="Ваш email">
+<div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 text-gray-400">
+<span class="text-xs">Онлайн</span>
+<span class="inline-block w-2 h-2 bg-success rounded-full animate-pulse"></span>
+</div>
+</div>
+<button class="bg-primary text-white px-6 py-3 rounded-button font-medium hover:bg-primary/90 whitespace-nowrap flex items-center gap-2">
+<i class="ri-mail-send-line"></i>
+Подписаться
+</button>
+</div>
+<div class="flex items-center justify-center gap-2 text-sm text-gray-500 mb-4">
+<i class="ri-shield-check-line text-success"></i>
+<span>Уже <span class="font-medium text-gray-700 subscribers-count">12,458</span> человек получают новые вакансии</span>
+</div>
+<p class="text-sm text-gray-500">Мы не отправляем спам. Вы можете отписаться в любой момент.</p>
+</div>
+</section>
+<!-- Footer -->
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-bottom z-40">
+<div class="flex items-center justify-around">
+<button class="tab-button flex-1 flex flex-col items-center gap-1 py-3 text-primary relative">
+<i class="ri-home-5-line text-xl"></i>
+<span class="text-xs font-medium">Home</span>
+<span class="absolute top-2 right-1/3 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<button class="tab-button flex-1 flex flex-col items-center gap-1 py-3 text-gray-400">
+<i class="ri-search-line text-xl"></i>
+<span class="text-xs">Search</span>
+</button>
+<button class="tab-button flex-1 flex flex-col items-center gap-1 py-3 text-gray-400">
+<i class="ri-bookmark-line text-xl"></i>
+<span class="text-xs">Saved</span>
+</button>
+<button class="tab-button flex-1 flex flex-col items-center gap-1 py-3 text-gray-400 relative">
+<i class="ri-message-3-line text-xl"></i>
+<span class="text-xs">Messages</span>
+<span class="absolute top-2 right-1/3 w-2 h-2 bg-red-500 rounded-full"></span>
+</button>
+</div>
+</nav>
+<!-- Location Modal -->
+<div id="locationModal" class="fixed inset-0 bg-black/50 z-50 hidden">
+<div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 transform translate-y-full transition-transform duration-300">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-semibold">Select Location</h3>
+<button class="text-gray-400" id="closeLocationModal">
+<i class="ri-close-line text-2xl"></i>
+</button>
+</div>
+<div class="space-y-4">
+<button class="w-full flex items-center gap-3 p-3 rounded-xl bg-primary/5 text-left">
+<i class="ri-map-pin-fill text-primary"></i>
+<div>
+<div class="font-medium">Prague</div>
+<div class="text-sm text-gray-500">Czech Republic</div>
+</div>
+<i class="ri-check-line text-primary ml-auto"></i>
+</button>
+<button class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 text-left">
+<i class="ri-map-pin-line text-gray-400"></i>
+<div>
+<div class="font-medium">Brno</div>
+<div class="text-sm text-gray-500">Czech Republic</div>
+</div>
+</button>
+<button class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 text-left">
+<i class="ri-map-pin-line text-gray-400"></i>
+<div>
+<div class="font-medium">Ostrava</div>
+<div class="text-sm text-gray-500">Czech Republic</div>
+</div>
+</button>
+</div>
+</div>
+</div>
+<style>
+.safe-top {
+padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+padding-bottom: env(safe-area-inset-bottom);
+}
+.hide-scrollbar {
+-ms-overflow-style: none;
+scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+display: none;
+}
+@keyframes slideUp {
+from {
+transform: translateY(100%);
+}
+to {
+transform: translateY(0);
+}
+}
+</style>
+<script id="employerDashboardInteractions">
+document.addEventListener('DOMContentLoaded', function() {
+    // Salary Range Slider
+    const minSalary = document.getElementById('minSalary');
+    const maxSalary = document.getElementById('maxSalary');
+    const sliderTrack = document.querySelector('.slider-track');
+    const sliderRange = document.querySelector('.slider-range');
+    const minValue = document.querySelector('.min-value');
+    const maxValue = document.querySelector('.max-value');
+
+    function updateSlider() {
+        const min = parseInt(minSalary.value);
+        const max = parseInt(maxSalary.value);
+        const percent1 = ((min - 20000) / (200000 - 20000)) * 100;
+        const percent2 = ((max - 20000) / (200000 - 20000)) * 100;
+        sliderRange.style.left = percent1 + '%';
+        sliderRange.style.width = (percent2 - percent1) + '%';
+        minValue.textContent = min.toLocaleString() + ' CZK';
+        maxValue.textContent = max.toLocaleString() + ' CZK';
+    }
+
+    if (minSalary && maxSalary) {
+        minSalary.addEventListener('input', updateSlider);
+        maxSalary.addEventListener('input', updateSlider);
+    }
+
+    // Skills Tags Input
+    const skillsInput = document.querySelector('#skillTags input');
+    const skillTags = document.getElementById('skillTags');
+
+    if (skillsInput) {
+        skillsInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && this.value.trim()) {
+                e.preventDefault();
+                const tag = document.createElement('div');
+                tag.className = 'flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary rounded text-sm';
+                tag.innerHTML = `
+                    ${this.value}
+                    <button type="button" class="hover:text-primary/80">
+                        <i class="ri-close-line"></i>
+                    </button>
+                `;
+                tag.querySelector('button').addEventListener('click', function() {
+                    tag.remove();
+                });
+                skillTags.insertBefore(tag, this);
+                this.value = '';
+            }
+        });
+    }
+
+    // Rich Text Editor Buttons
+    const editorButtons = document.querySelectorAll('.border-b button');
+    const textarea = document.querySelector('textarea');
+
+    editorButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const command = this.querySelector('i').className.split('-')[1];
+            let tag = '';
+            switch(command) {
+                case 'bold':
+                    tag = '**';
+                    break;
+                case 'italic':
+                    tag = '_';
+                    break;
+                case 'unordered':
+                    tag = '- ';
+                    break;
+                case 'ordered':
+                    tag = '1. ';
+                    break;
+                case 'link':
+                    tag = '[text](url)';
+                    break;
+            }
+            if (textarea) {
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const text = textarea.value;
+                textarea.value = text.substring(0, start) + tag + text.substring(end);
+                textarea.focus();
+                textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+            }
+        });
+    });
+
+    // Form Submit
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-success text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+            notification.innerHTML = `
+                <i class="ri-checkbox-circle-line text-xl"></i>
+                <div>
+                    <p class="font-medium">Job Posted Successfully</p>
+                    <p class="text-sm opacity-90">Your job is now live</p>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
+        });
+    }
+
+    // Preview Button
+    const previewButton = document.querySelector('button:has(.ri-eye-line)');
+    if (previewButton) {
+        previewButton.addEventListener('click', function() {
+            // Add preview logic here
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-primary text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+            notification.innerHTML = `
+                <i class="ri-eye-line text-xl"></i>
+                <div>
+                    <p class="font-medium">Preview Mode</p>
+                    <p class="text-sm opacity-90">This is how your job post will look</p>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
+        });
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+const menuToggle = document.getElementById('menuToggle');
+const closeSidebar = document.getElementById('closeSidebar');
+const sidebar = document.querySelector('aside');
+const overlay = document.createElement('div');
+overlay.className = 'fixed inset-0 bg-black/50 z-30 hidden';
+document.body.appendChild(overlay);
+function openSidebar() {
+sidebar.classList.remove('-translate-x-full');
+overlay.classList.remove('hidden');
+document.body.classList.add('overflow-hidden');
+}
+function closeSidebarFn() {
+sidebar.classList.add('-translate-x-full');
+overlay.classList.add('hidden');
+document.body.classList.remove('overflow-hidden');
+}
+menuToggle.addEventListener('click', openSidebar);
+closeSidebar.addEventListener('click', closeSidebarFn);
+overlay.addEventListener('click', closeSidebarFn);
+// Close sidebar on window resize if it's open
+window.addEventListener('resize', function() {
+if (window.innerWidth >= 1024) {
+closeSidebarFn();
+}
+});
+// Handle mobile swipe to close sidebar
+let touchStartX = 0;
+let touchEndX = 0;
+sidebar.addEventListener('touchstart', e => {
+touchStartX = e.changedTouches[0].screenX;
+}, false);
+sidebar.addEventListener('touchend', e => {
+touchEndX = e.changedTouches[0].screenX;
+if (touchStartX > touchEndX + 50) {
+closeSidebarFn();
+}
+}, false);
+// Splash Screen
+setTimeout(() => {
+const splashScreen = document.getElementById('splashScreen');
+if (splashScreen) {
+splashScreen.classList.add('opacity-0');
+setTimeout(() => splashScreen.remove(), 500);
+}
+}, 2000);
+// Search Input Placeholders
+const searchInput = document.getElementById('searchInput');
+const placeholders = [
+'Search jobs...',
+'Factory worker in Prague...',
+'Warehouse operator...',
+'Driver with housing...'
+];
+let currentPlaceholder = 0;
+function cyclePlaceholders() {
+currentPlaceholder = (currentPlaceholder + 1) % placeholders.length;
+if (searchInput) {
+searchInput.placeholder = placeholders[currentPlaceholder];
+}
+}
+setInterval(cyclePlaceholders, 3000);
+// Location Modal
+const locationButton = document.getElementById('locationButton');
+const locationModal = document.getElementById('locationModal');
+const closeLocationModal = document.getElementById('closeLocationModal');
+if (locationButton && locationModal) {
+locationButton.addEventListener('click', () => {
+locationModal.classList.remove('hidden');
+requestAnimationFrame(() => {
+locationModal.querySelector('div').classList.remove('translate-y-full');
+});
+});
+}
+if (closeLocationModal && locationModal) {
+closeLocationModal.addEventListener('click', () => {
+locationModal.querySelector('div').classList.add('translate-y-full');
+setTimeout(() => {
+locationModal.classList.add('hidden');
+}, 300);
+});
+}
+// Category Cards
+const categoryCards = document.querySelectorAll('.category-card');
+categoryCards.forEach(card => {
+card.addEventListener('click', () => {
+categoryCards.forEach(c => c.classList.remove('active', 'bg-primary/5'));
+card.classList.add('active', 'bg-primary/5');
+});
+});
+// Job Cards Bookmark
+const bookmarkButtons = document.querySelectorAll('.job-card button');
+bookmarkButtons.forEach(button => {
+button.addEventListener('click', function() {
+const icon = this.querySelector('i');
+if (icon.classList.contains('ri-bookmark-line')) {
+icon.classList.replace('ri-bookmark-line', 'ri-bookmark-fill');
+icon.classList.add('text-primary');
+} else {
+icon.classList.replace('ri-bookmark-fill', 'ri-bookmark-line');
+icon.classList.remove('text-primary');
+}
+});
+});
+// Bottom Navigation
+const tabButtons = document.querySelectorAll('.tab-button');
+tabButtons.forEach(button => {
+button.addEventListener('click', () => {
+tabButtons.forEach(b => {
+b.classList.remove('text-primary');
+b.classList.add('text-gray-400');
+});
+button.classList.remove('text-gray-400');
+button.classList.add('text-primary');
+});
+});
+// Pull to Refresh
+let touchStart = 0;
+let pullDistance = 0;
+const maxPull = 100;
+const container = document.getElementById('searchContainer');
+document.addEventListener('touchstart', (e) => {
+touchStart = e.touches[0].clientY;
+}, { passive: true });
+document.addEventListener('touchmove', (e) => {
+if (window.scrollY === 0) {
+pullDistance = Math.min(maxPull, e.touches[0].clientY - touchStart);
+if (pullDistance > 0 && container) {
+container.style.transform = `translateY(${pullDistance}px)`;
+}
+}
+}, { passive: true });
+document.addEventListener('touchend', () => {
+if (pullDistance >= maxPull) {
+// Trigger refresh
+const notification = document.createElement('div');
+notification.className = 'fixed top-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-full text-sm z-50 animate-fadeInUp';
+notification.textContent = 'Refreshing...';
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 2000);
+}
+if (container) {
+container.style.transform = '';
+}
+pullDistance = 0;
+});
+});
+</script>
+<!-- Chat Interface -->
+<div class="flex h-screen bg-gray-50">
+<!-- Sidebar -->
+<aside class="w-80 bg-white border-r border-gray-200 flex flex-col">
+<!-- User Profile -->
+<div class="p-4 border-b border-gray-200">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20male%20with%20short%20dark%20hair%2C%20friendly%20smile%2C%20wearing%20casual%20business%20attire%2C%20clean%20background&width=40&height=40&seq=chat1&orientation=squarish" alt="Profile" class="w-10 h-10 rounded-full">
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-white"></span>
+</div>
+<div class="flex-1">
+<h3 class="font-medium">Mikhail Petrov</h3>
+<p class="text-sm text-gray-500">Online</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
+<i class="ri-more-2-fill text-gray-600"></i>
+</button>
+</div>
+</div>
+<!-- Search Chats -->
+<div class="p-4">
+<div class="relative">
+<input type="text" class="w-full pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full text-sm" placeholder="Search messages...">
+<i class="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+</div>
+<!-- Chat List -->
+<div class="flex-1 overflow-y-auto">
+<div class="px-2">
+<!-- Active Chat -->
+<div class="p-2 bg-primary/5 rounded-lg mb-2 cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20HR%20manager%2C%20blonde%20hair%2C%20professional%20attire%2C%20friendly%20smile%2C%20office%20background&width=48&height=48&seq=chat2&orientation=squarish" alt="HR Manager" class="w-12 h-12 rounded-full">
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-white"></span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<h4 class="font-medium text-primary">Anna Svobodová</h4>
+<span class="text-xs text-gray-500">12:45</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-sm text-gray-600 truncate">Great! I'll send you the contract shortly...</span>
+<span class="flex-shrink-0 px-2 py-0.5 bg-primary text-white text-xs rounded-full">2</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Other Chats -->
+<div class="p-2 hover:bg-gray-50 rounded-lg mb-2 cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20male%20recruiter%2C%20middle-aged%2C%20wearing%20glasses%2C%20business%20casual%2C%20office%20setting&width=48&height=48&seq=chat3&orientation=squarish" alt="Recruiter" class="w-12 h-12 rounded-full">
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-gray-300 rounded-full border-2 border-white"></span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<h4 class="font-medium">Jan Novotný</h4>
+<span class="text-xs text-gray-500">Yesterday</span>
+</div>
+<div class="text-sm text-gray-500 truncate">Thank you for your application...</div>
+</div>
+</div>
+</div>
+<div class="p-2 hover:bg-gray-50 rounded-lg mb-2 cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20office%20manager%2C%20dark%20hair%2C%20professional%20business%20attire%2C%20modern%20office%20background&width=48&height=48&seq=chat4&orientation=squarish" alt="Office Manager" class="w-12 h-12 rounded-full">
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-white"></span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<h4 class="font-medium">Marie Dvořáková</h4>
+<span class="text-xs text-gray-500">Mon</span>
+</div>
+<div class="text-sm text-gray-500 truncate">Please send your documents for verification...</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Chat -->
+<main class="flex-1 flex flex-col bg-gray-50">
+<!-- Chat Header -->
+<div class="bg-white border-b border-gray-200 px-6 py-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20HR%20manager%2C%20blonde%20hair%2C%20professional%20attire%2C%20friendly%20smile%2C%20office%20background&width=48&height=48&seq=chat5&orientation=squarish" alt="HR Manager" class="w-12 h-12 rounded-full">
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-white"></span>
+</div>
+<div>
+<h2 class="font-medium">Anna Svobodová</h2>
+<div class="flex items-center gap-2 text-sm text-gray-500">
+<span>HR Manager at Tech Solutions s.r.o.</span>
+<span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+<span>Typing...</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+<i class="ri-phone-line text-gray-600"></i>
+</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+<i class="ri-vidicon-line text-gray-600"></i>
+</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+<i class="ri-more-2-fill text-gray-600"></i>
+</button>
+</div>
+</div>
+</div>
+<!-- Chat Messages -->
+<div class="flex-1 overflow-y-auto p-6" id="chatMessages">
+<!-- Time Divider -->
+<div class="flex items-center justify-center mb-6">
+<span class="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-500">Today</span>
+</div>
+<!-- Received Message with Document -->
+<div class="flex items-end gap-3 mb-6">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20HR%20manager%2C%20blonde%20hair%2C%20professional%20attire%2C%20friendly%20smile%2C%20office%20background&width=32&height=32&seq=chat6&orientation=squarish" alt="HR Manager" class="w-8 h-8 rounded-full">
+<div class="max-w-[75%]">
+<div class="bg-white rounded-t-2xl rounded-br-2xl p-4 shadow-sm mb-1">
+<div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg mb-3">
+<div class="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-lg">
+<i class="ri-file-text-line text-primary"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-medium truncate">Employment_Contract.pdf</p>
+<p class="text-sm text-gray-500">2.4 MB • PDF</p>
+</div>
+<button class="text-primary hover:text-primary/80">
+<i class="ri-download-line"></i>
+</button>
+</div>
+<p>Here's the employment contract we discussed. Please review and let me know if you have any questions.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-gray-400">12:30</span>
+<span class="text-xs text-gray-400">Translated from Czech</span>
+</div>
+</div>
+</div>
+<!-- Sent Message -->
+<div class="flex items-end justify-end gap-3 mb-6">
+<div class="max-w-[75%]">
+<div class="bg-primary text-white rounded-t-2xl rounded-bl-2xl p-4 shadow-sm mb-1">
+<p>Thank you! I'll review it right away and get back to you with any questions.</p>
+</div>
+<div class="flex items-center justify-end gap-2">
+<span class="text-xs text-gray-400">12:35</span>
+<i class="ri-check-double-line text-primary"></i>
+</div>
+</div>
+</div>
+<!-- Received Message with Voice -->
+<div class="flex items-end gap-3 mb-6">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20HR%20manager%2C%20blonde%20hair%2C%20professional%20attire%2C%20friendly%20smile%2C%20office%20background&width=32&height=32&seq=chat7&orientation=squarish" alt="HR Manager" class="w-8 h-8 rounded-full">
+<div class="max-w-[75%]">
+<div class="bg-white rounded-t-2xl rounded-br-2xl p-4 shadow-sm mb-1">
+<div class="flex items-center gap-3">
+<button class="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full">
+<i class="ri-play-fill"></i>
+</button>
+<div class="flex-1">
+<div class="h-8 bg-gray-100 rounded-full relative">
+<div class="absolute inset-0 flex items-center px-4">
+<div class="w-full h-1 bg-gray-200 rounded">
+<div class="w-1/3 h-full bg-primary rounded"></div>
+</div>
+</div>
+</div>
+</div>
+<span class="text-sm text-gray-500">0:42</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-gray-400">12:40</span>
+<span class="text-xs text-gray-400">Translated from Czech</span>
+</div>
+</div>
+</div>
+<!-- Typing Indicator -->
+<div class="flex items-end gap-3">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20HR%20manager%2C%20blonde%20hair%2C%20professional%20attire%2C%20friendly%20smile%2C%20office%20background&width=32&height=32&seq=chat8&orientation=squarish" alt="HR Manager" class="w-8 h-8 rounded-full">
+<div class="bg-white rounded-t-2xl rounded-br-2xl py-4 px-6 shadow-sm">
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></span>
+<span class="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+<span class="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Chat Input -->
+<div class="bg-white border-t border-gray-200 p-4">
+<div class="flex items-end gap-4">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+<i class="ri-emotion-line text-xl text-gray-600"></i>
+</button>
+<div class="flex-1 bg-gray-100 rounded-2xl p-2">
+<div class="min-h-[40px] max-h-32 overflow-y-auto px-3 py-2" contenteditable="true" placeholder="Type a message..."></div>
+<div class="flex items-center justify-between pt-2 px-2 border-t border-gray-200">
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full">
+<i class="ri-attachment-2 text-gray-600"></i>
+</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full">
+<i class="ri-image-line text-gray-600"></i>
+</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full">
+<i class="ri-mic-line text-gray-600"></i>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full">
+<i class="ri-translate-2 text-gray-600"></i>
+</button>
+<button class="bg-primary text-white w-8 h-8 flex items-center justify-center rounded-full">
+<i class="ri-send-plane-fill"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Info Sidebar -->
+<aside class="w-80 bg-white border-l border-gray-200 p-6">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-semibold">Chat Info</h3>
+<button class="text-gray-400 hover:text-gray-600">
+<i class="ri-close-line"></i>
+</button>
+</div>
+<!-- Company Info -->
+<div class="mb-6">
+<img src="https://readdy.ai/api/search-image?query=Modern%20tech%20company%20logo%20design%2C%20minimalist%20style%2C%20blue%20and%20white%20color%20scheme&width=64&height=64&seq=chat9&orientation=squarish" alt="Company Logo" class="w-16 h-16 rounded-lg mb-3">
+<h4 class="font-medium">Tech Solutions s.r.o.</h4>
+<p class="text-sm text-gray-500 mb-3">IT Services & Consulting</p>
+<div class="flex items-center gap-2 text-sm text-gray-600">
+<i class="ri-map-pin-line"></i>
+<span>Prague, Czech Republic</span>
+</div>
+</div>
+<!-- Shared Files -->
+<div class="mb-6">
+<h4 class="font-medium mb-3">Shared Files</h4>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+<div class="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-lg">
+<i class="ri-file-text-line text-primary"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-medium truncate">Employment_Contract.pdf</p>
+<p class="text-sm text-gray-500">2.4 MB • PDF</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+<div class="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-lg">
+<i class="ri-file-word-line text-primary"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-medium truncate">Job_Description.docx</p>
+<p class="text-sm text-gray-500">842 KB • Word</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Privacy & Security -->
+<div>
+<h4 class="font-medium mb-3">Privacy & Security</h4>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<i class="ri-shield-check-line text-success"></i>
+<span class="text-sm">End-to-end encrypted</span>
+</div>
+<button class="text-gray-400 hover:text-gray-600">
+<i class="ri-information-line"></i>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<i class="ri-timer-line text-primary"></i>
+<span class="text-sm">Message retention: 30 days</span>
+</div>
+<button class="text-gray-400 hover:text-gray-600">
+<i class="ri-information-line"></i>
+</button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<div>
+<a href="#" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">JobBridge</a>
+<p class="text-gray-400 mb-6">Платформа для трудовых мигрантов в Чехии. Мы соединяем соискателей с проверенными работодателями.</p>
+<div class="flex space-x-4">
+<a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-primary transition-colors">
+<i class="ri-facebook-fill"></i>
+</a>
+<a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-primary transition-colors">
+<i class="ri-instagram-line"></i>
+</a>
+<a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-primary transition-colors">
+<i class="ri-telegram-fill"></i>
+</a>
+<a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-primary transition-colors">
+<i class="ri-whatsapp-line"></i>
+</a>
+</div>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-4">Для соискателей</h3>
+<ul class="space-y-3">
+<li><a href="#" class="text-gray-400 hover:text-white">Поиск работы</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">Создать резюме</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">Сохраненные вакансии</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">Советы по трудоустройству</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">VIP-статус</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-4">Для работодателей</h3>
+<ul class="space-y-3">
+<li><a href="#" class="text-gray-400 hover:text-white">Разместить вакансию</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">Поиск сотрудников</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">Проверка IČO</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">Тарифы и услуги</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">Помощь с документами</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-4">Контакты и поддержка</h3>
+<ul class="space-y-3">
+<li class="flex items-center gap-2">
+<i class="ri-mail-line text-primary"></i>
+<a href="mailto:info@jobbridge.cz" class="text-gray-400 hover:text-white">info@jobbridge.cz</a>
+</li>
+<li class="flex items-center gap-2">
+<i class="ri-phone-line text-primary"></i>
+<a href="tel:+420777888999" class="text-gray-400 hover:text-white">+420 777 888 999</a>
+</li>
+<li class="flex items-center gap-2">
+<i class="ri-map-pin-line text-primary"></i>
+<span class="text-gray-400">Прага, Вацлавская площадь 11</span>
+</li>
+<li class="flex items-center gap-2">
+<i class="ri-time-line text-primary"></i>
+<span class="text-gray-400">Пн-Пт: 9:00 - 18:00</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="border-t border-gray-800 pt-8">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="text-gray-400 text-sm">
+© 2025 JobBridge.cz. Все права защищены.
+</div>
+<div class="flex flex-wrap gap-4 text-sm">
+<a href="#" class="text-gray-400 hover:text-white">О нас</a>
+<a href="#" class="text-gray-400 hover:text-white">Условия использования</a>
+<a href="#" class="text-gray-400 hover:text-white">Политика конфиденциальности</a>
+<a href="#" class="text-gray-400 hover:text-white">Cookies</a>
+</div>
+<div class="flex items-center gap-3">
+<i class="ri-visa-line text-2xl text-gray-400"></i>
+<i class="ri-mastercard-line text-2xl text-gray-400"></i>
+<i class="ri-paypal-line text-2xl text-gray-400"></i>
+</div>
+</div>
+</div>
+</div>
+</footer>
+<script id="languageSelector">
+document.addEventListener('DOMContentLoaded', function() {
+const languageSelect = document.querySelector('select');
+if (languageSelect) {
+languageSelect.addEventListener('change', function() {
+// Здесь будет логика смены языка
+console.log('Выбран язык:', this.value);
+});
+}
+});
+</script>
+<script id="liveUsersWidget">
+document.addEventListener('DOMContentLoaded', function() {
+function updateLiveUsers() {
+const liveUsersElements = document.querySelectorAll('.live-users-count, .online-users-count');
+const activeJobsElements = document.querySelectorAll('.active-jobs-count');
+liveUsersElements.forEach(element => {
+if (element) {
+const baseCount = 2458;
+const variation = Math.floor(Math.random() * 200) - 100;
+const newCount = baseCount + variation;
+element.textContent = newCount.toLocaleString();
+}
+});
+activeJobsElements.forEach(element => {
+if (element) {
+const baseCount = 3450;
+const variation = Math.floor(Math.random() * 100) - 50;
+const newCount = baseCount + variation;
+element.textContent = newCount.toLocaleString();
+}
+});
+}
+setInterval(updateLiveUsers, 5000);
+const upgradeButton = document.querySelector('.text-primary.hover\\:underline');
+if (upgradeButton) {
+upgradeButton.addEventListener('click', function() {
+window.scrollTo({
+top: document.querySelector('section.py-16.bg-white').offsetTop,
+behavior: 'smooth'
+});
+});
+}
+});
+</script>
+<script id="dashboardCharts">
+document.addEventListener('DOMContentLoaded', function() {
+// Initialize all charts
+const funnelChart = echarts.init(document.getElementById('funnelChart'));
+const timelineChart = echarts.init(document.getElementById('timelineChart'));
+const peakHoursChart = echarts.init(document.getElementById('peakHoursChart'));
+// Funnel Chart
+const funnelOption = {
+animation: false,
+tooltip: {
+trigger: 'item',
+formatter: '{b}: {c}'
+},
+series: [{
+type: 'funnel',
+left: '10%',
+top: 0,
+bottom: 0,
+width: '80%',
+minSize: '0%',
+maxSize: '100%',
+sort: 'descending',
+gap: 2,
+label: {
+show: true,
+position: 'right'
+},
+labelLine: {
+length: 10,
+lineStyle: {
+width: 1,
+type: 'solid'
+}
+},
+itemStyle: {
+borderColor: '#fff',
+borderWidth: 1
+},
+emphasis: {
+label: {
+fontSize: 14
+}
+},
+data: [
+{value: 847, name: 'Posted', itemStyle: {color: 'rgba(87, 181, 231, 1)'}},
+{value: 625, name: 'Viewed', itemStyle: {color: 'rgba(141, 211, 199, 1)'}},
+{value: 425, name: 'Applied', itemStyle: {color: 'rgba(251, 191, 114, 1)'}},
+{value: 148, name: 'Interviewed', itemStyle: {color: 'rgba(252, 141, 98, 1)'}},
+{value: 52, name: 'Hired', itemStyle: {color: '#4F46E5'}}
+]
+}]
+};
+// Timeline Chart
+const timelineOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.9)',
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+top: 10,
+right: 10,
+bottom: 20,
+left: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+axisLine: {
+lineStyle: {
+color: '#e5e7eb'
+}
+},
+axisLabel: {
+color: '#1f2937'
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937'
+},
+splitLine: {
+lineStyle: {
+color: '#e5e7eb'
+}
+}
+},
+series: [{
+data: [120, 132, 101, 134, 90, 50, 45],
+type: 'line',
+smooth: true,
+symbolSize: 6,
+lineStyle: {
+color: 'rgba(87, 181, 231, 1)',
+width: 2
+},
+areaStyle: {
+color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+offset: 0,
+color: 'rgba(87, 181, 231, 0.1)'
+}, {
+offset: 1,
+color: 'rgba(87, 181, 231, 0)'
+}])
+},
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)'
+}
+}]
+};
+// Peak Hours Chart
+const peakHoursOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.9)',
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+top: 10,
+right: 10,
+bottom: 20,
+left: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm'],
+axisLine: {
+lineStyle: {
+color: '#e5e7eb'
+}
+},
+axisLabel: {
+color: '#1f2937'
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937'
+},
+splitLine: {
+lineStyle: {
+color: '#e5e7eb'
+}
+}
+},
+series: [{
+data: [10, 45, 78, 56, 89, 120, 92, 45],
+type: 'bar',
+barWidth: '60%',
+itemStyle: {
+color: 'rgba(141, 211, 199, 1)',
+borderRadius: [4, 4, 0, 0]
+}
+}]
+};
+// Set chart options
+funnelChart.setOption(funnelOption);
+timelineChart.setOption(timelineOption);
+peakHoursChart.setOption(peakHoursOption);
+// Handle window resize
+window.addEventListener('resize', function() {
+funnelChart.resize();
+timelineChart.resize();
+peakHoursChart.resize();
+});
+// Animate numbers
+function animateValue(element, start, end, duration) {
+let current = start;
+const range = end - start;
+const increment = range / (duration / 16);
+const timer = setInterval(() => {
+current += increment;
+if (current >= end) {
+clearInterval(timer);
+current = end;
+}
+element.textContent = Math.floor(current).toLocaleString();
+}, 16);
+}
+document.querySelectorAll('.text-2xl.font-bold').forEach(element => {
+const value = parseInt(element.textContent);
+if (!isNaN(value)) {
+animateValue(element, 0, value, 2000);
+}
+});
+ratingButtons.forEach((button, index) => {
+button.addEventListener('click', function() {
+ratingButtons.forEach((btn, btnIndex) => {
+if (btnIndex <= index) {
+btn.classList.remove('text-gray-300');
+btn.classList.add('text-yellow-400');
+} else {
+btn.classList.remove('text-yellow-400');
+btn.classList.add('text-gray-300');
+}
+});
+});
+});
+// Favorite Button Interaction
+const favoriteButtons = document.querySelectorAll('button:has(.ri-heart-line)');
+favoriteButtons.forEach(button => {
+button.addEventListener('click', function() {
+const icon = this.querySelector('i');
+if (icon.classList.contains('ri-heart-line')) {
+icon.classList.remove('ri-heart-line');
+icon.classList.add('ri-heart-fill');
+icon.classList.add('text-red-500');
+} else {
+icon.classList.remove('ri-heart-fill');
+icon.classList.remove('text-red-500');
+icon.classList.add('ri-heart-line');
+}
+});
+});
+// Contact Button Interaction
+const contactButtons = document.querySelectorAll('button.bg-primary:not(:has(i))');
+contactButtons.forEach(button => {
+button.addEventListener('click', function() {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-primary text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-mail-line text-xl"></i>
+<div>
+<p class="font-medium">Contact Request Sent</p>
+<p class="text-sm opacity-90">The freelancer will respond shortly</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+});
+});
+// Filter Application
+const applyFiltersButton = document.querySelector('aside button.w-full');
+if (applyFiltersButton) {
+applyFiltersButton.addEventListener('click', function() {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-success text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-filter-3-line text-xl"></i>
+<div>
+<p class="font-medium">Filters Applied</p>
+<p class="text-sm opacity-90">Showing filtered results</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+});
+}
+// Portfolio Image Preview
+const portfolioImages = document.querySelectorAll('img[alt^="Portfolio"]');
+portfolioImages.forEach(image => {
+image.addEventListener('click', function() {
+const modal = document.createElement('div');
+modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+modal.innerHTML = `
+<div class="relative bg-white p-2 rounded-lg max-w-2xl max-h-[80vh]">
+<button class="absolute -top-10 right-0 text-white text-2xl">&times;</button>
+<img src="${this.src}" alt="${this.alt}" class="w-full h-full object-contain rounded">
+</div>
+`;
+document.body.appendChild(modal);
+modal.addEventListener('click', function(e) {
+if (e.target === modal || e.target.textContent === '×') {
+modal.remove();
+}
+});
+});
+});
+});
+</script>
+<script id="chatInteractions">
+document.addEventListener('DOMContentLoaded', function() {
+// Message Input
+const messageInput = document.querySelector('[contenteditable="true"]');
+const sendButton = document.querySelector('button:has(.ri-send-plane-fill)');
+if (messageInput && sendButton) {
+messageInput.addEventListener('input', function() {
+if (this.textContent.trim()) {
+sendButton.classList.remove('bg-gray-200');
+sendButton.classList.add('bg-primary');
+} else {
+sendButton.classList.remove('bg-primary');
+sendButton.classList.add('bg-gray-200');
+}
+});
+messageInput.addEventListener('keydown', function(e) {
+if (e.key === 'Enter' && !e.shiftKey) {
+e.preventDefault();
+if (this.textContent.trim()) {
+sendMessage(this.textContent);
+}
+}
+});
+sendButton.addEventListener('click', function() {
+if (messageInput.textContent.trim()) {
+sendMessage(messageInput.textContent);
+}
+});
+}
+function sendMessage(text) {
+const chatMessages = document.getElementById('chatMessages');
+const messageHTML = `
+<div class="flex items-end justify-end gap-3 mb-6 opacity-0 transform translate-y-4" style="animation: slideUp 0.3s ease forwards">
+<div class="max-w-[75%]">
+<div class="bg-primary text-white rounded-t-2xl rounded-bl-2xl p-4 shadow-sm mb-1">
+<p>${text}</p>
+</div>
+<div class="flex items-center justify-end gap-2">
+<span class="text-xs text-gray-400">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+<i class="ri-check-line text-gray-400"></i>
+</div>
+</div>
+</div>
+`;
+chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+messageInput.textContent = '';
+chatMessages.scrollTop = chatMessages.scrollHeight;
+// Simulate received message
+setTimeout(() => {
+const typingIndicator = document.querySelector('.animate-bounce').parentElement.parentElement.parentElement;
+typingIndicator.style.display = 'flex';
+setTimeout(() => {
+typingIndicator.style.display = 'none';
+const receivedHTML = `
+<div class="flex items-end gap-3 mb-6 opacity-0 transform translate-y-4" style="animation: slideUp 0.3s ease forwards">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20HR%20manager%2C%20blonde%20hair%2C%20professional%20attire%2C%20friendly%20smile%2C%20office%20background&width=32&height=32&seq=chat10&orientation=squarish" alt="HR Manager" class="w-8 h-8 rounded-full">
+<div class="max-w-[75%]">
+<div class="bg-white rounded-t-2xl rounded-br-2xl p-4 shadow-sm mb-1">
+<p>I understand. Let me check and get back to you shortly.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-gray-400">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+<span class="text-xs text-gray-400">Translated from Czech</span>
+</div>
+</div>
+</div>
+`;
+chatMessages.insertAdjacentHTML('beforeend', receivedHTML);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+}, 2000);
+}, 500);
+}
+// File Upload
+const fileButton = document.querySelector('button:has(.ri-attachment-2)');
+if (fileButton) {
+fileButton.addEventListener('click', function() {
+const input = document.createElement('input');
+input.type = 'file';
+input.accept = '.pdf,.doc,.docx';
+input.click();
+input.addEventListener('change', function() {
+if (this.files && this.files[0]) {
+const file = this.files[0];
+const reader = new FileReader();
+reader.onload = function() {
+const chatMessages = document.getElementById('chatMessages');
+const fileHTML = `
+<div class="flex items-end justify-end gap-3 mb-6 opacity-0 transform translate-y-4" style="animation: slideUp 0.3s ease forwards">
+<div class="max-w-[75%]">
+<div class="bg-primary text-white rounded-t-2xl rounded-bl-2xl p-4 shadow-sm mb-1">
+<div class="flex items-center gap-3 p-3 bg-white/10 rounded-lg">
+<div class="w-10 h-10 flex items-center justify-center bg-white/20 rounded-lg">
+<i class="ri-file-text-line text-white"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-medium text-white truncate">${file.name}</p>
+<p class="text-sm text-white/80">${(file.size/1024/1024).toFixed(1)} MB • ${file.name.split('.').pop().toUpperCase()}</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-end gap-2">
+<span class="text-xs text-gray-400">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+<i class="ri-check-line text-gray-400"></i>
+</div>
+</div>
+</div>
+`;
+chatMessages.insertAdjacentHTML('beforeend', fileHTML);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+};
+reader.readAsDataURL(this.files[0]);
+}
+});
+});
+}
+// Voice Message
+const micButton = document.querySelector('button:has(.ri-mic-line)');
+if (micButton) {
+let isRecording = false;
+micButton.addEventListener('click', function() {
+if (!isRecording) {
+this.innerHTML = '<i class="ri-record-circle-fill text-red-500"></i>';
+isRecording = true;
+// Start recording simulation
+} else {
+this.innerHTML = '<i class="ri-mic-line text-gray-600"></i>';
+isRecording = false;
+// Stop recording and send voice message simulation
+const chatMessages = document.getElementById('chatMessages');
+const voiceHTML = `
+<div class="flex items-end justify-end gap-3 mb-6 opacity-0 transform translate-y-4" style="animation: slideUp 0.3s ease forwards">
+<div class="max-w-[75%]">
+<div class="bg-primary text-white rounded-t-2xl rounded-bl-2xl p-4 shadow-sm mb-1">
+<div class="flex items-center gap-3">
+<button class="w-8 h-8 flex items-center justify-center bg-white text-primary rounded-full">
+<i class="ri-play-fill"></i>
+</button>
+<div class="flex-1">
+<div class="h-8 bg-white/20 rounded-full relative">
+<div class="absolute inset-0 flex items-center px-4">
+<div class="w-full h-1 bg-white/20 rounded">
+<div class="w-2/3 h-full bg-white rounded"></div>
+</div>
+</div>
+</div>
+</div>
+<span class="text-sm text-white/80">0:08</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-2">
+<span class="text-xs text-gray-400">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+<i class="ri-check-line text-gray-400"></i>
+</div>
+</div>
+</div>
+`;
+chatMessages.insertAdjacentHTML('beforeend', voiceHTML);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+});
+}
+});
+</script>
+<script id="educationPlatform">
+document.addEventListener('DOMContentLoaded', function() {
+// Progress Bar Animation
+function animateProgressBars() {
+const progressBars = document.querySelectorAll('.bg-primary, .bg-secondary');
+progressBars.forEach(bar => {
+const width = bar.style.width;
+bar.style.width = '0';
+setTimeout(() => {
+bar.style.width = width;
+}, 300);
+});
+}
+// Course Card Hover Effects
+const courseCards = document.querySelectorAll('.rounded-lg.p-6.shadow-sm');
+courseCards.forEach(card => {
+card.addEventListener('mouseenter', () => {
+card.classList.add('transform', 'scale-105');
+});
+card.addEventListener('mouseleave', () => {
+card.classList.remove('transform', 'scale-105');
+});
+});
+// Achievement Badge Tooltips
+const badges = document.querySelectorAll('.w-24.text-center');
+badges.forEach(badge => {
+badge.addEventListener('mouseenter', () => {
+if (!badge.classList.contains('opacity-50')) {
+const tooltip = document.createElement('div');
+tooltip.className = 'absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap';
+tooltip.textContent = 'Achievement Unlocked!';
+badge.style.position = 'relative';
+badge.appendChild(tooltip);
+}
+});
+badge.addEventListener('mouseleave', () => {
+const tooltip = badge.querySelector('.absolute');
+if (tooltip) {
+tooltip.remove();
+}
+});
+});
+// Start Learning Button Effect
+const startButton = document.querySelector('button:has(.ri-play-circle-line)');
+if (startButton) {
+startButton.addEventListener('click', function() {
+this.classList.add('scale-95');
+setTimeout(() => {
+this.classList.remove('scale-95');
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-success text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-checkbox-circle-line text-xl"></i>
+<div>
+<p class="font-medium">Course Started!</p>
+<p class="text-sm opacity-90">Your first lesson is ready</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+}, 200);
+});
+}
+// Initialize Animations
+animateProgressBars();
+// Observe Progress Section
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+animateProgressBars();
+}
+});
+}, {
+threshold: 0.1
+});
+const progressSection = document.querySelector('.bg-white.rounded-lg.p-6.shadow-sm.mb-16');
+if (progressSection) {
+observer.observe(progressSection);
+}
+});
+</script>
+<script id="animations">
+document.addEventListener('DOMContentLoaded', function() {
+const observerOptions = {
+root: null,
+rootMargin: '0px',
+threshold: 0.1
+};
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+entry.target.classList.add('is-visible');
+if (entry.target.classList.contains('stats-section')) {
+animateNumbers();
+}
+}
+});
+}, observerOptions);
+document.querySelectorAll('section').forEach(section => {
+section.classList.add('fade-in-section');
+observer.observe(section);
+});
+function animateNumbers() {
+document.querySelectorAll('.animate-number').forEach(el => {
+const target = parseInt(el.getAttribute('data-target'));
+const duration = 2000;
+const start = 0;
+const increment = target / (duration / 16);
+let current = start;
+const updateNumber = () => {
+current += increment;
+if (current < target) {
+el.textContent = Math.floor(current).toLocaleString() + '+';
+requestAnimationFrame(updateNumber);
+} else {
+el.textContent = target.toLocaleString() + '+';
+}
+};
+el.classList.add('animate-count-up');
+updateNumber();
+});
+}
+const heroSection = document.querySelector('.hero-parallax');
+if (heroSection) {
+window.addEventListener('scroll', () => {
+const scrolled = window.pageYOffset;
+const parallaxOffset = scrolled * 0.4;
+heroSection.style.setProperty('--parallax-offset', `${parallaxOffset}px`);
+});
+}
+document.querySelectorAll('.card-3d').forEach(card => {
+card.addEventListener('mousemove', e => {
+const rect = card.getBoundingClientRect();
+const x = e.clientX - rect.left;
+const y = e.clientY - rect.top;
+const centerX = rect.width / 2;
+const centerY = rect.height / 2;
+const rotateX = (y - centerY) / 10;
+const rotateY = (centerX - x) / 10;
+card.style.setProperty('--rotate-x', `${rotateX}deg`);
+card.style.setProperty('--rotate-y', `${rotateY}deg`);
+});
+card.addEventListener('mouseleave', () => {
+card.style.setProperty('--rotate-x', '0deg');
+card.style.setProperty('--rotate-y', '0deg');
+});
+});
+document.querySelectorAll('.button-ripple').forEach(button => {
+button.addEventListener('click', e => {
+const rect = button.getBoundingClientRect();
+const x = e.clientX - rect.left;
+const y = e.clientY - rect.top;
+button.style.setProperty('--ripple-x', `${x}px`);
+button.style.setProperty('--ripple-y', `${y}px`);
+});
+});
+});
+</script>
+<script id="pricingInteractions">
+document.addEventListener('DOMContentLoaded', function() {
+const promoButton = document.querySelector('input[placeholder="Введите промокод"] + button');
+if (promoButton) {
+promoButton.addEventListener('click', function() {
+const promoInput = document.querySelector('input[placeholder="Введите промокод"]');
+if (promoInput && promoInput.value) {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-error-warning-line text-xl"></i>
+<div>
+<p class="font-medium">Промокод недействителен</p>
+<p class="text-sm opacity-90">Пожалуйста, проверьте правильность ввода</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+promoInput.value = '';
+}
+});
+}
+const vipButton = document.querySelector('button:has(.ri-vip-crown-line)');
+const premiumButton = document.querySelector('button:has(.ri-shield-star-line)');
+[vipButton, premiumButton].forEach(button => {
+if (button) {
+button.addEventListener('click', function() {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-primary text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-lock-line text-xl"></i>
+<div>
+<p class="font-medium">Требуется авторизация</p>
+<p class="text-sm opacity-90">Пожалуйста, войдите в аккаунт</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+});
+}
+});
+});
+</script>
+<script id="vacancyInteractions">
+document.addEventListener('DOMContentLoaded', function() {
+const applyButtons = document.querySelectorAll('button:not([type])');
+applyButtons.forEach(button => {
+if (button.textContent.includes('Откликнуться')) {
+button.addEventListener('click', function() {
+// Логика отклика на вакансию
+alert('Вы успешно откликнулись на вакансию!');
+});
+}
+if (button.textContent.includes('Сохранить')) {
+button.addEventListener('click', function() {
+const icon = this.querySelector('i');
+if (icon.classList.contains('ri-bookmark-line')) {
+icon.classList.remove('ri-bookmark-line');
+icon.classList.add('ri-bookmark-fill');
+alert('Вакансия сохранена!');
+} else {
+icon.classList.remove('ri-bookmark-fill');
+icon.classList.add('ri-bookmark-line');
+alert('Вакансия удалена из сохраненных!');
+}
+});
+}
+});
+});
+</script>
+<script id="searchForm">
+document.addEventListener('DOMContentLoaded', function() {
+const searchForm = document.querySelector('.bg-white.p-5.rounded-lg.shadow-lg button');
+if (searchForm) {
+searchForm.addEventListener('click', function(e) {
+e.preventDefault();
+// Логика поиска вакансий
+alert('Поиск вакансий...');
+});
+}
+});
+</script>
+<script id="newsletterSubscription">
+document.addEventListener('DOMContentLoaded', function() {
+const subscribeButton = document.querySelector('section.py-16.bg-gray-50 button');
+const subscribersCount = document.querySelector('.subscribers-count');
+function updateSubscribersCount() {
+if (subscribersCount) {
+const baseCount = 12458;
+const variation = Math.floor(Math.random() * 50) - 25;
+const newCount = baseCount + variation;
+subscribersCount.textContent = newCount.toLocaleString();
+}
+}
+setInterval(updateSubscribersCount, 8000);
+if (subscribeButton) {
+subscribeButton.addEventListener('click', function() {
+const emailInput = document.querySelector('section.py-16.bg-gray-50 input[type="email"]');
+if (emailInput && emailInput.value && emailInput.value.includes('@')) {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-success text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-checkbox-circle-line text-xl"></i>
+<div>
+<p class="font-medium">Спасибо за подписку!</p>
+<p class="text-sm opacity-90">Проверьте вашу почту</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+emailInput.value = '';
+} else {
+const notification = document.createElement('div');
+notification.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fadeInUp';
+notification.innerHTML = `
+<i class="ri-error-warning-line text-xl"></i>
+<div>
+<p class="font-medium">Ошибка</p>
+<p class="text-sm opacity-90">Пожалуйста, введите корректный email</p>
+</div>
+`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 5000);
+}
+});
+}
+});
+</script>
+</body>
+</html>

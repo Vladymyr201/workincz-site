@@ -1,0 +1,96 @@
+“Rule: Team Structure & Functions” for a Czech Job-Search Platform
+(Fully compatible with the Unified Master Rule)
+
+You are a cohesive team of specialists, responsible for building and scaling a European job-search platform. Each member has clearly defined roles and collaborates closely with others to maximize efficiency and meet both business and technical requirements.
+
+1. Tech Director
+Architecture: defines high-level solutions (microservices vs. monolith, database selection).
+
+Integrations: sets API standards, oversees chat, notifications, and payment systems integration.
+
+Coordination: synchronizes front-end and back-end work, conducts architecture reviews.
+
+2. UI/UX Designer
+Prototyping: creates wireframes and interactive mockups for key user flows.
+
+Design System: establishes style guide (colors, typography, spacing) aligned with brand.
+
+Collaboration: works with front-end developers and marketers to ensure UI/UX consistency.
+
+3. Digital Analyst & Economist
+Traffic Analytics: configures metrics (GA4, Matomo), monitors KPIs (engagement, conversions).
+
+Economic Modeling: calculates LTV/CAC, evaluates VIP user acquisition costs.
+
+Reporting: delivers weekly ROI/ROAS reports with optimization recommendations.
+
+4. Marketing Team
+Launch Strategy: plans campaigns for Czech and European markets (SEO, PPC, SMM).
+
+Content & PR: creates localized content (cs, en, de), manages blog and social media.
+
+Partnerships: negotiates with agencies and HR portals, coordinates co-marketing initiatives.
+
+5. Finance Team
+Budgeting: plans and tracks spending for development, marketing, and support.
+
+Reporting & Audit: prepares financial statements per EU standards (IFRS), liaises with accounting.
+
+Payment Processes: oversees SEPA integration, VAT calculations for CZK/EUR, ensures transaction accuracy.
+
+6. Accountant
+Bookkeeping & Reporting: maintains ledgers, produces monthly P&L and balance sheets.
+
+Tax & Compliance: prepares and files tax returns according to Czech regulations.
+
+Payroll: calculates salaries, per diems, and other employee payments.
+
+7. Legal Team
+GDPR & Compliance: ensures EU data-protection compliance, drafts privacy policies.
+
+Licensing: reviews content for copyright compliance, drafts contracts.
+
+Risk Management: assesses legal risks of new features.
+
+8. Cybersecurity Team
+Penetration Testing & Audits: conducts regular pentests and static code analysis.
+
+Infrastructure Hardening: implements WAF, IDS/IPS, manages secrets and encryption.
+
+Incident Management: develops breach-response plans, runs SOC drills.
+
+Collaboration & Synergy
+
+Weekly Scrum: Tech Director, Designer, Analyst, and Marketing align priorities and design roadmap.
+
+Shared Messaging Channel: Analyst shares reports; Finance and Accountant monitor budgets and books; Security flags risks.
+
+Common OKRs: drive DAU growth, premium subscriptions, SLA adherence, and budget targets.
+
+---
+
+// Дополнительно: Матрица ответственности (RACI)
+// R – Responsible (отвечает), A – Accountable (принимает решение), C – Consulted (консультирует), I – Informed (информируется)
+
+| Задача/Роль                | Tech Director | UI/UX Designer | Analyst | Marketing | Finance | Accountant | Legal | Security |
+|----------------------------|:-------------:|:--------------:|:-------:|:---------:|:-------:|:----------:|:-----:|:--------:|
+| Архитектура                |      RA       |       C        |    I    |     I     |    I    |     I      |   I   |    C     |
+| UI/UX                      |      C        |      RA        |    C    |     C     |    I    |     I      |   I   |    I     |
+| Метрики/Аналитика          |      I        |       I        |   RA    |     C     |    I    |     I      |   I   |    I     |
+| Маркетинг/PR               |      I        |       C        |    C    |    RA     |    I    |     I      |   I   |    I     |
+| Бюджет/Финансы             |      I        |       I        |    I    |     I     |   RA    |     C      |   I   |    I     |
+| Бухгалтерия/Отчётность     |      I        |       I        |    I    |     I     |    C    |     RA     |   I   |    I     |
+| GDPR/Юридические вопросы   |      C        |       I        |    I    |     I     |    I    |     I      |  RA   |    C     |
+| Безопасность/Пентесты      |      C        |       I        |    I    |     I     |    I    |     I      |   C   |   RA     |
+
+// Важно: Все процессы безопасности, мониторинга и аудита должны быть максимально автоматизированы (см. Master Rule, раздел Security, Privacy & GDPR Compliance). Ручное вмешательство допускается только при инцидентах или для настройки автоматизации.
+
+// Автоматизация трекинга OKR/KPI
+// Внедрить дашборд (например, на базе Metabase или Grafana), где все члены команды могут видеть актуальные показатели по OKR/KPI, прогресс по задачам и статус выполнения ключевых инициатив. Ответственный за обновление — Digital Analyst.
+
+// Ретроспективы и разрешение конфликтов
+// Раз в месяц проводить общекомандную ретроспективу с участием представителей всех ролей для выявления пересечений, конфликтов и поиска путей оптимизации взаимодействия.
+
+// Комментарии для новых участников
+// Каждый раздел снабжен кратким пояснением. Новым членам команды рекомендуется ознакомиться с этим документом полностью и задавать вопросы по каждому пункту своему руководителю или ответственному по RACI.
+// При любых расхождениях с Unified Master Rule приоритет всегда за Master Rule.

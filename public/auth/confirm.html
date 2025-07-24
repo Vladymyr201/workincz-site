@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение входа - WorkInCZ</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#F59E0B',
+                        success: '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <!-- Loading State -->
+        <div id="loadingState" class="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Подтверждение входа</h2>
+            <p class="text-gray-600">Проверяем вашу ссылку...</p>
+        </div>
+        
+        <!-- Success State -->
+        <div id="successState" class="bg-white rounded-xl shadow-lg p-8 text-center hidden">
+            <div class="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ri-check-line text-success text-2xl"></i>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Вход выполнен!</h2>
+            <p class="text-gray-600 mb-6">Перенаправляем вас в личный кабинет...</p>
+            <div class="animate-pulse">
+                <div class="h-2 bg-gray-200 rounded mb-2"></div>
+                <div class="h-2 bg-gray-200 rounded w-3/4 mx-auto"></div>
+            </div>
+        </div>
+        
+        <!-- Error State -->
+        <div id="errorState" class="bg-white rounded-xl shadow-lg p-8 text-center hidden">
+            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ri-error-warning-line text-red-500 text-2xl"></i>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Ошибка входа</h2>
+            <p id="errorMessage" class="text-gray-600 mb-6">Ссылка недействительна или истекла</p>
+            <div class="space-y-3">
+                <button onclick="window.location.href='/'" class="w-full bg-primary text-white py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                    Вернуться на главную
+                </button>
+                <button onclick="window.location.href='/login'" class="w-full bg-gray-100 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                    Попробовать снова
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase конфигурация
+        const firebaseConfig = {
+            apiKey: "AIzaSyAo34JvPwyqjwzjhd-d-qEKh7HqAAWsIiM",
+            authDomain: "workincz-759c7.firebaseapp.com",
+            projectId: "workincz-759c7",
+            storageBucket: "workincz-759c7.appspot.com",
+            messagingSenderId: "670842817143",
+            appId: "1:670842817143:web:d8998634da78318e9f1472",
+            databaseURL: "https://workincz-759c7-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        class MagicLinkHandler {
+            constructor() {
+                this.init();
+            }
+
+            async init() {
+                try {
+                    // Проверяем, есть ли email в localStorage
+                    const email = localStorage.getItem('emailForSignIn');
+                    if (!email) {
+                        this.showError('Email не найден. Попробуйте войти снова.');
+                        return;
+                    }
+
+                    // Обрабатываем Magic-Link
+                    await this.handleMagicLink(email);
+                    
+                } catch (error) {
+                    console.error('Ошибка обработки Magic-Link:', error);
+                    this.showError(this.getErrorMessage(error));
+                }
+            }
+
+            async handleMagicLink(email) {
+                // Проверяем, авторизован ли пользователь
+                const user = auth.currentUser;
+                
+                if (user) {
+                    // Пользователь уже авторизован
+                    await this.processUserLogin(user);
+                } else {
+                    // Ожидаем авторизацию
+                    auth.onAuthStateChanged(async (user) => {
+                        if (user) {
+                            await this.processUserLogin(user);
+                        } else {
+                            // Пользователь не авторизован, показываем ошибку
+                            setTimeout(() => {
+                                this.showError('Не удалось авторизовать пользователя');
+                            }, 3000);
+                        }
+                    });
+                }
+            }
+
+            async processUserLogin(user) {
+                try {
+                    // Проверяем, есть ли профиль пользователя
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    
+                    if (userDoc.exists) {
+                        // Профиль существует, определяем роль
+                        const userData = userDoc.data();
+                        const role = userData.role || 'candidate';
+                        
+                        this.showSuccess();
+                        this.redirectToDashboard(role);
+                        
+                    } else {
+                        // Создаем новый профиль
+                        await this.createUserProfile(user, email);
+                        
+                        this.showSuccess();
+                        this.redirectToDashboard('candidate'); // По умолчанию соискатель
+                    }
+                    
+                } catch (error) {
+                    console.error('Ошибка обработки профиля:', error);
+                    this.showError('Ошибка создания профиля');
+                }
+            }
+
+            async createUserProfile(user, email) {
+                const userData = {
+                    uid: user.uid,
+                    email: email,
+                    name: email.split('@')[0], // Используем часть email как имя
+                    role: 'candidate', // По умолчанию соискатель
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isVerified: true,
+                    isPremium: false,
+                    stats: {
+                        applications: 0,
+                        savedJobs: 0,
+                        profileViews: 0
+                    }
+                };
+
+                await db.collection('users').doc(user.uid).set(userData);
+                console.log('✅ Создан профиль пользователя:', user.uid);
+            }
+
+            redirectToDashboard(role) {
+                const dashboards = {
+                    candidate: '/dashboard.html',
+                    client: '/employer-dashboard.html',
+                    agency: '/agency-dashboard.html'
+                };
+
+                const dashboardUrl = dashboards[role] || '/dashboard.html';
+                
+                // Добавляем параметры для отслеживания
+                const url = new URL(dashboardUrl, window.location.origin);
+                url.searchParams.set('magic_link', 'true');
+                url.searchParams.set('role', role);
+                
+                // Очищаем localStorage
+                localStorage.removeItem('emailForSignIn');
+                
+                // Перенаправляем через 2 секунды
+                setTimeout(() => {
+                    window.location.href = url.toString();
+                }, 2000);
+            }
+
+            showSuccess() {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('successState').classList.remove('hidden');
+            }
+
+            showError(message) {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('errorState').classList.remove('hidden');
+                document.getElementById('errorMessage').textContent = message;
+            }
+
+            getErrorMessage(error) {
+                const errorMessages = {
+                    'auth/invalid-action-code': 'Ссылка недействительна или истекла',
+                    'auth/expired-action-code': 'Ссылка истекла. Запросите новую',
+                    'auth/invalid-email': 'Неверный формат email',
+                    'auth/user-disabled': 'Аккаунт заблокирован',
+                    'auth/user-not-found': 'Пользователь не найден'
+                };
+                
+                return errorMessages[error.code] || error.message || 'Произошла ошибка. Попробуйте еще раз';
+            }
+        }
+
+        // Инициализация обработчика
+        const magicLinkHandler = new MagicLinkHandler();
+    </script>
+</body>
+</html> 

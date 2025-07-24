@@ -1,0 +1,68 @@
+name: MCP Automation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * *'  # Ежедневно в 2:00
+
+jobs:
+  mcp-code-review:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install MCP servers
+      run: |
+        npm install -g mcp-server-code-runner
+        npm install -g @sentry/mcp-server
+        npm install -g @playwright/mcp
+    
+    - name: Run Code Review
+      run: |
+        npx mcp-server-code-runner --config mcp.json --review
+    
+    - name: Run Security Scan
+      run: |
+        npx @sentry/mcp-server --config mcp.json --scan
+    
+    - name: Run Performance Tests
+      run: |
+        npx @playwright/mcp --config mcp.json --test
+    
+    - name: Generate Report
+      run: |
+        node generate-mcp-report.js
+    
+    - name: Upload Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: mcp-report
+        path: mcp-report.json
+
+  mcp-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Run Monitoring
+      run: |
+        node monitor-mcp.js
+    
+    - name: Send Notifications
+      if: failure()
+      run: |
+        echo "MCP monitoring failed"
