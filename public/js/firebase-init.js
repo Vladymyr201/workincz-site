@@ -6,9 +6,9 @@
     return;
   }
 
-  // Конфигурация Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyAo34JvPwyqjwzjhd-d-qEKh7HqAAWsIiM",
+  // Загружаем безопасную конфигурацию Firebase
+  const firebaseConfig = window.loadFirebaseConfig ? window.loadFirebaseConfig() : {
+    apiKey: "AIzaSyAo34JvPwyqjwzjhd-d-qEKh7HqAAWsIiM", // Fallback для совместимости
     authDomain: "workincz-759c7.firebaseapp.com",
     projectId: "workincz-759c7",
     storageBucket: "workincz-759c7.appspot.com",
