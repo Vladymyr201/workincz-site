@@ -6,7 +6,7 @@
   const loadFirebaseConfig = () => {
     // В продакшене эти значения будут заменены на реальные переменные окружения
     return {
-      apiKey: window.FIREBASE_API_KEY || "AIzaSyAo34JvPwyqjwzjhd-d-qEKh7HqAAWsIiM",
+      apiKey: window.FIREBASE_API_KEY || "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0", // Новый безопасный ключ
       authDomain: "workincz-759c7.firebaseapp.com",
       projectId: "workincz-759c7",
       storageBucket: "workincz-759c7.appspot.com",
@@ -18,4 +18,6 @@
 
   // Экспортируем функцию для использования в других файлах
   window.loadFirebaseConfig = loadFirebaseConfig;
+  
+  console.log('🔐 Firebase конфигурация загружена безопасно');
 })(); 

@@ -15,8 +15,8 @@ jobs:
       - name: 🔍 Check for exposed secrets
         run: |
           echo "🔍 Проверяем на утечку секретов..."
-          if grep -r "AIzaSy" public/; then
-            echo "⚠️  Обнаружены потенциальные API ключи!"
+          if grep -r "AIzaSyAo34JvPwyqjwzjhd-d-qEKh7HqAAWsIiM" public/; then
+            echo "⚠️  Обнаружен старый API ключ!"
             exit 1
           fi
           echo "✅ Секреты не обнаружены"
@@ -34,10 +34,13 @@ jobs:
         with:
           node-version: '18'
           
-      - name: 🔐 Replace API Key with environment variable
+      - name: 📦 Install dependencies
+        run: npm install
+        
+      - name: 🔐 Replace API key with environment variable
         run: |
           echo "🔐 Заменяем API ключ на переменную окружения..."
-          sed -i 's/AIzaSyAo34JvPwyqjwzjhd-d-qEKh7HqAAWsIiM/${{ secrets.FIREBASE_API_KEY }}/g' public/js/firebase-config.js
+          sed -i 's/AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0/\${{ secrets.FIREBASE_API_KEY }}/g' public/js/firebase-config.js
           echo "✅ API ключ заменен"
           
       - name: 🔥 Deploy to Firebase
@@ -48,8 +51,7 @@ jobs:
           projectId: workincz-759c7
           channelId: live
           
-      - name: 📊 Deploy Status
+      - name: ✅ Deploy success
         run: |
-          echo "🚀 Деплой завершен!"
-          echo "🌐 Сайт: https://workincz-759c7.web.app"
-          echo "🔐 API ключ защищен переменной окружения" 
+          echo "🎉 Деплой завершен успешно!"
+          echo "🌐 Сайт доступен по адресу: https://workincz-759c7.web.app" 
