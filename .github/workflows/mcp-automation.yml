@@ -7,6 +7,8 @@ on:
     branches: [ main ]
   schedule:
     - cron: '0 2 * * *'  # Ежедневно в 2:00
+  workflow_dispatch:
+    # Позволяет запускать workflow вручную из интерфейса GitHub
 
 jobs:
   mcp-code-review:

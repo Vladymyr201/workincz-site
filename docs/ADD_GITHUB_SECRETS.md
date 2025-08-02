@@ -1,66 +1,157 @@
-# Настройка секретов в GitHub для успешной работы Actions
+# Добавление необходимых секретов в GitHub Actions
+
+В этом документе приведены пошаговые инструкции по добавлению всех необходимых секретов для работы GitHub Actions workflows в проекте WorkInCZ.
 
 ## Необходимые секреты
 
-### Базовые секреты для деплоя Firebase
-1. **FIREBASE_TOKEN**
-   - Описание: Токен доступа для деплоя через Firebase CLI
-   - Как получить: 
-     ```bash
-     firebase login:ci
-     ```
-     Команда выведет токен, который нужно скопировать
+### 1. FIREBASE_TOKEN
 
-### Секреты для бэкапа Firestore
-1. **GCP_PROJECT_ID**
-   - Описание: ID проекта Google Cloud
-   - Как найти: В консоли Firebase/GCP, это идентификатор в URL или в настройках проекта
+**Описание:** Токен для аутентификации Firebase CLI в CI/CD.
 
-2. **GCP_SA_KEY**
-   - Описание: Ключ сервисного аккаунта в формате JSON
-   - Как получить:
-     1. Перейдите в GCP Console → IAM → Service Accounts
-     2. Создайте новый сервисный аккаунт или выберите существующий
-     3. Добавьте необходимые роли: `Firestore Admin`, `Storage Admin`
-     4. Создайте и скачайте JSON ключ
-     5. Скопируйте все содержимое JSON файла
+**Значение:** 
+```
+[Вставьте сюда токен, полученный командой firebase login:ci]
+```
 
-3. **GCP_SA_EMAIL**
-   - Описание: Email сервисного аккаунта
-   - Где найти: В сведениях о сервисном аккаунте или в JSON ключе (поле `client_email`)
-
-4. **GCS_BUCKET**
-   - Описание: Имя Google Cloud Storage бакета для хранения бэкапов
-   - Формат: `your-bucket-name` (без префикса gs://)
-
-5. **BACKUP_ENCRYPTION_KEY** (опционально)
-   - Описание: Ключ для шифрования бэкапов
-   - Рекомендация: Используйте надежный случайный пароль длиной не менее 32 символов
-
-6. **SLACK_WEBHOOK_URL** (опционально)
-   - Описание: URL для отправки уведомлений в Slack
-   - Как получить: В настройках Slack в разделе Incoming Webhooks
-
-## Как добавить секреты в GitHub
-
+**Как добавить:**
 1. Перейдите в репозиторий на GitHub
 2. Нажмите на вкладку "Settings"
 3. В боковом меню выберите "Secrets and variables" → "Actions"
-4. Нажмите кнопку "New repository secret"
-5. Введите имя секрета и его значение
-6. Нажмите "Add secret"
+4. Нажмите "New repository secret"
+5. В поле "Name" введите `FIREBASE_TOKEN`
+6. В поле "Secret" вставьте значение токена
+7. Нажмите "Add secret"
 
-## Проверка настройки
+### 2. GCP_PROJECT_ID
 
-После добавления всех необходимых секретов, запустите workflow "Firebase Deploy" или "Firestore Backup" вручную через интерфейс GitHub Actions, чтобы убедиться, что все работает правильно.
+**Описание:** ID проекта Google Cloud.
 
-## Устранение неполадок
+**Значение:**
+```
+workincz-759c7
+```
 
-### Ошибка: "Context access might be invalid"
-Означает, что секрет не настроен в репозитории или имеет неверное имя. Проверьте список секретов и убедитесь, что имена совпадают с теми, что используются в workflow файлах.
+**Как добавить:**
+1. Перейдите в репозиторий на GitHub
+2. Нажмите на вкладку "Settings"
+3. В боковом меню выберите "Secrets and variables" → "Actions"
+4. Нажмите "New repository secret"
+5. В поле "Name" введите `GCP_PROJECT_ID`
+6. В поле "Secret" вставьте значение ID проекта
+7. Нажмите "Add secret"
 
-### Ошибка аутентификации Firebase/GCP
-Убедитесь, что:
-1. Токен Firebase не истек (срок действия обычно 1 месяц)
-2. Сервисный аккаунт имеет все необходимые права
-3. JSON ключ сервисного аккаунта корректен и не поврежден
+### 3. GCS_BUCKET
+
+**Описание:** Имя бакета Google Cloud Storage для хранения бэкапов.
+
+**Рекомендуемое значение:**
+```
+workincz-backups
+```
+
+**Примечание:** Если бакет не существует, его необходимо создать в Google Cloud Console.
+
+**Как добавить:**
+1. Перейдите в репозиторий на GitHub
+2. Нажмите на вкладку "Settings"
+3. В боковом меню выберите "Secrets and variables" → "Actions"
+4. Нажмите "New repository secret"
+5. В поле "Name" введите `GCS_BUCKET`
+6. В поле "Secret" вставьте имя бакета
+7. Нажмите "Add secret"
+
+### 4. GCP_SA_KEY
+
+**Описание:** Ключ сервисного аккаунта Google Cloud в формате JSON.
+
+**Как получить:**
+1. Перейдите в [Google Cloud Console](https://console.cloud.google.com/) → IAM & Admin → Service Accounts
+2. Создайте новый сервисный аккаунт с именем `github-actions-firestore-backup`
+3. Добавьте следующие роли:
+   - Cloud Datastore Import Export Admin (`roles/datastore.importExportAdmin`)
+   - Storage Object Admin (`roles/storage.objectAdmin`)
+4. Перейдите в Keys → Add Key → Create new key → JSON
+5. Скачайте и сохраните JSON файл
+
+**Как добавить:**
+1. Перейдите в репозиторий на GitHub
+2. Нажмите на вкладку "Settings"
+3. В боковом меню выберите "Secrets and variables" → "Actions"
+4. Нажмите "New repository secret"
+5. В поле "Name" введите `GCP_SA_KEY`
+6. В поле "Secret" вставьте полное содержимое JSON файла
+7. Нажмите "Add secret"
+
+### 5. GCP_SA_EMAIL
+
+**Описание:** Email сервисного аккаунта Google Cloud.
+
+**Как получить:** В файле ключа сервисного аккаунта (JSON) найдите значение поля `client_email`.
+
+**Как добавить:**
+1. Перейдите в репозиторий на GitHub
+2. Нажмите на вкладку "Settings"
+3. В боковом меню выберите "Secrets and variables" → "Actions"
+4. Нажмите "New repository secret"
+5. В поле "Name" введите `GCP_SA_EMAIL`
+6. В поле "Secret" вставьте email сервисного аккаунта
+7. Нажмите "Add secret"
+
+### 6. SLACK_WEBHOOK_URL (опционально)
+
+**Описание:** URL для отправки уведомлений в Slack.
+
+**Как получить:**
+1. В настройках Slack создайте новое приложение
+2. Активируйте Incoming Webhooks
+3. Создайте новый webhook для канала и скопируйте URL
+
+**Как добавить:**
+1. Перейдите в репозиторий на GitHub
+2. Нажмите на вкладку "Settings"
+3. В боковом меню выберите "Secrets and variables" → "Actions"
+4. Нажмите "New repository secret"
+5. В поле "Name" введите `SLACK_WEBHOOK_URL`
+6. В поле "Secret" вставьте URL webhook
+7. Нажмите "Add secret"
+
+### 7. BACKUP_ENCRYPTION_KEY (опционально)
+
+**Описание:** Ключ для шифрования бэкапов Firestore.
+
+**Как создать:**
+```bash
+# В Linux/macOS
+openssl rand -base64 32
+
+# В Windows PowerShell
+$bytes = New-Object byte[] 32
+(New-Object Security.Cryptography.RNGCryptoServiceProvider).GetBytes($bytes)
+[Convert]::ToBase64String($bytes)
+```
+
+**Как добавить:**
+1. Перейдите в репозиторий на GitHub
+2. Нажмите на вкладку "Settings"
+3. В боковом меню выберите "Secrets and variables" → "Actions"
+4. Нажмите "New repository secret"
+5. В поле "Name" введите `BACKUP_ENCRYPTION_KEY`
+6. В поле "Secret" вставьте сгенерированный ключ
+7. Нажмите "Add secret"
+
+## Проверка настройки секретов
+
+После добавления всех необходимых секретов, запустите workflow `firestore-backup` вручную:
+
+1. Перейдите в репозиторий на GitHub
+2. Нажмите на вкладку "Actions"
+3. В боковом меню выберите "Firestore Backup"
+4. Нажмите "Run workflow" → "Run workflow"
+5. Дождитесь завершения workflow и проверьте результаты
+
+## Дополнительные рекомендации
+
+1. **Регулярно обновляйте секреты** - рекомендуется ротация секретов каждые 30-90 дней.
+2. **Ограничивайте доступ к секретам** - предоставляйте доступ только тем, кому это необходимо.
+3. **Используйте принцип наименьших привилегий** - предоставляйте минимально необходимые права для выполнения задач.
+4. **Рассмотрите возможность использования OpenID Connect** - для более безопасной аутентификации в облачных сервисах.
