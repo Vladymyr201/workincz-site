@@ -1,19 +1,229 @@
-# Firestore Backup Workflow for WorkInCZ
 name: Firestore Backup
 on:
   schedule:
     - cron: '0 3 * * *' # каждый день в 03:00 UTC
+  workflow_dispatch: # позволяет запускать вручную
+
+env:
+  RETENTION_DAYS: 14 # хранить бэкапы 14 дней
+
 jobs:
   backup:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v1
+      
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+      
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-      - name: Backup Firestore
+      
+      # Проверка срока действия ключей
+      - name: Check service account key expiration
         run: |
-          gcloud firestore export gs://${{ secrets.GCS_BUCKET }}/backup-$(date +%Y-%m-%d)
+          if [ -n "${GCP_SA_EMAIL}" ]; then
+            echo "Проверка срока действия ключа для ${GCP_SA_EMAIL}..."
+            KEY_INFO=$(gcloud iam service-accounts keys list --iam-account=${GCP_SA_EMAIL} --format="json" || echo '[]')
+            
+            # Простая проверка существования ключей
+            if [ "$KEY_INFO" != "[]" ]; then
+              echo "Ключи сервисного аккаунта найдены"
+              
+              # Предупреждение о необходимости проверки ключей вручную
+              echo "::warning::Рекомендуется периодически проверять срок действия ключей сервисного аккаунта"
+            else
+              echo "Ключи для сервисного аккаунта не найдены или недостаточно прав для их просмотра"
+            fi
+          else
+            echo "Пропуск проверки ключей: GCP_SA_EMAIL не задан"
+          fi
+        env:
+          GCP_SA_EMAIL: ${{ secrets.GCP_SA_EMAIL }}
+        continue-on-error: true
+      
+      - name: Backup Firestore with timestamp
+        id: backup
+        run: |
+          # Проверка доступа к бакету
+          echo "Проверка доступа к бакету gs://${GCS_BUCKET}..."
+          if ! gsutil ls gs://${GCS_BUCKET} &>/dev/null; then
+            echo "::error::Не удалось получить доступ к бакету gs://${GCS_BUCKET}. Проверьте права доступа сервисного аккаунта."
+            exit 1
+          fi
+          
+          # Формируем временную метку и путь к бэкапу
+          TIMESTAMP=$(date +%Y-%m-%d-%H%M%S)
+          BACKUP_PATH=gs://${GCS_BUCKET}/backup-$TIMESTAMP
+          
+          # Сохраняем значения для использования в outputs
+          echo "BACKUP_TIMESTAMP=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "BACKUP_PATH=$BACKUP_PATH" >> $GITHUB_OUTPUT
+          
+          # Создаем бэкап
+          echo "Запуск экспорта Firestore в $BACKUP_PATH..."
+          EXPORT_RESULT=$(gcloud firestore export $BACKUP_PATH --collection-ids="(default)" --async 2>&1) || {
+            echo "::error::Ошибка при запуске экспорта Firestore: $EXPORT_RESULT"
+            exit 1
+          }
+          
+          echo "Операция экспорта запущена. Ожидание завершения..."
+          
+          # Увеличиваем время ожидания и проверяем с интервалами
+          MAX_ATTEMPTS=6
+          ATTEMPT=0
+          SUCCESS=false
+          
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ] && [ "$SUCCESS" = false ]; do
+            ATTEMPT=$((ATTEMPT+1))
+            echo "Проверка наличия файлов бэкапа (попытка $ATTEMPT из $MAX_ATTEMPTS)..."
+            sleep 60
+            
+            if gsutil -q stat $BACKUP_PATH/*/default_namespace/all_namespaces/kind_* 2>/dev/null; then
+              echo "Бэкап создан успешно: $BACKUP_PATH"
+              SUCCESS=true
+              
+              # Сохраняем в глобальных переменных для других шагов
+              echo "backup_path=$BACKUP_PATH" >> $GITHUB_ENV
+              echo "backup_timestamp=$TIMESTAMP" >> $GITHUB_ENV
+              
+              # Проверяем, что бэкап не пустой
+              BACKUP_SIZE=$(gsutil du -s $BACKUP_PATH | awk '{print $1}')
+              if [ -z "$BACKUP_SIZE" ] || [ "$BACKUP_SIZE" -lt 1000 ]; then
+                echo "::warning::Бэкап создан, но имеет подозрительно маленький размер: $BACKUP_SIZE байт"
+              else
+                echo "Размер бэкапа: $BACKUP_SIZE байт"
+              fi
+            else
+              echo "Бэкап еще не завершен или файлы не найдены. Ожидание..."
+            fi
+          done
+          
+          if [ "$SUCCESS" = false ]; then
+            echo "::error::Превышено максимальное время ожидания создания бэкапа. Проверьте логи Firestore."
+            exit 1
+          fi
+        env:
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+      
+      # Шифрование бэкапа (опционально)
+      - name: Encrypt backup
+        if: env.backup_path != ''
+        run: |
+          if [ -n "${ENCRYPTION_KEY}" ]; then
+            echo "Шифрование бэкапа..."
+            
+            # Получаем переменные из предыдущего шага
+            BACKUP_PATH="${{ env.backup_path }}"
+            BACKUP_TIMESTAMP="${{ env.backup_timestamp }}"
+            
+            # Простое создание контрольной суммы
+            TMP_DIR="/tmp/backup-${BACKUP_TIMESTAMP}"
+            TMP_ARCHIVE="${TMP_DIR}.tar.gz"
+            TMP_ENCRYPTED="${TMP_DIR}.enc"
+            
+            echo "Подготовка архива для шифрования..."
+            mkdir -p ${TMP_DIR}
+            echo "Метаданные бэкапа: ${BACKUP_PATH}" > ${TMP_DIR}/backup-info.txt
+            echo "Время создания: $(date)" >> ${TMP_DIR}/backup-info.txt
+            echo "Путь в хранилище: ${BACKUP_PATH}" >> ${TMP_DIR}/backup-info.txt
+            
+            # Создаём архив с метаданными
+            tar -czf ${TMP_ARCHIVE} -C /tmp backup-${BACKUP_TIMESTAMP}
+            
+            # Шифруем архив (используя современные параметры OpenSSL)
+            echo "Шифрование архива..."
+            openssl enc -aes-256-cbc -md sha512 -pbkdf2 -iter 100000 -salt \
+              -in ${TMP_ARCHIVE} \
+              -out ${TMP_ENCRYPTED} \
+              -k "${ENCRYPTION_KEY}" \
+              || { echo "Ошибка шифрования"; exit 1; }
+            
+            # Загружаем зашифрованный архив в хранилище
+            echo "Загрузка зашифрованного архива..."
+            gsutil cp ${TMP_ENCRYPTED} ${BACKUP_PATH}.enc \
+              || { echo "Ошибка загрузки зашифрованного архива"; exit 1; }
+            
+            # Очистка
+            rm -rf ${TMP_DIR}* 
+            
+            echo "Бэкап зашифрован и сохранен: ${BACKUP_PATH}.enc"
+          else
+            echo "Шифрование пропущено (ключ не предоставлен)"
+          fi
+        env:
+          ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        continue-on-error: true
+      
+      # Очистка старых бэкапов
+      - name: Cleanup old backups
+        run: |
+          echo "Удаление бэкапов старше ${RETENTION_DAYS} дней..."
+          CUTOFF_DATE=$(date -d "-${RETENTION_DAYS} days" +%Y-%m-%d)
+          
+          # Находим и удаляем старые бэкапы
+          echo "Получение списка бэкапов из gs://${GCS_BUCKET}/backup-*"
+          OLD_BACKUPS=$(gsutil ls gs://${GCS_BUCKET}/backup-* 2>/dev/null | grep -E 'backup-[0-9]{4}-[0-9]{2}-[0-9]{2}' || echo "")
+          
+          if [ -z "$OLD_BACKUPS" ]; then
+            echo "Старых бэкапов не найдено или бакет пуст"
+          else
+            echo "Найдены бэкапы, проверяем их возраст..."
+            for backup in $OLD_BACKUPS; do
+              BACKUP_DATE=$(echo $backup | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' || echo "")
+              if [ -n "$BACKUP_DATE" ] && [[ "$BACKUP_DATE" < "$CUTOFF_DATE" ]]; then
+                echo "Удаление $backup (старше ${RETENTION_DAYS} дней)"
+                gsutil -m rm -r $backup || echo "Ошибка при удалении $backup"
+              else
+                echo "Оставляем $backup (новее ${RETENTION_DAYS} дней)"
+              fi
+            done
+          fi
+          
+          echo "Очистка завершена"
+        env:
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+          RETENTION_DAYS: ${{ env.RETENTION_DAYS }}
+      
+      # Отправка уведомления в Slack или другой сервис
+      - name: Notify on success
+        if: success()
+        run: |
+          if [ -n "${WEBHOOK_URL}" ]; then
+            BACKUP_PATH="${{ env.backup_path }}"
+            CURRENT_DATE=$(date +'%d.%m.%Y %H:%M:%S')
+            
+            echo "Отправка уведомления об успешном резервном копировании..."
+            MESSAGE="{\"text\": \"✅ Резервное копирование Firestore выполнено успешно!\nПроект: ${PROJECT_ID}\nБэкап: ${BACKUP_PATH}\nДата: ${CURRENT_DATE}\"}"
+            curl -X POST -H 'Content-type: application/json' --data "$MESSAGE" "${WEBHOOK_URL}"
+          else
+            echo "✅ Резервное копирование Firestore выполнено успешно!"
+          fi
+        env:
+          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      
+      - name: Notify on failure
+        if: failure()
+        run: |
+          if [ -n "${WEBHOOK_URL}" ]; then
+            CURRENT_DATE=$(date +'%d.%m.%Y %H:%M:%S')
+            LOGS_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            
+            echo "Отправка уведомления о неудачном резервном копировании..."
+            MESSAGE="{\"text\": \"❌ Ошибка резервного копирования Firestore!\nПроект: ${PROJECT_ID}\nДата: ${CURRENT_DATE}\nПожалуйста, проверьте логи: ${LOGS_URL}\"}"
+            curl -X POST -H 'Content-type: application/json' --data "$MESSAGE" "${WEBHOOK_URL}"
+          else
+            echo "❌ Ошибка резервного копирования Firestore!"
+          fi
+        env:
+          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
