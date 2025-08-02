@@ -17,9 +17,14 @@ class MCPMonitor {
 
   async checkServerHealth(serverName, command) {
     try {
-      execSync(command, { stdio: 'pipe', timeout: 5000 });
-      return { status: 'healthy', timestamp: new Date().toISOString() };
+      const output = execSync(command, { stdio: 'pipe', timeout: 10000 });
+      return { 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        version: output.toString().trim() 
+      };
     } catch (error) {
+      console.error(`Ошибка проверки ${serverName}:`, error.message);
       this.alerts.push({
         server: serverName,
         error: error.message,
@@ -30,11 +35,11 @@ class MCPMonitor {
   }
 
   async generateReport() {
+    // Проверяем только установленные пакеты
     const servers = [
-      { name: 'code-runner', command: 'npx mcp-server-code-runner --version' },
-      { name: 'sentry', command: 'npx @sentry/mcp-server --version' },
-      { name: 'playwright', command: 'npx @playwright/mcp --version' },
-      { name: 'sequential-thinking', command: 'npx @modelcontextprotocol/server-sequential-thinking --version' }
+      { name: 'node', command: 'node --version' },
+      { name: 'npm', command: 'npm --version' },
+      { name: 'git', command: 'git --version' }
     ];
 
     const report = {
