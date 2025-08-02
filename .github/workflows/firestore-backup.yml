@@ -110,7 +110,7 @@ jobs:
             echo "Проверка наличия файлов бэкапа (попытка $ATTEMPT из $MAX_ATTEMPTS)..."
             sleep 60
             
-                          if gsutil -u ${PROJECT_ID} -q stat $BACKUP_PATH/*/default_namespace/all_namespaces/kind_* 2>/dev/null; then
+            if gsutil -u ${PROJECT_ID} -q stat $BACKUP_PATH/*/default_namespace/all_namespaces/kind_* 2>/dev/null; then
               echo "Бэкап создан успешно: $BACKUP_PATH"
               SUCCESS=true
               
@@ -214,7 +214,7 @@ jobs:
           fi
           
           echo "Очистка завершена"
-                  env:
+        env:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
           PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           RETENTION_DAYS: ${{ env.RETENTION_DAYS }}
@@ -262,6 +262,8 @@ jobs:
           BACKUP_PATH="${{ env.backup_path || 'Не создан' }}"
           JOB_STATUS="${{ job.status }}"
           
+          PROJECT_ID="${{ secrets.GCP_PROJECT_ID }}"
+          
           if [ "$JOB_STATUS" = "success" ]; then
             TITLE="Резервное копирование Firestore выполнено успешно"
             MESSAGE="Бэкап создан и сохранен в *$BACKUP_PATH*"
@@ -277,4 +279,3 @@ jobs:
           fi
         env:
           WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
