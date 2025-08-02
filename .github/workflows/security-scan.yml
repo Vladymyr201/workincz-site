@@ -1,33 +1,58 @@
-# Security Scan Workflow for WorkInCZ
 name: Security Scan
-
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 * * 1' # Каждый понедельник в 2:00 UTC
+  workflow_dispatch: # Позволяет запускать вручную
+
+env:
+  NODE_VERSION: '18'
 
 jobs:
-  security-scan:
+  scan-api-keys:
+    name: Scan for API Keys
     runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@v3
-    
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
     - name: Setup Node.js
-      uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run security audit
-      run: npm audit --audit-level moderate
-    
-    - name: Run Snyk security scan
-      uses: snyk/actions/node@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      uses: actions/setup-node@v4
       with:
-        args: --severity-threshold=high
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Run API Key security check
+      id: security_check
+      run: |
+        echo "Running API Key security check..."
+        node scripts/security-check.js
+      continue-on-error: true
+      
+    - name: Upload security report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-report
+        path: security-check-report.json
+        
+    - name: Check results
+      run: |
+        if [ -f security-check-report.json ]; then
+          oldApiKeysFound=$(jq '.summary.oldApiKeysFound' security-check-report.json)
+          filesWithOldKeys=$(jq '.files | keys | map(select(. as $path | [.[] | select((.keys[] | .isCurrent == false)) ] | length > 0)) | length' security-check-report.json)
+          
+          if [ "$oldApiKeysFound" -gt 0 ]; then
+            echo "::error::⚠️ Found $oldApiKeysFound old API keys in $filesWithOldKeys files. See the security-report artifact for details."
+            exit 1
+          else
+            echo "✅ No old API keys found. Security check passed."
+          fi
+        else
+          echo "::error::Security report file not found"
+          exit 1
+        fi
