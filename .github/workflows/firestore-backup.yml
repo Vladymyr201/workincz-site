@@ -19,13 +19,10 @@ jobs:
         uses: 'google-github-actions/auth@v1'
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
-          token_format: 'access_token'
+          export_environment_variables: true
       
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
-        with:
-          version: '>= 363.0.0'
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
       
       # Проверка срока действия ключей
       - name: Check service account key expiration
