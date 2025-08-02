@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkInCZ - Европейская платформа поиска работы</title>
+    <meta name="description" content="Найдите работу в Чехии и Европе. Работодатели, кадровые агентства и соискатели - все на одной платформе WorkInCZ.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            500: '#64748b',
+                            600: '#475569',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Современный градиентный фон */
+        .modern-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        /* Анимации */
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Современные тени */
+        .modern-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Улучшенные кнопки */
+        .btn-modern {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-modern:hover::before {
+            left: 100%;
+        }
+        
+        /* Анимированный фон */
+        .animated-bg {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Защита от выделения текста */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* Современные карточки */
+        .card-modern {
+            transition: all 0.3s ease;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .card-modern:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        /* Градиентный текст */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Современный поиск */
+        .search-modern {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-modern:focus-within {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Статистика */
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+        }
+        
+        /* Анимация появления */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="font-inter antialiased">
+    <!-- Modern UI Components -->
+    <script src="js/components/modern-ui.js"></script>
+    
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold gradient-text">WorkInCZ</h1>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#jobs" class="text-gray-700 hover:text-blue-600 transition-colors">Вакансии</a>
+                    <a href="#employers" class="text-gray-700 hover:text-blue-600 transition-colors">Работодателям</a>
+                    <a href="#agencies" class="text-gray-700 hover:text-blue-600 transition-colors">Агентствам</a>
+                    <a href="#about" class="text-gray-700 hover:text-blue-600 transition-colors">О нас</a>
+                </nav>
+                
+                <!-- Auth Buttons -->
+                <div class="flex items-center space-x-4">
+                    <a href="auth/login.html" class="text-gray-700 hover:text-blue-600 transition-colors">
+                        Войти
+                    </a>
+                    <a href="auth/register.html" class="btn-modern bg-blue-600 text-white px-6 py-2 rounded-full font-medium">
+                        Регистрация
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 relative overflow-hidden">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+            <div class="absolute top-40 left-40 w-80 h-80 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        </div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="text-center">
+                <!-- Main Heading -->
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                    Найдите работу своей мечты в{" "}
+                    <span class="gradient-text">Чехии</span>
+                </h1>
+                
+                <!-- Subtitle -->
+                <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Европейская платформа для поиска работы. Соединяем талантливых специалистов с лучшими работодателями Чехии и Европы.
+                </p>
+                
+                <!-- Search Bar -->
+                <div class="max-w-2xl mx-auto mb-12">
+                    <div class="search-modern p-2 flex items-center">
+                        <div class="flex-1 flex items-center">
+                            <i class="fas fa-search text-gray-400 ml-4 mr-3"></i>
+                            <input 
+                                type="text" 
+                                id="jobSearch" 
+                                placeholder="Должность, компания или ключевые слова..."
+                                class="flex-1 bg-transparent border-none outline-none text-gray-700 placeholder-gray-400 text-lg"
+                            >
+                        </div>
+                        <button 
+                            onclick="handleJobSearch()"
+                            class="btn-modern bg-blue-600 text-white px-8 py-3 rounded-full font-medium ml-4 hover:bg-blue-700 transition-colors"
+                        >
+                            Найти вакансии
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <div class="stat-card p-6 text-center">
+                        <div class="text-3xl font-bold gradient-text mb-2">10,000+</div>
+                        <div class="text-gray-600">Активных вакансий</div>
+                    </div>
+                    <div class="stat-card p-6 text-center">
+                        <div class="text-3xl font-bold gradient-text mb-2">5,000+</div>
+                        <div class="text-gray-600">Компаний-партнеров</div>
+                    </div>
+                    <div class="stat-card p-6 text-center">
+                        <div class="text-3xl font-bold gradient-text mb-2">50,000+</div>
+                        <div class="text-gray-600">Успешных трудоустройств</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Преимущества -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Почему WorkInCZ?
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Мы создали платформу, которая объединяет все необходимое для успешного поиска работы в Европе
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Карточка 1 -->
+                <div class="card-modern bg-white p-8 text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-globe text-2xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Европейский рынок</h3>
+                    <p class="text-gray-600">Доступ к тысячам вакансий в Чехии и других странах Европы</p>
+                </div>
+                
+                <!-- Карточка 2 -->
+                <div class="card-modern bg-white p-8 text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-shield-alt text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Безопасность</h3>
+                    <p class="text-gray-600">Проверенные работодатели и защищенные сделки</p>
+                </div>
+                
+                <!-- Карточка 3 -->
+                <div class="card-modern bg-white p-8 text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-rocket text-2xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Быстрый старт</h3>
+                    <p class="text-gray-600">Простая регистрация и мгновенный доступ к вакансиям</p>
+                </div>
+                
+                <!-- Карточка 4 -->
+                <div class="card-modern bg-white p-8 text-center">
+                    <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-users text-2xl text-orange-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Сообщество</h3>
+                    <p class="text-gray-600">Поддержка и советы от опытных специалистов</p>
+                </div>
+                
+                <!-- Карточка 5 -->
+                <div class="card-modern bg-white p-8 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-chart-line text-2xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Аналитика</h3>
+                    <p class="text-gray-600">Детальная статистика и аналитика рынка труда</p>
+                </div>
+                
+                <!-- Карточка 6 -->
+                <div class="card-modern bg-white p-8 text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-mobile-alt text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Мобильность</h3>
+                    <p class="text-gray-600">Удобное использование на любых устройствах</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Как это работает -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Как это работает?
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Всего 3 простых шага до вашей новой карьеры в Европе
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Шаг 1 -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Создайте профиль</h3>
+                    <p class="text-gray-600">Зарегистрируйтесь и заполните свой профиль с опытом и навыками</p>
+                </div>
+                
+                <!-- Шаг 2 -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Найдите вакансии</h3>
+                    <p class="text-gray-600">Используйте умный поиск для поиска подходящих вакансий</p>
+                </div>
+                
+                <!-- Шаг 3 -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Получите работу</h3>
+                    <p class="text-gray-600">Отправьте заявку и получите предложение от работодателя</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+                Готовы начать новую карьеру?
+            </h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                Присоединяйтесь к тысячам специалистов, которые уже нашли работу своей мечты через WorkInCZ
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="auth/register.html" class="btn-modern bg-white text-blue-600 px-8 py-3 rounded-full font-medium hover:bg-gray-100 transition-colors">
+                    Начать поиск
+                </a>
+                <a href="#jobs" class="btn-modern border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-blue-600 transition-colors">
+                    Посмотреть вакансии
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">WorkInCZ</h3>
+                    <p class="text-gray-400">Европейская платформа для поиска работы в Чехии и Европе</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Для соискателей</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Найти работу</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Создать резюме</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Карьерные советы</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Для работодателей</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Разместить вакансию</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Найти сотрудников</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">HR решения</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Поддержка</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Помощь</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Контакты</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 WorkInCZ. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Функция поиска вакансий
+        function handleJobSearch() {
+            const searchTerm = document.getElementById('jobSearch').value.trim();
+            if (searchTerm) {
+                // Показываем уведомление
+                modernUI.showToast({
+                    type: 'info',
+                    title: 'Поиск вакансий',
+                    message: `Ищем вакансии по запросу: "${searchTerm}"`,
+                    duration: 3000
+                });
+                
+                // Здесь будет логика поиска
+                setTimeout(() => {
+                    window.location.href = `jobs.html?search=${encodeURIComponent(searchTerm)}`;
+                }, 1000);
+            } else {
+                modernUI.showToast({
+                    type: 'warning',
+                    title: 'Внимание',
+                    message: 'Пожалуйста, введите поисковый запрос',
+                    duration: 3000
+                });
+            }
+        }
+
+        // Обработка Enter в поле поиска
+        document.getElementById('jobSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleJobSearch();
+            }
+        });
+
+        // Анимация появления элементов при скролле
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Добавляем класс для анимации к элементам
+        document.querySelectorAll('.card-modern, .stat-card').forEach(el => {
+            el.classList.add('animate-on-scroll');
+            observer.observe(el);
+        });
+
+        // Приветственное уведомление при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                modernUI.showToast({
+                    type: 'success',
+                    title: 'Добро пожаловать!',
+                    message: 'Добро пожаловать на WorkInCZ - вашу платформу для поиска работы в Европе',
+                    duration: 4000
+                });
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

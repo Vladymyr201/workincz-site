@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - WorkInCZ</title>
+    <meta name="description" content="Войдите в свой аккаунт WorkInCZ">
+    
+    <!-- Tailwind CSS - Оптимизированная версия для продакшена -->
+    <link href="../css/tailwind-optimized.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="../index.html" class="text-2xl font-bold text-primary-600">
+                        <i class="fas fa-briefcase mr-2"></i>WorkInCZ
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="../index.html" class="text-gray-600 hover:text-primary-600 transition-colors">Главная</a>
+                    <a href="../jobs.html" class="text-gray-600 hover:text-primary-600 transition-colors">Вакансии</a>
+                    <a href="register.html" class="text-gray-600 hover:text-primary-600 transition-colors">Регистрация</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <!-- Logo and Title -->
+            <div class="text-center">
+                <div class="mx-auto h-12 w-12 bg-primary-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt text-white text-xl"></i>
+                </div>
+                <h2 class="mt-6 text-3xl font-bold text-gray-900">
+                    Вход в аккаунт
+                </h2>
+                <p class="mt-2 text-sm text-gray-600">
+                    Войдите в свой аккаунт для доступа к платформе
+                </p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="mt-8 space-y-6">
+                <div class="space-y-4">
+                    <!-- Email Field -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                            Email адрес
+                        </label>
+                        <input 
+                            id="email" 
+                            name="email" 
+                            type="email" 
+                            required 
+                            autocomplete="email"
+                            class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            placeholder="your@email.com"
+                        >
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                            Пароль
+                        </label>
+                        <div class="relative">
+                            <input 
+                                id="password" 
+                                name="password" 
+                                type="password" 
+                                required 
+                                autocomplete="current-password"
+                                class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 pr-10"
+                                placeholder="Введите пароль"
+                            >
+                            <button 
+                                type="button" 
+                                id="togglePassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                            >
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input 
+                            id="remember-me" 
+                            name="remember-me" 
+                            type="checkbox" 
+                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                        >
+                        <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                            Запомнить меня
+                        </label>
+                    </div>
+                    <div class="text-sm">
+                        <a href="#" id="forgotPassword" class="font-medium text-primary-600 hover:text-primary-500">
+                            Забыли пароль?
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    <button 
+                        type="submit" 
+                        id="loginBtn"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                    >
+                        <span id="loginBtnText">Войти</span>
+                        <span id="loginBtnSpinner" class="hidden ml-2">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+                    <div class="flex">
+                        <i class="fas fa-exclamation-circle mr-2 mt-0.5"></i>
+                        <span id="errorText"></span>
+                    </div>
+                </div>
+
+                <!-- Success Message -->
+                <div id="successMessage" class="hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
+                    <div class="flex">
+                        <i class="fas fa-check-circle mr-2 mt-0.5"></i>
+                        <span id="successText"></span>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Divider -->
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-gray-50 text-gray-500">Или</span>
+                </div>
+            </div>
+
+            <!-- Quick Login Options -->
+            <div class="space-y-3">
+                <button 
+                    id="googleQuickLoginBtn"
+                    class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                    <i class="fab fa-google text-red-500 mr-2"></i>
+                    Быстрый вход через Google
+                </button>
+                <p class="text-xs text-gray-500 text-center">
+                    Только для зарегистрированных пользователей
+                </p>
+            </div>
+
+            <!-- Register Link -->
+            <div class="text-center">
+                <p class="text-sm text-gray-600">
+                    Нет аккаунта? 
+                    <a href="register.html" class="font-medium text-primary-600 hover:text-primary-500">
+                        Зарегистрироваться
+                    </a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Error Monitor -->
+    <script src="../js/utils/error-monitor.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+            authDomain: "workclick-cz.web.app",
+            databaseURL: "https://workincz-759c7-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "workincz-759c7",
+            storageBucket: "workincz-759c7.firebasestorage.app",
+            messagingSenderId: "670842817143",
+            appId: "1:670842817143:web:d8998634da78318e9f1472",
+            measurementId: "G-PB27XT0CT0"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        console.log('Firebase инициализирован на странице входа');
+    </script>
+
+    <!-- Login Logic -->
+    <script>
+        class LoginManager {
+            constructor() {
+                this.auth = firebase.auth();
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.checkAuthState();
+            }
+
+            setupEventListeners() {
+                // Form submission
+                document.getElementById('loginForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleLogin();
+                });
+
+                // Password toggle
+                document.getElementById('togglePassword').addEventListener('click', () => {
+                    this.togglePasswordVisibility();
+                });
+
+                // Google quick login
+                document.getElementById('googleQuickLoginBtn').addEventListener('click', () => {
+                    this.handleGoogleQuickLogin();
+                });
+
+                // Forgot password
+                document.getElementById('forgotPassword').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleForgotPassword();
+                });
+            }
+
+            async handleLogin() {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('remember-me').checked;
+
+                this.showLoading(true);
+                this.hideMessages();
+
+                try {
+                    // Set persistence based on remember me
+                    const persistence = rememberMe ? 
+                        firebase.auth.Auth.Persistence.LOCAL : 
+                        firebase.auth.Auth.Persistence.SESSION;
+                    
+                    await this.auth.setPersistence(persistence);
+
+                    // Sign in
+                    const userCredential = await this.auth.signInWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    this.showSuccess('Вход выполнен успешно! Перенаправление...');
+                    
+                    // Redirect to dashboard after short delay
+                    setTimeout(() => {
+                        this.redirectToDashboard(user);
+                    }, 1500);
+
+                } catch (error) {
+                    console.error('Login error:', error);
+                    this.handleLoginError(error);
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async handleGoogleQuickLogin() {
+                this.showLoading(true);
+                this.hideMessages();
+
+                try {
+                    if (!window.FirebaseIntegration) {
+                        throw new Error('Firebase не инициализирован');
+                    }
+
+                    // Используем быстрый вход через Google
+                    const result = await window.FirebaseIntegration.quickSignInWithGoogle();
+                    
+                    if (result && result.user) {
+                        this.showSuccess('Быстрый вход выполнен успешно! Перенаправление...');
+                        setTimeout(() => {
+                            this.redirectToDashboard(result.user);
+                        }, 1500);
+                    }
+
+                } catch (error) {
+                    console.error('Google quick login error:', error);
+                    this.handleLoginError(error);
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async checkUserRoles(user) {
+                try {
+                    // Проверяем, есть ли у пользователя роли в Firestore
+                    const db = firebase.firestore();
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    
+                    if (userDoc.exists && userDoc.data().roles && userDoc.data().roles.length > 0) {
+                        // Пользователь уже зарегистрирован с ролями
+                        this.showSuccess('Вход через Google выполнен успешно! Перенаправление...');
+                        setTimeout(() => {
+                            this.redirectToDashboard(user);
+                        }, 1500);
+                    } else {
+                        // Пользователь новый или без ролей
+                        this.showSuccess('Вход выполнен! Выберите роли для продолжения...');
+                        setTimeout(() => {
+                            // Перенаправляем на регистрацию для выбора ролей
+                            window.location.href = 'register.html?googleAuth=true&uid=' + user.uid;
+                        }, 2000);
+                    }
+                } catch (error) {
+                    console.error('Error checking user roles:', error);
+                    // В случае ошибки перенаправляем на регистрацию
+                    this.showSuccess('Вход выполнен! Выберите роли для продолжения...');
+                    setTimeout(() => {
+                        window.location.href = 'register.html?googleAuth=true&uid=' + user.uid;
+                    }, 2000);
+                }
+            }
+
+            async handleForgotPassword() {
+                const email = document.getElementById('email').value;
+                
+                if (!email) {
+                    this.showError('Пожалуйста, введите email для восстановления пароля');
+                    return;
+                }
+
+                try {
+                    await this.auth.sendPasswordResetEmail(email);
+                    this.showSuccess('Письмо для восстановления пароля отправлено на ваш email');
+                } catch (error) {
+                    console.error('Password reset error:', error);
+                    this.handleLoginError(error);
+                }
+            }
+
+            handleLoginError(error) {
+                let message = 'Произошла ошибка при входе';
+
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        message = 'Пользователь с таким email не найден. Проверьте email или зарегистрируйтесь';
+                        break;
+                    case 'auth/wrong-password':
+                        message = 'Неверный пароль. Проверьте правильность ввода';
+                        break;
+                    case 'auth/invalid-email':
+                        message = 'Неверный формат email';
+                        break;
+                    case 'auth/user-disabled':
+                        message = 'Аккаунт заблокирован. Обратитесь в поддержку';
+                        break;
+                    case 'auth/too-many-requests':
+                        message = 'Слишком много попыток входа. Попробуйте через 15 минут';
+                        break;
+                    case 'auth/account-exists-with-different-credential':
+                        message = 'Аккаунт уже существует с другим способом входа';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        message = 'Вход временно недоступен';
+                        break;
+                    case 'auth/network-request-failed':
+                        message = 'Ошибка сети. Проверьте подключение к интернету';
+                        break;
+                    case 'auth/popup-closed-by-user':
+                        message = 'Вход через Google был отменен';
+                        break;
+                    default:
+                        if (error.message.includes('не зарегистрирован')) {
+                            message = 'Пользователь не зарегистрирован. Сначала зарегистрируйтесь';
+                        } else {
+                            message = error.message || message;
+                        }
+                }
+
+                this.showError(message);
+            }
+
+            redirectToDashboard(user) {
+                // Проверяем, есть ли сохраненный URL для возврата
+                const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+                
+                if (redirectUrl) {
+                    sessionStorage.removeItem('redirectAfterLogin');
+                    window.location.href = redirectUrl;
+                } else {
+                    // По умолчанию перенаправляем на дашборд
+                    window.location.href = '../dashboard.html';
+                }
+            }
+
+            checkAuthState() {
+                this.auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        // User is already logged in, redirect to dashboard
+                        window.location.href = '../dashboard.html';
+                    }
+                });
+
+                // Проверяем результат redirect аутентификации
+                this.handleRedirectResult();
+            }
+
+            async handleRedirectResult() {
+                try {
+                    const result = await this.auth.getRedirectResult();
+                    if (result.user) {
+                        console.log('✅ Google аутентификация завершена:', result.user.email);
+                        await this.checkUserRoles(result.user);
+                    }
+                } catch (error) {
+                    console.error('❌ Ошибка обработки redirect результата:', error);
+                    this.handleLoginError(error);
+                }
+            }
+
+            togglePasswordVisibility() {
+                const passwordInput = document.getElementById('password');
+                const toggleBtn = document.getElementById('togglePassword');
+                const icon = toggleBtn.querySelector('i');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    passwordInput.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            }
+
+            showLoading(show) {
+                const btn = document.getElementById('loginBtn');
+                const btnText = document.getElementById('loginBtnText');
+                const spinner = document.getElementById('loginBtnSpinner');
+
+                if (show) {
+                    btn.disabled = true;
+                    btnText.textContent = 'Вход...';
+                    spinner.classList.remove('hidden');
+                } else {
+                    btn.disabled = false;
+                    btnText.textContent = 'Войти';
+                    spinner.classList.add('hidden');
+                }
+            }
+
+            showError(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                const errorText = document.getElementById('errorText');
+                
+                errorText.textContent = message;
+                errorDiv.classList.remove('hidden');
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    this.hideMessages();
+                }, 5000);
+            }
+
+            showSuccess(message) {
+                const successDiv = document.getElementById('successMessage');
+                const successText = document.getElementById('successText');
+                
+                successText.textContent = message;
+                successDiv.classList.remove('hidden');
+            }
+
+            hideMessages() {
+                document.getElementById('errorMessage').classList.add('hidden');
+                document.getElementById('successMessage').classList.add('hidden');
+            }
+        }
+
+        // Initialize login manager when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new LoginManager();
+        });
+    </script>
+</body>
+</html>

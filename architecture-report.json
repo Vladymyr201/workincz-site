@@ -1,0 +1,40 @@
+{
+  "timestamp": "2025-08-01T12:22:15.830Z",
+  "score": 88,
+  "errors": [],
+  "warnings": [
+    "⚠️ УСТАРЕВШИЙ МОДУЛЬ: src/modules/ - требует миграции",
+    "⚠️ УСТАРЕВШИЙ МОДУЛЬ: public/js/ - требует миграции",
+    "⚠️ УСТАРЕВШИЙ МОДУЛЬ: public/auth/ - требует миграции"
+  ],
+  "success": [
+    "✅ Запрещенный файл отсутствует: public/js-hashed/",
+    "✅ Запрещенный файл отсутствует: public/css/",
+    "✅ Запрещенный файл отсутствует: public/firebase-config.js",
+    "✅ Запрещенный файл отсутствует: public/js/firebase-integration.js",
+    "✅ Обязательный файл найден: src/lib/firebase.ts",
+    "✅ Обязательный файл найден: src/app/globals.css",
+    "✅ Обязательный файл найден: next.config.js",
+    "✅ Обязательный файл найден: tailwind.config.js",
+    "✅ Обязательный файл найден: PROJECT_RULES.md",
+    "✅ Обязательный файл найден: ARCHITECTURE.md",
+    "✅ Папка найдена: src/app/ (Next.js App Router)",
+    "✅ Папка найдена: src/components/ (React компоненты)",
+    "✅ Папка найдена: src/hooks/ (React хуки)",
+    "✅ Папка найдена: src/lib/ (Утилиты и конфигурации)",
+    "✅ Папка найдена: src/types/ (TypeScript типы)",
+    "✅ Папка найдена: src/services/ (Сервисы)",
+    "✅ Найдено TypeScript файлов: 62",
+    "✅ Конфигурационный файл найден: package.json",
+    "✅ Конфигурационный файл найден: next.config.js",
+    "✅ Конфигурационный файл найден: tailwind.config.js",
+    "✅ Конфигурационный файл найден: tsconfig.json",
+    "✅ Конфигурационный файл найден: webpack.config.js"
+  ],
+  "summary": {
+    "score": 88,
+    "errors": 0,
+    "warnings": 3,
+    "success": 22
+  }
+}

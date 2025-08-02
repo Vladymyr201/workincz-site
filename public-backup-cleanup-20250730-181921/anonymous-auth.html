@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Анонимная Аутентификация</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+        .login { background: #007bff; color: white; }
+        .logout { background: #dc3545; color: white; }
+        .dashboard { background: #28a745; color: white; }
+        .user-info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <h1>Анонимная Аутентификация</h1>
+    
+    <div id="status"></div>
+    
+    <div id="loginSection">
+        <h2>Быстрый вход без регистрации</h2>
+        <p>Нажмите кнопку ниже для анонимного входа в систему:</p>
+        <button id="anonymousLoginBtn" class="login">Войти анонимно</button>
+    </div>
+    
+    <div id="userSection" style="display: none;">
+        <div class="user-info">
+            <h3>Информация о пользователе</h3>
+            <div id="userInfo"></div>
+        </div>
+        
+        <button id="logoutBtn" class="logout">Выйти</button>
+        <button id="dashboardBtn" class="dashboard">Перейти в Dashboard</button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script>
+        // Firebase конфигурация
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+            authDomain: "workclick-cz.web.app",
+            databaseURL: "https://workincz-759c7-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "workincz-759c7",
+            storageBucket: "workincz-759c7.firebasestorage.app",
+            messagingSenderId: "670842817143",
+            appId: "1:670842817143:web:d8998634da78318e9f1472",
+            measurementId: "G-PB27XT0CT0"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        console.log('Firebase инициализирован на anonymous-auth странице');
+    </script>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        const loginSection = document.getElementById('loginSection');
+        const userSection = document.getElementById('userSection');
+        const userInfoDiv = document.getElementById('userInfo');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            statusDiv.appendChild(div);
+            console.log(message);
+        }
+
+        function showSection(sectionName) {
+            loginSection.style.display = 'none';
+            userSection.style.display = 'none';
+            
+            if (sectionName === 'login') {
+                loginSection.style.display = 'block';
+            } else if (sectionName === 'user') {
+                userSection.style.display = 'block';
+            }
+        }
+
+        try {
+            log('Инициализация Firebase...', 'info');
+            log('Firebase инициализирован', 'success');
+            log('Auth получен', 'success');
+
+            // Отслеживаем состояние аутентификации
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    log(`Пользователь авторизован: ${user.isAnonymous ? 'Анонимный' : user.email}`, 'success');
+                    showSection('user');
+                    userInfoDiv.innerHTML = `
+                        <p><strong>UID:</strong> ${user.uid}</p>
+                        <p><strong>Тип:</strong> ${user.isAnonymous ? 'Анонимный пользователь' : 'Email пользователь'}</p>
+                        <p><strong>Email:</strong> ${user.email || 'Не указан'}</p>
+                        <p><strong>Email подтверждён:</strong> ${user.emailVerified ? 'Да' : 'Нет'}</p>
+                        <p><strong>Дата создания:</strong> ${new Date(user.metadata.creationTime).toLocaleString()}</p>
+                        <p><strong>Последний вход:</strong> ${new Date(user.metadata.lastSignInTime).toLocaleString()}</p>
+                    `;
+                } else {
+                    log('Пользователь не авторизован', 'info');
+                    showSection('login');
+                }
+            });
+
+            // Анонимный вход
+            document.getElementById('anonymousLoginBtn').addEventListener('click', async () => {
+                try {
+                    log('Попытка анонимного входа...', 'info');
+                    const result = await firebase.auth().signInAnonymously();
+                    log('Анонимный вход успешен!', 'success');
+                } catch (error) {
+                    log(`Ошибка анонимного входа: ${error.message}`, 'error');
+                }
+            });
+
+            // Выход
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                try {
+                    log('Попытка выхода...', 'info');
+                    await firebase.auth().signOut();
+                    log('Выход успешен!', 'success');
+                } catch (error) {
+                    log(`Ошибка выхода: ${error.message}`, 'error');
+                }
+            });
+
+            // Переход в Dashboard
+            document.getElementById('dashboardBtn').addEventListener('click', () => {
+                window.location.href = '/dashboard.html';
+            });
+
+        } catch (error) {
+            log(`Критическая ошибка: ${error.message}`, 'error');
+        }
+    </script>
+</body>
+</html>

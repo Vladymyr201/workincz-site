@@ -47,7 +47,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "mcp-server-sentry",
+        "@sentry/mcp-server",
         "--auth-token",
         "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"
       ]
@@ -106,6 +106,12 @@
         "-y",
         "youtube-data-mcp-server"
       ]
+    },
+    "FullAutoQA": {
+      "command": "npx",
+      "args": [
+        "mcp-server-code-runner"
+      ]
     }
   },
   "codeReviewChecklist": [
@@ -163,6 +169,48 @@
           ]
         }
       ]
+    },
+    {
+      "name": "full-auto-qa",
+      "trigger": "onFileSave",
+      "actions": [
+        {
+          "type": "runFullAutoQA",
+          "mcp": [
+            "FullAutoQA"
+          ],
+          "description": "When a file is saved or changed, trigger FullAutoQA to check code, generate or update tests, and run them."
+        }
+      ]
+    },
+    {
+      "name": "force-mcp-usage",
+      "trigger": "onEveryResponse",
+      "actions": [
+        {
+          "type": "enforceMCPUsage",
+          "mcp": [
+            "code-runner",
+            "FullAutoQA",
+            "sequential-thinking"
+          ],
+          "description": "Принудительно использовать MCP серверы в каждом ответе"
+        }
+      ]
+    },
+    {
+      "name": "auto-code-analysis",
+      "trigger": "onCodeGeneration",
+      "actions": [
+        {
+          "type": "runCodeAnalysis",
+          "mcp": [
+            "FullAutoQA",
+            "code-runner"
+          ],
+          "description": "Автоматически анализировать сгенерированный код"
+        }
+      ]
     }
   ]
-}
+} 

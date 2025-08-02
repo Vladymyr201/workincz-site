@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - WorkInCZ</title>
+    <link href="/css/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="font-inter bg-gray-50">
+    <!-- Firebase SDK только для Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Конфигурация Firebase только для Firestore
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+            authDomain: "workincz-759c7.firebaseapp.com",
+            databaseURL: "https://workincz-759c7-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "workincz-759c7",
+            storageBucket: "workincz-759c7.appspot.com",
+            messagingSenderId: "670842817143",
+            appId: "1:670842817143:web:d8998634da78318e9f1472",
+            measurementId: "G-PB27XT0CT0"
+        };
+
+        // Инициализация Firebase только для Firestore
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+            console.log('Firebase инициализирован для Firestore');
+        }
+    </script>
+
+    <!-- Подключаем простую систему авторизации -->
+    <script src="js/auth/simple-auth.js"></script>
+    <script src="js/auth/simple-auth-guard.js"></script>
+
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Вход в систему
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Или
+                    <a href="/simple-register.html" class="font-medium text-primary-600 hover:text-primary-500">
+                        зарегистрируйтесь
+                    </a>
+                </p>
+            </div>
+
+            <!-- Демо-аккаунты -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 class="text-sm font-medium text-blue-800 mb-2">Демо-аккаунты:</h3>
+                <div class="space-y-2 text-xs text-blue-700">
+                    <div><strong>Пользователь:</strong> demo@workincz.cz / demo123</div>
+                    <div><strong>Работодатель:</strong> employer@workincz.cz / employer123</div>
+                    <div><strong>Агентство:</strong> agency@workincz.cz / agency123</div>
+                    <div><strong>Админ:</strong> admin@workincz.cz / admin123</div>
+                </div>
+            </div>
+
+            <form class="mt-8 space-y-6" id="loginForm">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="email" class="sr-only">Email</label>
+                        <input id="email" name="email" type="email" required 
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm" 
+                               placeholder="Email">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Пароль</label>
+                        <input id="password" name="password" type="password" required 
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm" 
+                               placeholder="Пароль">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" 
+                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </span>
+                        Войти
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="text-sm">
+                        <a href="/simple-register.html" class="font-medium text-primary-600 hover:text-primary-500">
+                            Нет аккаунта? Зарегистрируйтесь
+                        </a>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="button" onclick="anonymousLogin()" 
+                            class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        <i class="fas fa-user-secret mr-2"></i>
+                        Войти анонимно
+                    </button>
+                </div>
+            </form>
+
+            <!-- Быстрые кнопки для демо -->
+            <div class="mt-6">
+                <h3 class="text-sm font-medium text-gray-700 mb-3">Быстрый вход:</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="quickLogin('demo@workincz.cz', 'demo123')" 
+                            class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 py-2 px-3 rounded">
+                        Демо пользователь
+                    </button>
+                    <button onclick="quickLogin('employer@workincz.cz', 'employer123')" 
+                            class="text-xs bg-green-100 hover:bg-green-200 text-green-800 py-2 px-3 rounded">
+                        Работодатель
+                    </button>
+                    <button onclick="quickLogin('agency@workincz.cz', 'agency123')" 
+                            class="text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-800 py-2 px-3 rounded">
+                        Агентство
+                    </button>
+                    <button onclick="quickLogin('admin@workincz.cz', 'admin123')" 
+                            class="text-xs bg-red-100 hover:bg-red-200 text-red-800 py-2 px-3 rounded">
+                        Админ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Уведомления -->
+            <div id="notification" class="hidden fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50">
+                <p id="notificationText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация AuthGuard
+        let authGuard;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            authGuard = new SimpleAuthGuard();
+        });
+
+        // Обработка формы входа
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                await window.simpleAuth.login(email, password);
+                showNotification('Успешный вход! Перенаправление...', 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 1000);
+            } catch (error) {
+                showNotification('Ошибка входа: ' + error.message, 'error');
+            }
+        });
+
+        // Анонимный вход
+        async function anonymousLogin() {
+            try {
+                await window.simpleAuth.anonymousLogin();
+                showNotification('Анонимный вход выполнен! Перенаправление...', 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 1000);
+            } catch (error) {
+                showNotification('Ошибка анонимного входа: ' + error.message, 'error');
+            }
+        }
+
+        // Быстрый вход
+        async function quickLogin(email, password) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+            
+            try {
+                await window.simpleAuth.login(email, password);
+                showNotification('Быстрый вход выполнен! Перенаправление...', 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 1000);
+            } catch (error) {
+                showNotification('Ошибка быстрого входа: ' + error.message, 'error');
+            }
+        }
+
+        // Показ уведомлений
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 transform translate-x-full`;
+            
+            switch (type) {
+                case 'success':
+                    notification.className += ' bg-green-500 text-white';
+                    break;
+                case 'error':
+                    notification.className += ' bg-red-500 text-white';
+                    break;
+                case 'warning':
+                    notification.className += ' bg-yellow-500 text-white';
+                    break;
+                default:
+                    notification.className += ' bg-blue-500 text-white';
+            }
+            
+            notificationText.textContent = message;
+            notification.classList.remove('hidden');
+            
+            // Анимация появления
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Автоматическое скрытие
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

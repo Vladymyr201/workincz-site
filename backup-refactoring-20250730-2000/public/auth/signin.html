@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - WorkInCZ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#F59E0B',
+                        success: '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .button-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .button-ripple::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .button-ripple:active::after {
+            width: 300px;
+            height: 300px;
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <a href="/" class="flex items-center justify-center space-x-2 mb-8">
+                <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                    <i class="ri-briefcase-line text-white text-lg"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-900">WorkInCZ</span>
+            </a>
+            <h2 class="text-3xl font-bold text-gray-900">Войти в аккаунт</h2>
+            <p class="mt-2 text-sm text-gray-600">
+                Войдите в свой аккаунт для доступа к вакансиям
+            </p>
+        </div>
+
+        <!-- Error Alert -->
+        <div id="error-alert" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+                <i class="ri-error-warning-line text-red-600 mr-2"></i>
+                <span id="error-message" class="text-red-600 text-sm"></span>
+            </div>
+        </div>
+
+        <!-- Sign In Form -->
+        <form id="signin-form" class="space-y-6">
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                </label>
+                <div class="relative">
+                    <i class="ri-mail-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        autocomplete="email"
+                        class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none"
+                        placeholder="your@email.com"
+                    >
+                </div>
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                    Пароль
+                </label>
+                <div class="relative">
+                    <i class="ri-lock-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        required
+                        autocomplete="current-password"
+                        class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none"
+                        placeholder="Введите пароль"
+                    >
+                    <button
+                        type="button"
+                        id="toggle-password"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                        <i class="ri-eye-line" id="password-icon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input
+                        id="remember-me"
+                        name="remember-me"
+                        type="checkbox"
+                        class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                    >
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                        Запомнить меня
+                    </label>
+                </div>
+                <a href="/auth/forgot-password" class="text-sm text-primary hover:text-primary/80">
+                    Забыли пароль?
+                </a>
+            </div>
+
+            <button
+                type="submit"
+                id="signin-button"
+                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed button-ripple"
+            >
+                <span id="button-text">Войти</span>
+                <i id="loading-icon" class="ri-loader-4-line animate-spin ml-2 hidden"></i>
+            </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-gray-50 text-gray-500">или</span>
+            </div>
+        </div>
+
+        <!-- Google Sign In -->
+        <button
+            id="google-signin"
+            type="button"
+            class="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed button-ripple"
+        >
+            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            <span id="google-button-text">Войти через Google</span>
+            <i id="google-loading-icon" class="ri-loader-4-line animate-spin ml-2 hidden"></i>
+        </button>
+
+        <!-- Sign Up Link -->
+        <div class="text-center">
+            <p class="text-sm text-gray-600">
+                Нет аккаунта? 
+                <a href="/auth/signup.html" class="font-medium text-primary hover:text-primary/80">
+                    Зарегистрироваться
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Import Firebase configuration
+        import { firebaseConfig } from '../firebase-config.js';
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        // DOM elements
+        const signinForm = document.getElementById('signin-form');
+        const signinButton = document.getElementById('signin-button');
+        const buttonText = document.getElementById('button-text');
+        const loadingIcon = document.getElementById('loading-icon');
+        const googleSigninButton = document.getElementById('google-signin');
+        const googleButtonText = document.getElementById('google-button-text');
+        const googleLoadingIcon = document.getElementById('google-loading-icon');
+        const errorAlert = document.getElementById('error-alert');
+        const errorMessage = document.getElementById('error-message');
+        const togglePasswordButton = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
+        const passwordIcon = document.getElementById('password-icon');
+
+        // Toggle password visibility
+        togglePasswordButton.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            passwordIcon.className = type === 'password' ? 'ri-eye-line' : 'ri-eye-off-line';
+        });
+
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorAlert.classList.remove('hidden');
+        }
+
+        // Hide error message
+        function hideError() {
+            errorAlert.classList.add('hidden');
+        }
+
+        // Set loading state
+        function setLoading(button, text, icon, loading) {
+            button.disabled = loading;
+            text.style.display = loading ? 'none' : 'inline';
+            icon.classList.toggle('hidden', !loading);
+        }
+
+        // Handle email/password sign in
+        signinForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            setLoading(signinButton, buttonText, loadingIcon, true);
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log('Successfully signed in:', userCredential.user);
+                
+                // Redirect to dashboard
+                window.location.href = '/dashboard.html';
+            } catch (error) {
+                console.error('Sign in error:', error);
+                
+                let errorMsg = 'Ошибка входа. Попробуйте снова.';
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMsg = 'Пользователь с таким email не найден';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMsg = 'Неверный пароль';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMsg = 'Неверный формат email';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMsg = 'Слишком много попыток входа. Попробуйте позже';
+                        break;
+                }
+                
+                showError(errorMsg);
+            } finally {
+                setLoading(signinButton, buttonText, loadingIcon, false);
+            }
+        });
+
+        // Handle Google sign in
+        googleSigninButton.addEventListener('click', async () => {
+            hideError();
+            setLoading(googleSigninButton, googleButtonText, googleLoadingIcon, true);
+
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                console.log('Successfully signed in with Google:', result.user);
+                
+                // Redirect to dashboard
+                window.location.href = '/dashboard.html';
+            } catch (error) {
+                console.error('Google sign in error:', error);
+                
+                let errorMsg = 'Ошибка входа через Google. Попробуйте снова.';
+                switch (error.code) {
+                    case 'auth/popup-closed-by-user':
+                        errorMsg = 'Окно входа было закрыто';
+                        break;
+                    case 'auth/popup-blocked':
+                        errorMsg = 'Всплывающее окно было заблокировано браузером';
+                        break;
+                    case 'auth/cancelled-popup-request':
+                        errorMsg = 'Запрос на вход был отменен';
+                        break;
+                }
+                
+                showError(errorMsg);
+            } finally {
+                setLoading(googleSigninButton, googleButtonText, googleLoadingIcon, false);
+            }
+        });
+    </script>
+</body>
+</html> 

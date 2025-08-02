@@ -1,0 +1,8 @@
+{
+  "FullAutoQA-Alt1": {
+    "command": "node",
+    "args": [
+      "D:/workincz-site/node_modules/mcp-server-code-runner/dist/cli.js"
+    ]
+  }
+}

@@ -1,5 +1,13 @@
 {
-  "projects": {
-    "default": "workincz-759c7"
-  }
+  "projects": {},
+  "targets": {
+    "workincz-759c7": {
+      "hosting": {
+        "workclick-cz": [
+          "workclick-cz"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

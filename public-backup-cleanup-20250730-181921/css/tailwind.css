@@ -1,0 +1,64 @@
+/* Tailwind CSS - Production Build */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for WorkInCZ */
+@layer base {
+    html {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    body {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    button, input, textarea, a, .selectable {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+    
+    img {
+        -webkit-user-drag: none;
+        -khtml-user-drag: none;
+        -moz-user-drag: none;
+        -o-user-drag: none;
+        user-drag: none;
+        pointer-events: none;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium transition-colors;
+    }
+    
+    .btn-secondary {
+        @apply text-primary-600 hover:text-primary-700 font-medium transition-colors;
+    }
+    
+    .card {
+        @apply bg-white rounded-lg shadow-md p-6;
+    }
+    
+    .card-hover {
+        @apply transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-lg;
+    }
+    
+    .sidebar-transition {
+        @apply transition-transform duration-300 ease-in-out;
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+} 

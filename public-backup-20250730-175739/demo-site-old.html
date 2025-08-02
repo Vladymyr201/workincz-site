@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkInCZ - Полноценный сайт поиска работы</title>
+    <meta name="description" content="Найдите работу в Чехии и Европе. Работодатели, кадровые агентства и соискатели - все на одной платформе WorkInCZ.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="0,100 1000,0 1000,100"/></svg>');
+            background-size: cover;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-hero {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        
+        .btn-hero:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary-hero {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        
+        .btn-primary-hero:hover {
+            background: #218838;
+            border-color: #218838;
+        }
+        
+        .features-section {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .feature-card {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            padding: 40px 30px;
+            text-align: center;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .stats-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .cta-section {
+            background: #28a745;
+            color: white;
+            padding: 80px 0;
+        }
+        
+        .job-card {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .job-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .job-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .job-body {
+            padding: 20px;
+        }
+        
+        .job-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .salary-badge {
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .location-badge {
+            background: #6c757d;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .search-section {
+            background: white;
+            padding: 40px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-box {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .search-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .auth-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn-auth {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-auth:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn-google {
+            background: #4285f4;
+            margin-bottom: 10px;
+        }
+        
+        .btn-google:hover {
+            background: #3367d6;
+        }
+        
+        .btn-anonymous {
+            background: #6c757d;
+        }
+        
+        .btn-anonymous:hover {
+            background: #5a6268;
+        }
+        
+        .demo-alert {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="#">
+                <i class="fas fa-briefcase me-2"></i>WorkInCZ
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#jobs">Вакансии</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Возможности</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#stats">Статистика</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="agency-landing.html">Для агентств</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="showAuthModal()">Войти</button>
+                    <button class="btn btn-primary" onclick="showAuthModal()">Регистрация</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <h1 class="hero-title">Найдите работу мечты в Европе</h1>
+                    <p class="hero-subtitle">WorkInCZ - современная платформа для поиска работы в Чехии и Европе. Соединяем работодателей, кадровые агентства и соискателей.</p>
+                    <div class="hero-buttons">
+                        <a href="#jobs" class="btn-hero">
+                            <i class="fas fa-search me-2"></i>Найти работу
+                        </a>
+                        <a href="agency-landing.html" class="btn-hero btn-primary-hero">
+                            <i class="fas fa-building me-2"></i>Для агентств
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <i class="fas fa-globe-europe" style="font-size: 15rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <div class="demo-alert">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Демо-версия:</strong> Это полноценный сайт с работающей аутентификацией и всеми функциями
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="text-center mb-4">
+                        <h2>Поиск вакансий</h2>
+                        <p class="text-muted">Найдите подходящую работу в Чехии и Европе</p>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" class="search-box" placeholder="Должность или ключевые слова">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="search-box" placeholder="Город или регион">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="search-box">
+                                <option>Все категории</option>
+                                <option>IT и разработка</option>
+                                <option>Маркетинг</option>
+                                <option>Продажи</option>
+                                <option>Производство</option>
+                                <option>Услуги</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="search-btn w-100">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Jobs Section -->
+    <section id="jobs" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2>Популярные вакансии</h2>
+                <p class="text-muted">Свежие предложения от ведущих компаний</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">Senior JavaScript Developer</h5>
+                                    <p class="text-muted mb-0">TechCorp Solutions</p>
+                                </div>
+                                <span class="salary-badge">€3,500 - €5,000</span>
+                            </div>
+                        </div>
+                        <div class="job-body">
+                            <p>Ищем опытного JavaScript разработчика для работы над инновационными проектами. Требуется знание React, Node.js, TypeScript.</p>
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="location-badge">Прага</span>
+                                <span class="location-badge">Полная занятость</span>
+                                <span class="location-badge">Удаленно</span>
+                            </div>
+                        </div>
+                        <div class="job-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Опубликовано 2 часа назад</small>
+                                <button class="btn btn-primary btn-sm">Откликнуться</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">Marketing Manager</h5>
+                                    <p class="text-muted mb-0">EuroMarketing Group</p>
+                                </div>
+                                <span class="salary-badge">€2,800 - €4,200</span>
+                            </div>
+                        </div>
+                        <div class="job-body">
+                            <p>Руководство маркетинговыми кампаниями, работа с клиентами, аналитика и отчетность. Опыт в digital marketing обязателен.</p>
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="location-badge">Брно</span>
+                                <span class="location-badge">Полная занятость</span>
+                                <span class="location-badge">Офис</span>
+                            </div>
+                        </div>
+                        <div class="job-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Опубликовано 5 часов назад</small>
+                                <button class="btn btn-primary btn-sm">Откликнуться</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">Sales Representative</h5>
+                                    <p class="text-muted mb-0">CzechTrade Solutions</p>
+                                </div>
+                                <span class="salary-badge">€2,200 - €3,500</span>
+                            </div>
+                        </div>
+                        <div class="job-body">
+                            <p>Продажи B2B, работа с клиентами, проведение презентаций. Знание чешского языка приветствуется.</p>
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="location-badge">Острава</span>
+                                <span class="location-badge">Полная занятость</span>
+                                <span class="location-badge">Офис</span>
+                            </div>
+                        </div>
+                        <div class="job-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Опубликовано 1 день назад</small>
+                                <button class="btn btn-primary btn-sm">Откликнуться</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">UX/UI Designer</h5>
+                                    <p class="text-muted mb-0">DesignStudio Prague</p>
+                                </div>
+                                <span class="salary-badge">€3,000 - €4,500</span>
+                            </div>
+                        </div>
+                        <div class="job-body">
+                            <p>Создание пользовательских интерфейсов, прототипирование, работа с Figma. Опыт в веб-дизайне обязателен.</p>
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="location-badge">Прага</span>
+                                <span class="location-badge">Полная занятость</span>
+                                <span class="location-badge">Гибрид</span>
+                            </div>
+                        </div>
+                        <div class="job-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Опубликовано 2 дня назад</small>
+                                <button class="btn btn-primary btn-sm">Откликнуться</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Показать больше вакансий
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-3">Почему WorkInCZ?</h2>
+                <p class="lead text-muted">Инновационная платформа для современного рынка труда</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Для всех участников</h4>
+                        <p class="text-muted">Работодатели, кадровые агентства и соискатели - все на одной платформе</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <h4>Европейский рынок</h4>
+                        <p class="text-muted">Доступ к вакансиям по всей Европе с поддержкой мультивалютности</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4>Безопасность и качество</h4>
+                        <p class="text-muted">Проверенные работодатели и агентства, защита персональных данных</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Аналитика и статистика</h4>
+                        <p class="text-muted">Подробная аналитика для работодателей и агентств</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h4>Мобильное приложение</h4>
+                        <p class="text-muted">Удобное мобильное приложение для поиска работы на ходу</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h4>Поддержка 24/7</h4>
+                        <p class="text-muted">Круглосуточная поддержка на русском, чешском и английском языках</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">10,000+</div>
+                        <div class="stat-label">Активных вакансий</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">5,000+</div>
+                        <div class="stat-label">Компаний-партнеров</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">50,000+</div>
+                        <div class="stat-label">Успешных трудоустройств</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">100+</div>
+                        <div class="stat-label">Кадровых агентств</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container text-center">
+            <h2 class="display-4 fw-bold mb-4">Готовы начать?</h2>
+            <p class="lead mb-4">Присоединяйтесь к тысячам успешных пользователей WorkInCZ</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-light btn-lg" onclick="showAuthModal()">
+                    <i class="fas fa-user-plus me-2"></i>Зарегистрироваться
+                </button>
+                <a href="agency-landing.html" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-building me-2"></i>Для агентств
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <h5><i class="fas fa-briefcase me-2"></i>WorkInCZ</h5>
+                    <p>Современная платформа для поиска работы в Европе</p>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Платформа</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">О нас</a></li>
+                        <li><a href="#" class="text-light">Возможности</a></li>
+                        <li><a href="#" class="text-light">Цены</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Поддержка</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">Помощь</a></li>
+                        <li><a href="#" class="text-light">Контакты</a></li>
+                        <li><a href="#" class="text-light">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Правовая информация</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">Условия использования</a></li>
+                        <li><a href="#" class="text-light">Политика конфиденциальности</a></li>
+                        <li><a href="#" class="text-light">GDPR</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Социальные сети</h6>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="text-light"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2025 WorkInCZ. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-content">
+            <span class="close-btn" onclick="hideAuthModal()">&times;</span>
+            <h3 class="text-center mb-4">Вход в систему</h3>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchTab('login')">Вход</div>
+                <div class="auth-tab" onclick="switchTab('register')">Регистрация</div>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form active">
+                <button class="btn-auth btn-google" onclick="loginWithGoogle()">
+                    <i class="fab fa-google me-2"></i>Войти через Google
+                </button>
+                <button class="btn-auth btn-anonymous" onclick="loginAnonymously()">
+                    <i class="fas fa-user-secret me-2"></i>Анонимный вход
+                </button>
+                <div class="text-center mt-3">
+                    <small class="text-muted">Или</small>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="Email" id="loginEmail">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Пароль" id="loginPassword">
+                </div>
+                <button class="btn-auth" onclick="loginWithEmail()">Войти</button>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerForm" class="auth-form">
+                <button class="btn-auth btn-google" onclick="loginWithGoogle()">
+                    <i class="fab fa-google me-2"></i>Регистрация через Google
+                </button>
+                <div class="text-center mt-3">
+                    <small class="text-muted">Или</small>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="Email" id="registerEmail">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Пароль" id="registerPassword">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Подтвердите пароль" id="registerPasswordConfirm">
+                </div>
+                <button class="btn-auth" onclick="registerWithEmail()">Зарегистрироваться</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Firebase -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js"></script>
+    <script type="module" src="./js/auth.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Auth Modal Functions
+        function showAuthModal() {
+            document.getElementById('authModal').style.display = 'block';
+        }
+        
+        function hideAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+        
+        function switchTab(tab) {
+            // Update tabs
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update forms
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.getElementById('registerForm').classList.add('active');
+            }
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideAuthModal();
+            }
+        });
+        
+        // Auth Functions
+        async function loginWithGoogle() {
+            try {
+                await login();
+                hideAuthModal();
+                window.location.href = '/dashboard.html';
+            } catch (error) {
+                alert('Ошибка входа через Google: ' + error.message);
+            }
+        }
+        
+        async function loginAnonymously() {
+            try {
+                // Redirect to anonymous auth page
+                window.location.href = '/anonymous-auth.html';
+            } catch (error) {
+                alert('Ошибка анонимного входа: ' + error.message);
+            }
+        }
+        
+        async function loginWithEmail() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                alert('Заполните все поля');
+                return;
+            }
+            
+            try {
+                await loginWithEmail(email, password);
+                hideAuthModal();
+                window.location.href = '/dashboard.html';
+            } catch (error) {
+                alert('Ошибка входа: ' + error.message);
+            }
+        }
+        
+        async function registerWithEmail() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            
+            if (!email || !password || !passwordConfirm) {
+                alert('Заполните все поля');
+                return;
+            }
+            
+            if (password !== passwordConfirm) {
+                alert('Пароли не совпадают');
+                return;
+            }
+            
+            try {
+                await registerWithEmail(email, password);
+                hideAuthModal();
+                window.location.href = '/dashboard.html';
+            } catch (error) {
+                alert('Ошибка регистрации: ' + error.message);
+            }
+        }
+        
+        // Import auth functions
+        import { login, loginWithEmail, registerWithEmail } from './js/auth.js';
+        
+        // Demo functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for job cards
+            document.querySelectorAll('.job-card .btn-primary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showAuthModal();
+                });
+            });
+            
+            // Add search functionality
+            document.querySelector('.search-btn').addEventListener('click', function() {
+                alert('Функция поиска будет доступна после входа в систему');
+                showAuthModal();
+            });
+        });
+    </script>
+</body>
+</html>

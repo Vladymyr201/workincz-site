@@ -1,0 +1,8 @@
+{
+  "FullAutoQA-Alt2": {
+    "command": "node",
+    "args": [
+      "D:/workincz-site/servers/src/testing/debug-mcp-server.cjs"
+    ]
+  }
+}

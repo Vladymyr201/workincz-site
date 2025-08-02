@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - WorkInCZ</title>
+    <meta name="description" content="Создайте аккаунт на платформе WorkInCZ">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .role-card {
+            transition: all 0.3s ease;
+        }
+        .role-card:hover {
+            transform: translateY(-2px);
+        }
+        .role-card.selected {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="../index.html" class="text-2xl font-bold text-primary-600">
+                        <i class="fas fa-briefcase mr-2"></i>WorkInCZ
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="../index.html" class="text-gray-600 hover:text-primary-600 transition-colors">Главная</a>
+                    <a href="../jobs.html" class="text-gray-600 hover:text-primary-600 transition-colors">Вакансии</a>
+                    <a href="login.html" class="text-gray-600 hover:text-primary-600 transition-colors">Вход</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="mx-auto h-12 w-12 bg-primary-600 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-user-plus text-white text-xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    Создание аккаунта
+                </h1>
+                <p class="text-lg text-gray-600">
+                    Выберите тип аккаунта и заполните данные для регистрации
+                </p>
+            </div>
+
+            <!-- Registration Form -->
+            <form id="registerForm" class="bg-white rounded-lg shadow-lg p-8">
+                <!-- Step 1: Role Selection -->
+                <div id="step1" class="space-y-6">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Выберите тип аккаунта</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Candidate Role -->
+                            <div class="role-card border-2 border-gray-200 rounded-lg p-6 cursor-pointer" data-role="candidate">
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-user text-blue-600 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Соискатель</h3>
+                                    <p class="text-sm text-gray-600 mb-4">
+                                        Ищете работу в Чехии? Создайте профиль и найдите подходящую вакансию
+                                    </p>
+                                    <ul class="text-xs text-gray-500 space-y-1">
+                                        <li>• Просмотр вакансий</li>
+                                        <li>• Подача заявок</li>
+                                        <li>• Общение с работодателями</li>
+                                        <li>• Отслеживание статуса</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Client Role -->
+                            <div class="role-card border-2 border-gray-200 rounded-lg p-6 cursor-pointer" data-role="client">
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-building text-green-600 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Работодатель</h3>
+                                    <p class="text-sm text-gray-600 mb-4">
+                                        Ищете сотрудников? Размещайте вакансии и находите подходящих кандидатов
+                                    </p>
+                                    <ul class="text-xs text-gray-500 space-y-1">
+                                        <li>• Размещение вакансий</li>
+                                        <li>• Просмотр кандидатов</li>
+                                        <li>• Управление заявками</li>
+                                        <li>• Аналитика</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Agency Role -->
+                            <div class="role-card border-2 border-gray-200 rounded-lg p-6 cursor-pointer" data-role="agency">
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-handshake text-purple-600 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Кадровое агентство</h3>
+                                    <p class="text-sm text-gray-600 mb-4">
+                                        Предоставляете услуги по подбору персонала? Подключитесь к платформе
+                                    </p>
+                                    <ul class="text-xs text-gray-500 space-y-1">
+                                        <li>• Управление клиентами</li>
+                                        <li>• Подбор кандидатов</li>
+                                        <li>• Комиссионные</li>
+                                        <li>• Аналитика</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button 
+                            type="button" 
+                            id="nextStepBtn"
+                            class="bg-primary-600 text-white px-6 py-2 rounded-md hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled
+                        >
+                            Далее
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Registration Form -->
+                <div id="step2" class="hidden space-y-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-gray-900">Данные для регистрации</h2>
+                        <button 
+                            type="button" 
+                            id="backStepBtn"
+                            class="text-primary-600 hover:text-primary-700 transition-colors"
+                        >
+                            <i class="fas fa-arrow-left mr-2"></i>Назад
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Personal Information -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-medium text-gray-900">Личная информация</h3>
+                            
+                            <div>
+                                <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Имя *
+                                </label>
+                                <input 
+                                    id="firstName" 
+                                    name="firstName" 
+                                    type="text" 
+                                    required 
+                                    class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Ваше имя"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Фамилия *
+                                </label>
+                                <input 
+                                    id="lastName" 
+                                    name="lastName" 
+                                    type="text" 
+                                    required 
+                                    class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Ваша фамилия"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Телефон
+                                </label>
+                                <input 
+                                    id="phone" 
+                                    name="phone" 
+                                    type="tel" 
+                                    class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="+420 123 456 789"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Account Information -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-medium text-gray-900">Данные аккаунта</h3>
+                            
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Email адрес *
+                                </label>
+                                <input 
+                                    id="email" 
+                                    name="email" 
+                                    type="email" 
+                                    required 
+                                    class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="your@email.com"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Пароль *
+                                </label>
+                                <div class="relative">
+                                    <input 
+                                        id="password" 
+                                        name="password" 
+                                        type="password" 
+                                        required 
+                                        class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 pr-10"
+                                        placeholder="Минимум 6 символов"
+                                        minlength="6"
+                                    >
+                                    <button 
+                                        type="button" 
+                                        id="togglePassword"
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                    >
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Подтвердите пароль *
+                                </label>
+                                <input 
+                                    id="confirmPassword" 
+                                    name="confirmPassword" 
+                                    type="password" 
+                                    required 
+                                    class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Повторите пароль"
+                                    minlength="6"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Role-specific fields -->
+                    <div id="roleSpecificFields" class="space-y-4">
+                        <!-- Will be populated based on selected role -->
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <input 
+                                id="terms" 
+                                name="terms" 
+                                type="checkbox" 
+                                required 
+                                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded mt-1"
+                            >
+                            <label for="terms" class="ml-2 block text-sm text-gray-700">
+                                Я согласен с <a href="#" class="text-primary-600 hover:text-primary-500">условиями использования</a> и 
+                                <a href="#" class="text-primary-600 hover:text-primary-500">политикой конфиденциальности</a> *
+                            </label>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input 
+                                id="newsletter" 
+                                name="newsletter" 
+                                type="checkbox" 
+                                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded mt-1"
+                            >
+                            <label for="newsletter" class="ml-2 block text-sm text-gray-700">
+                                Подписаться на новости и уведомления о новых вакансиях
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end">
+                        <button 
+                            type="submit" 
+                            id="registerBtn"
+                            class="bg-primary-600 text-white px-8 py-3 rounded-md hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <span id="registerBtnText">Создать аккаунт</span>
+                            <span id="registerBtnSpinner" class="hidden ml-2">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="hidden mt-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+                <div class="flex">
+                    <i class="fas fa-exclamation-circle mr-2 mt-0.5"></i>
+                    <span id="errorText"></span>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="hidden mt-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
+                <div class="flex">
+                    <i class="fas fa-check-circle mr-2 mt-0.5"></i>
+                    <span id="successText"></span>
+                </div>
+            </div>
+
+            <!-- Login Link -->
+            <div class="text-center mt-8">
+                <p class="text-gray-600">
+                    Уже есть аккаунт? 
+                    <a href="login.html" class="font-medium text-primary-600 hover:text-primary-500">
+                        Войти
+                    </a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+            authDomain: "workclick-cz.web.app",
+            databaseURL: "https://workincz-759c7-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "workincz-759c7",
+            storageBucket: "workincz-759c7.firebasestorage.app",
+            messagingSenderId: "670842817143",
+            appId: "1:670842817143:web:d8998634da78318e9f1472",
+            measurementId: "G-PB27XT0CT0"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        console.log('Firebase инициализирован на странице регистрации');
+    </script>
+
+    <!-- Registration Logic -->
+    <script>
+        class RegistrationManager {
+            constructor() {
+                this.auth = firebase.auth();
+                this.db = firebase.firestore();
+                this.selectedRole = null;
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.checkAuthState();
+            }
+
+            setupEventListeners() {
+                // Role selection
+                document.querySelectorAll('.role-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        this.selectRole(card.dataset.role);
+                    });
+                });
+
+                // Navigation buttons
+                document.getElementById('nextStepBtn').addEventListener('click', () => {
+                    this.nextStep();
+                });
+
+                document.getElementById('backStepBtn').addEventListener('click', () => {
+                    this.previousStep();
+                });
+
+                // Form submission
+                document.getElementById('registerForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleRegistration();
+                });
+
+                // Password toggle
+                document.getElementById('togglePassword').addEventListener('click', () => {
+                    this.togglePasswordVisibility();
+                });
+
+                // Password confirmation validation
+                document.getElementById('confirmPassword').addEventListener('input', () => {
+                    this.validatePasswordMatch();
+                });
+            }
+
+            selectRole(role) {
+                // Remove previous selection
+                document.querySelectorAll('.role-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+
+                // Select new role
+                const selectedCard = document.querySelector(`[data-role="${role}"]`);
+                selectedCard.classList.add('selected');
+                this.selectedRole = role;
+
+                // Enable next button
+                document.getElementById('nextStepBtn').disabled = false;
+
+                // Update role-specific fields
+                this.updateRoleSpecificFields(role);
+            }
+
+            updateRoleSpecificFields(role) {
+                const container = document.getElementById('roleSpecificFields');
+                let html = '';
+
+                switch (role) {
+                    case 'candidate':
+                        html = `
+                            <h3 class="text-lg font-medium text-gray-900">Профессиональная информация</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="profession" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Профессия
+                                    </label>
+                                    <input 
+                                        id="profession" 
+                                        name="profession" 
+                                        type="text" 
+                                        class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                        placeholder="Например: Программист"
+                                    >
+                                </div>
+                                <div>
+                                    <label for="experience" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Опыт работы
+                                    </label>
+                                    <select 
+                                        id="experience" 
+                                        name="experience" 
+                                        class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    >
+                                        <option value="">Выберите опыт</option>
+                                        <option value="no">Без опыта</option>
+                                        <option value="1-3">1-3 года</option>
+                                        <option value="3-5">3-5 лет</option>
+                                        <option value="5-10">5-10 лет</option>
+                                        <option value="10+">Более 10 лет</option>
+                                    </select>
+                                </div>
+                            </div>
+                        `;
+                        break;
+
+                    case 'client':
+                        html = `
+                            <h3 class="text-lg font-medium text-gray-900">Информация о компании</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="companyName" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Название компании *
+                                    </label>
+                                    <input 
+                                        id="companyName" 
+                                        name="companyName" 
+                                        type="text" 
+                                        required 
+                                        class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                        placeholder="Название вашей компании"
+                                    >
+                                </div>
+                                <div>
+                                    <label for="companySize" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Размер компании
+                                    </label>
+                                    <select 
+                                        id="companySize" 
+                                        name="companySize" 
+                                        class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                    >
+                                        <option value="">Выберите размер</option>
+                                        <option value="1-10">1-10 сотрудников</option>
+                                        <option value="11-50">11-50 сотрудников</option>
+                                        <option value="51-200">51-200 сотрудников</option>
+                                        <option value="201-1000">201-1000 сотрудников</option>
+                                        <option value="1000+">Более 1000 сотрудников</option>
+                                    </select>
+                                </div>
+                            </div>
+                        `;
+                        break;
+
+                    case 'agency':
+                        html = `
+                            <h3 class="text-lg font-medium text-gray-900">Информация об агентстве</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="agencyName" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Название агентства *
+                                    </label>
+                                    <input 
+                                        id="agencyName" 
+                                        name="agencyName" 
+                                        type="text" 
+                                        required 
+                                        class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                        placeholder="Название вашего агентства"
+                                    >
+                                </div>
+                                <div>
+                                    <label for="license" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Лицензия
+                                    </label>
+                                    <input 
+                                        id="license" 
+                                        name="license" 
+                                        type="text" 
+                                        class="form-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                        placeholder="Номер лицензии (если есть)"
+                                    >
+                                </div>
+                            </div>
+                        `;
+                        break;
+                }
+
+                container.innerHTML = html;
+            }
+
+            nextStep() {
+                if (!this.selectedRole) {
+                    this.showError('Пожалуйста, выберите тип аккаунта');
+                    return;
+                }
+
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+            }
+
+            previousStep() {
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step1').classList.remove('hidden');
+            }
+
+            async handleRegistration() {
+                if (!this.validateForm()) {
+                    return;
+                }
+
+                this.showLoading(true);
+                this.hideMessages();
+
+                try {
+                    const formData = this.getFormData();
+                    
+                    // Create user account
+                    const userCredential = await this.auth.createUserWithEmailAndPassword(
+                        formData.email, 
+                        formData.password
+                    );
+
+                    const user = userCredential.user;
+
+                    // Save additional user data to Firestore
+                    await this.saveUserData(user.uid, formData);
+
+                    // Send email verification
+                    await user.sendEmailVerification();
+
+                    this.showSuccess('Аккаунт создан успешно! Проверьте email для подтверждения.');
+                    
+                    // Redirect to dashboard after short delay
+                    setTimeout(() => {
+                        window.location.href = '../dashboard.html';
+                    }, 3000);
+
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    this.handleRegistrationError(error);
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            validateForm() {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const terms = document.getElementById('terms').checked;
+
+                if (!email || !password || !confirmPassword) {
+                    this.showError('Пожалуйста, заполните все обязательные поля');
+                    return false;
+                }
+
+                if (password !== confirmPassword) {
+                    this.showError('Пароли не совпадают');
+                    return false;
+                }
+
+                if (password.length < 6) {
+                    this.showError('Пароль должен содержать минимум 6 символов');
+                    return false;
+                }
+
+                if (!terms) {
+                    this.showError('Необходимо согласиться с условиями использования');
+                    return false;
+                }
+
+                return true;
+            }
+
+            validatePasswordMatch() {
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const confirmInput = document.getElementById('confirmPassword');
+
+                if (confirmPassword && password !== confirmPassword) {
+                    confirmInput.classList.add('border-red-500');
+                } else {
+                    confirmInput.classList.remove('border-red-500');
+                }
+            }
+
+            getFormData() {
+                const formData = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    phone: document.getElementById('phone').value,
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value,
+                    role: this.selectedRole,
+                    newsletter: document.getElementById('newsletter').checked,
+                    createdAt: new Date(),
+                    isEmailVerified: false
+                };
+
+                // Add role-specific data
+                switch (this.selectedRole) {
+                    case 'candidate':
+                        formData.profession = document.getElementById('profession')?.value || '';
+                        formData.experience = document.getElementById('experience')?.value || '';
+                        break;
+                    case 'client':
+                        formData.companyName = document.getElementById('companyName')?.value || '';
+                        formData.companySize = document.getElementById('companySize')?.value || '';
+                        break;
+                    case 'agency':
+                        formData.agencyName = document.getElementById('agencyName')?.value || '';
+                        formData.license = document.getElementById('license')?.value || '';
+                        break;
+                }
+
+                return formData;
+            }
+
+            async saveUserData(uid, userData) {
+                try {
+                    await this.db.collection('users').doc(uid).set({
+                        ...userData,
+                        uid: uid,
+                        updatedAt: new Date()
+                    });
+                } catch (error) {
+                    console.error('Error saving user data:', error);
+                    throw error;
+                }
+            }
+
+            handleRegistrationError(error) {
+                let message = 'Произошла ошибка при регистрации';
+
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        message = 'Пользователь с таким email уже существует';
+                        break;
+                    case 'auth/invalid-email':
+                        message = 'Неверный формат email';
+                        break;
+                    case 'auth/weak-password':
+                        message = 'Пароль слишком слабый';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        message = 'Регистрация временно недоступна';
+                        break;
+                    default:
+                        message = error.message || message;
+                }
+
+                this.showError(message);
+            }
+
+            checkAuthState() {
+                this.auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        // User is already logged in, redirect to dashboard
+                        window.location.href = '../dashboard.html';
+                    }
+                });
+            }
+
+            togglePasswordVisibility() {
+                const passwordInput = document.getElementById('password');
+                const toggleBtn = document.getElementById('togglePassword');
+                const icon = toggleBtn.querySelector('i');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    passwordInput.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            }
+
+            showLoading(show) {
+                const btn = document.getElementById('registerBtn');
+                const btnText = document.getElementById('registerBtnText');
+                const spinner = document.getElementById('registerBtnSpinner');
+
+                if (show) {
+                    btn.disabled = true;
+                    btnText.textContent = 'Создание аккаунта...';
+                    spinner.classList.remove('hidden');
+                } else {
+                    btn.disabled = false;
+                    btnText.textContent = 'Создать аккаунт';
+                    spinner.classList.add('hidden');
+                }
+            }
+
+            showError(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                const errorText = document.getElementById('errorText');
+                
+                errorText.textContent = message;
+                errorDiv.classList.remove('hidden');
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    this.hideMessages();
+                }, 5000);
+            }
+
+            showSuccess(message) {
+                const successDiv = document.getElementById('successMessage');
+                const successText = document.getElementById('successText');
+                
+                successText.textContent = message;
+                successDiv.classList.remove('hidden');
+            }
+
+            hideMessages() {
+                document.getElementById('errorMessage').classList.add('hidden');
+                document.getElementById('successMessage').classList.add('hidden');
+            }
+        }
+
+        // Initialize registration manager when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new RegistrationManager();
+        });
+    </script>
+</body>
+</html>

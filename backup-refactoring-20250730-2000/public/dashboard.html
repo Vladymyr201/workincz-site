@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет - WorkInCZ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#F59E0B',
+                        success: '#10B981',
+                        danger: '#EF4444'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        .content-transition {
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .button-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .button-ripple::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .button-ripple:active::after {
+            width: 300px;
+            height: 300px;
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg z-50 sidebar-transition transform -translate-x-full lg:translate-x-0">
+        <!-- Sidebar Header -->
+        <div class="flex items-center justify-between p-4 border-b border-gray-200">
+            <a href="/" class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                    <i class="ri-briefcase-line text-white text-lg"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-900">WorkInCZ</span>
+            </a>
+            <button onclick="toggleSidebar()" class="lg:hidden text-gray-500 hover:text-gray-700">
+                <i class="ri-close-line text-xl"></i>
+            </button>
+        </div>
+
+        <!-- User Profile -->
+        <div class="p-4 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                    <i class="ri-user-line text-primary text-xl"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p id="sidebar-user-name" class="text-sm font-medium text-gray-900 truncate">Загрузка...</p>
+                    <p id="sidebar-user-role" class="text-xs text-gray-500">Загрузка...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="p-4 space-y-2">
+            <a href="#dashboard" class="nav-item active flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">
+                <i class="ri-dashboard-line text-lg"></i>
+                <span>Дашборд</span>
+            </a>
+            
+            <a href="#profile" class="nav-item flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">
+                <i class="ri-user-settings-line text-lg"></i>
+                <span>Профиль</span>
+            </a>
+            
+            <a href="#jobs" class="nav-item flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">
+                <i class="ri-briefcase-line text-lg"></i>
+                <span>Вакансии</span>
+            </a>
+            
+            <a href="#applications" class="nav-item flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">
+                <i class="ri-file-list-3-line text-lg"></i>
+                <span>Мои заявки</span>
+                <div id="applications-badge" class="notification-badge hidden">0</div>
+            </a>
+            
+            <a href="#messages" class="nav-item flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">
+                <i class="ri-message-3-line text-lg"></i>
+                <span>Сообщения</span>
+                <div id="messages-badge" class="notification-badge hidden">0</div>
+            </a>
+            
+            <a href="#favorites" class="nav-item flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">
+                <i class="ri-heart-line text-lg"></i>
+                <span>Избранное</span>
+            </a>
+            
+            <a href="#settings" class="nav-item flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">
+                <i class="ri-settings-3-line text-lg"></i>
+                <span>Настройки</span>
+            </a>
+        </nav>
+
+        <!-- Logout Button -->
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+            <button id="logout-button" class="w-full flex items-center justify-center space-x-2 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors">
+                <i class="ri-logout-box-r-line text-lg"></i>
+                <span>Выйти</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div id="main-content" class="lg:ml-64 content-transition">
+        <!-- Top Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="flex items-center justify-between px-4 py-3">
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleSidebar()" class="lg:hidden text-gray-500 hover:text-gray-700">
+                    <i class="ri-menu-line text-xl"></i>
+                </button>
+
+                <!-- Page Title -->
+                <h1 id="page-title" class="text-xl font-semibold text-gray-900">Дашборд</h1>
+
+                <!-- Right Side Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <button class="relative text-gray-500 hover:text-gray-700">
+                        <i class="ri-notification-3-line text-xl"></i>
+                        <div id="notifications-badge" class="notification-badge hidden">0</div>
+                    </button>
+
+                    <!-- User Menu -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                            <i class="ri-user-line text-primary"></i>
+                        </div>
+                        <span id="header-user-name" class="text-sm font-medium text-gray-700 hidden lg:block">Загрузка...</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <main class="p-6">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section active">
+                <!-- Welcome Card -->
+                <div class="bg-gradient-to-r from-primary to-primary/80 rounded-lg p-6 text-white mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-2" id="welcome-title">Добро пожаловать!</h2>
+                            <p class="text-primary-100" id="welcome-message">Загрузка профиля...</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-primary-100 text-sm">Ваша роль</div>
+                            <div id="welcome-role" class="text-lg font-semibold">Загрузка...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mr-4">
+                                <i class="ri-eye-line text-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Просмотры профиля</p>
+                                <p class="text-2xl font-bold text-gray-900" id="profile-views">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mr-4">
+                                <i class="ri-file-list-3-line text-secondary text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Активные заявки</p>
+                                <p class="text-2xl font-bold text-gray-900" id="active-applications">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center mr-4">
+                                <i class="ri-message-3-line text-success text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Новые сообщения</p>
+                                <p class="text-2xl font-bold text-gray-900" id="new-messages">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-danger/10 rounded-lg flex items-center justify-center mr-4">
+                                <i class="ri-heart-line text-danger text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Избранные вакансии</p>
+                                <p class="text-2xl font-bold text-gray-900" id="favorite-jobs">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mr-4">
+                                <i class="ri-search-line text-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Поиск работы</h3>
+                                <p class="text-sm text-gray-600">Найдите подходящие вакансии</p>
+                            </div>
+                        </div>
+                        <a href="/" class="inline-flex items-center text-primary hover:text-primary/80 font-medium">
+                            Начать поиск
+                            <i class="ri-arrow-right-line ml-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mr-4">
+                                <i class="ri-file-list-3-line text-secondary text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Мои заявки</h3>
+                                <p class="text-sm text-gray-600">Отслеживайте статус заявок</p>
+                            </div>
+                        </div>
+                        <a href="#applications" class="inline-flex items-center text-secondary hover:text-secondary/80 font-medium">
+                            Просмотреть
+                            <i class="ri-arrow-right-line ml-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center mr-4">
+                                <i class="ri-user-settings-line text-success text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Профиль</h3>
+                                <p class="text-sm text-gray-600">Управляйте своим профилем</p>
+                            </div>
+                        </div>
+                        <a href="#profile" class="inline-flex items-center text-success hover:text-success/80 font-medium">
+                            Редактировать
+                            <i class="ri-arrow-right-line ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Последняя активность</h2>
+                    <div class="space-y-4" id="recent-activity">
+                        <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                                <i class="ri-login-circle-line text-primary"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-gray-900">Успешный вход в систему</div>
+                                <div class="text-sm text-gray-500" id="login-time">Загрузка...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="section hidden">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Мой профиль</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Profile Info -->
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Основная информация</h3>
+                            <form id="profile-form" class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Имя</label>
+                                        <input type="text" id="profile-first-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Фамилия</label>
+                                        <input type="text" id="profile-last-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" id="profile-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+                                    <input type="tel" id="profile-phone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Роль</label>
+                                    <select id="profile-role" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none">
+                                        <option value="candidate">Соискатель</option>
+                                        <option value="employer">Работодатель</option>
+                                        <option value="agency">Агентство</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors button-ripple">
+                                    Сохранить изменения
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Profile Stats -->
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Статистика профиля</h3>
+                            <div class="space-y-4">
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Дата регистрации</span>
+                                        <span id="profile-created" class="text-sm font-medium text-gray-900">Загрузка...</span>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Последний вход</span>
+                                        <span id="profile-last-login" class="text-sm font-medium text-gray-900">Загрузка...</span>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Статус email</span>
+                                        <span id="profile-email-status" class="text-sm font-medium text-gray-900">Загрузка...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs Section -->
+            <div id="jobs-section" class="section hidden">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Вакансии</h2>
+                    <div class="text-center py-12">
+                        <i class="ri-briefcase-line text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600">Раздел вакансий находится в разработке</p>
+                        <a href="/" class="inline-flex items-center mt-4 text-primary hover:text-primary/80 font-medium">
+                            Перейти к поиску вакансий
+                            <i class="ri-arrow-right-line ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications Section -->
+            <div id="applications-section" class="section hidden">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Мои заявки</h2>
+                    <div class="text-center py-12">
+                        <i class="ri-file-list-3-line text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600">У вас пока нет активных заявок</p>
+                        <a href="/" class="inline-flex items-center mt-4 text-primary hover:text-primary/80 font-medium">
+                            Найти вакансии
+                            <i class="ri-arrow-right-line ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Section -->
+            <div id="messages-section" class="section hidden">
+                <div class="bg-white rounded-lg shadow-sm h-[calc(100vh-200px)] flex flex-col">
+                    <!-- Messages Header -->
+                    <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                        <div class="flex items-center space-x-3">
+                            <i class="ri-message-3-line text-xl text-primary"></i>
+                            <h2 class="text-xl font-semibold text-gray-900">Сообщения</h2>
+                            <span id="unread-messages-count" class="bg-primary text-white text-xs px-2 py-1 rounded-full hidden">0</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button id="new-chat-btn" class="bg-primary text-white p-2 rounded-lg hover:bg-primary/90 transition-colors">
+                                <i class="ri-add-line"></i>
+                            </button>
+                            <button id="messages-settings-btn" class="text-gray-500 hover:text-gray-700 p-2 rounded-lg">
+                                <i class="ri-settings-3-line"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Messages Content -->
+                    <div class="flex flex-1 overflow-hidden">
+                        <!-- Chats List -->
+                        <div id="chats-list" class="w-full lg:w-1/3 border-r border-gray-200 flex flex-col">
+                            <!-- Search -->
+                            <div class="p-3 border-b border-gray-200">
+                                <div class="relative">
+                                    <input type="text" id="chat-search" placeholder="Поиск чатов..." 
+                                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                </div>
+                            </div>
+
+                            <!-- Chats -->
+                            <div id="chats-container" class="flex-1 overflow-y-auto">
+                                <div id="no-chats-message" class="text-center py-8 text-gray-500">
+                                    <i class="ri-message-3-line text-3xl mb-2"></i>
+                                    <p>У вас пока нет сообщений</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div id="chat-messages" class="hidden lg:flex flex-1 flex flex-col">
+                            <!-- No Chat Selected -->
+                            <div id="no-chat-selected" class="flex-1 flex items-center justify-center text-gray-500">
+                                <div class="text-center">
+                                    <i class="ri-message-3-line text-4xl mb-4"></i>
+                                    <p>Выберите чат для начала общения</p>
+                                </div>
+                            </div>
+
+                            <!-- Active Chat -->
+                            <div id="active-chat" class="flex-1 flex flex-col hidden">
+                                <!-- Chat Header -->
+                                <div id="chat-header" class="flex items-center justify-between p-4 border-b border-gray-200">
+                                    <!-- Mobile Back Button -->
+                                    <button id="mobile-back-btn" class="lg:hidden text-gray-500 hover:text-gray-700 mr-2">
+                                        <i class="ri-arrow-left-line text-xl"></i>
+                                    </button>
+                                    <div class="flex items-center space-x-3">
+                                        <div id="chat-avatar" class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                            <i class="ri-user-line text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h3 id="chat-title" class="font-medium text-gray-900">Название чата</h3>
+                                            <p id="chat-status" class="text-sm text-gray-500">Онлайн</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button id="chat-video-call" class="text-gray-500 hover:text-gray-700 p-2 rounded-lg">
+                                            <i class="ri-vidicon-line"></i>
+                                        </button>
+                                        <button id="chat-voice-call" class="text-gray-500 hover:text-gray-700 p-2 rounded-lg">
+                                            <i class="ri-phone-line"></i>
+                                        </button>
+                                        <button id="chat-more" class="text-gray-500 hover:text-gray-700 p-2 rounded-lg">
+                                            <i class="ri-more-2-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Messages Container -->
+                                <div id="messages-container" class="flex-1 overflow-y-auto p-4 space-y-4">
+                                    <!-- Messages will be loaded here -->
+                                </div>
+
+                                <!-- Message Input -->
+                                <div class="p-4 border-t border-gray-200">
+                                    <div class="flex items-end space-x-2">
+                                        <div class="flex-1 relative">
+                                            <textarea id="message-input" rows="1" placeholder="Введите сообщение..." 
+                                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                                            <div class="absolute right-2 bottom-2 flex items-center space-x-1">
+                                                <button id="emoji-btn" class="text-gray-400 hover:text-gray-600 p-1">
+                                                    <i class="ri-emotion-line"></i>
+                                                </button>
+                                                <button id="attach-btn" class="text-gray-400 hover:text-gray-600 p-1">
+                                                    <i class="ri-attachment-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button id="send-message-btn" class="bg-primary text-white p-3 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50">
+                                            <i class="ri-send-plane-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Favorites Section -->
+            <div id="favorites-section" class="section hidden">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Избранные вакансии</h2>
+                    <div class="text-center py-12">
+                        <i class="ri-heart-line text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600">У вас пока нет избранных вакансий</p>
+                        <a href="/" class="inline-flex items-center mt-4 text-primary hover:text-primary/80 font-medium">
+                            Найти вакансии
+                            <i class="ri-arrow-right-line ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-section" class="section hidden">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Настройки</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Уведомления</h3>
+                            <div class="space-y-3">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                    <span class="ml-2 text-sm text-gray-700">Email уведомления</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                    <span class="ml-2 text-sm text-gray-700">Push уведомления</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                    <span class="ml-2 text-sm text-gray-700">Новые вакансии</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Безопасность</h3>
+                            <button class="bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors button-ripple">
+                                Изменить пароль
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Messaging Module -->
+    <script src="js/dashboard-messaging.js"></script>
+    <script src="js/messaging-demo.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Import Firebase configuration
+        import { firebaseConfig } from './firebase-config.js';
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global variables
+        let currentUser = null;
+        let userData = null;
+
+        // DOM elements
+        const sidebarUserName = document.getElementById('sidebar-user-name');
+        const sidebarUserRole = document.getElementById('sidebar-user-role');
+        const headerUserName = document.getElementById('header-user-name');
+        const welcomeTitle = document.getElementById('welcome-title');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const welcomeRole = document.getElementById('welcome-role');
+        const loginTime = document.getElementById('login-time');
+        const logoutButton = document.getElementById('logout-button');
+        const pageTitle = document.getElementById('page-title');
+
+        // Profile form elements
+        const profileForm = document.getElementById('profile-form');
+        const profileFirstName = document.getElementById('profile-first-name');
+        const profileLastName = document.getElementById('profile-last-name');
+        const profileEmail = document.getElementById('profile-email');
+        const profilePhone = document.getElementById('profile-phone');
+        const profileRole = document.getElementById('profile-role');
+
+        // Profile stats elements
+        const profileCreated = document.getElementById('profile-created');
+        const profileLastLogin = document.getElementById('profile-last-login');
+        const profileEmailStatus = document.getElementById('profile-email-status');
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show target section
+            document.getElementById(sectionId + '-section').classList.remove('hidden');
+            
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active', 'bg-primary/10', 'text-primary');
+                item.classList.add('text-gray-700');
+            });
+            
+            // Activate clicked nav item
+            const activeNavItem = document.querySelector(`[href="#${sectionId}"]`);
+            if (activeNavItem) {
+                activeNavItem.classList.add('active', 'bg-primary/10', 'text-primary');
+                activeNavItem.classList.remove('text-gray-700');
+            }
+            
+            // Update page title
+            const titles = {
+                'dashboard': 'Дашборд',
+                'profile': 'Профиль',
+                'jobs': 'Вакансии',
+                'applications': 'Мои заявки',
+                'messages': 'Сообщения',
+                'favorites': 'Избранное',
+                'settings': 'Настройки'
+            };
+            pageTitle.textContent = titles[sectionId] || 'Дашборд';
+        }
+
+        // Navigation event listeners
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = item.getAttribute('href').substring(1);
+                showSection(sectionId);
+            });
+        });
+
+        // Mobile sidebar toggle
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        };
+
+        // Check authentication state
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log('User is signed in:', user);
+                currentUser = user;
+                
+                try {
+                    // Get user profile from Firestore
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    
+                    if (userDoc.exists()) {
+                        userData = userDoc.data();
+                        updateUI(userData);
+                        loadProfileData(userData);
+                    } else {
+                        // Fallback to Firebase Auth data
+                        const fallbackData = {
+                            displayName: user.displayName || user.email,
+                            email: user.email,
+                            role: 'candidate',
+                            firstName: user.displayName?.split(' ')[0] || '',
+                            lastName: user.displayName?.split(' ')[1] || '',
+                            phoneNumber: user.phoneNumber || '',
+                            createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime) : new Date(),
+                            isEmailVerified: user.emailVerified
+                        };
+                        userData = fallbackData;
+                        updateUI(fallbackData);
+                        loadProfileData(fallbackData);
+                    }
+                } catch (error) {
+                    console.error('Error fetching user profile:', error);
+                    
+                    // Fallback to Firebase Auth data
+                    const fallbackData = {
+                        displayName: user.displayName || user.email,
+                        email: user.email,
+                        role: 'candidate',
+                        firstName: user.displayName?.split(' ')[0] || '',
+                        lastName: user.displayName?.split(' ')[1] || '',
+                        phoneNumber: user.phoneNumber || '',
+                        createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime) : new Date(),
+                        isEmailVerified: user.emailVerified
+                    };
+                    userData = fallbackData;
+                    updateUI(fallbackData);
+                    loadProfileData(fallbackData);
+                }
+            } else {
+                console.log('User is signed out');
+                // Redirect to login page
+                window.location.href = '/auth/signin.html';
+            }
+        });
+
+        // Update UI with user data
+        function updateUI(data) {
+            const displayName = data.displayName || data.firstName || data.email;
+            const roleName = getRoleDisplayName(data.role);
+            
+            // Update all user name displays
+            sidebarUserName.textContent = displayName;
+            headerUserName.textContent = displayName;
+            sidebarUserRole.textContent = roleName;
+            welcomeRole.textContent = roleName;
+            
+            // Update welcome message
+            welcomeTitle.textContent = `Добро пожаловать, ${data.firstName || 'пользователь'}!`;
+            welcomeMessage.textContent = `Добро пожаловать в личный кабинет WorkInCZ`;
+            
+            // Update login time
+            const now = new Date();
+            loginTime.textContent = now.toLocaleString('ru-RU');
+        }
+
+        // Load profile data into form
+        function loadProfileData(data) {
+            profileFirstName.value = data.firstName || '';
+            profileLastName.value = data.lastName || '';
+            profileEmail.value = data.email || '';
+            profilePhone.value = data.phoneNumber || '';
+            profileRole.value = data.role || 'candidate';
+            
+            // Update profile stats
+            if (data.createdAt) {
+                const createdDate = data.createdAt instanceof Date ? data.createdAt : data.createdAt.toDate();
+                profileCreated.textContent = createdDate.toLocaleDateString('ru-RU');
+            }
+            
+            profileLastLogin.textContent = new Date().toLocaleDateString('ru-RU');
+            profileEmailStatus.textContent = data.isEmailVerified ? 'Подтвержден' : 'Не подтвержден';
+        }
+
+        // Get role display name
+        function getRoleDisplayName(role) {
+            switch (role) {
+                case 'candidate':
+                    return 'Соискатель';
+                case 'employer':
+                    return 'Работодатель';
+                case 'agency':
+                    return 'Агентство';
+                case 'admin':
+                    return 'Администратор';
+                default:
+                    return 'Пользователь';
+            }
+        }
+
+        // Handle profile form submission
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentUser) return;
+            
+            try {
+                const updatedData = {
+                    firstName: profileFirstName.value,
+                    lastName: profileLastName.value,
+                    phoneNumber: profilePhone.value,
+                    role: profileRole.value,
+                    displayName: `${profileFirstName.value} ${profileLastName.value}`,
+                    updatedAt: new Date()
+                };
+                
+                // Update Firestore
+                await updateDoc(doc(db, 'users', currentUser.uid), updatedData);
+                
+                // Update local data
+                userData = { ...userData, ...updatedData };
+                updateUI(userData);
+                
+                alert('Профиль успешно обновлен!');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Ошибка при обновлении профиля');
+            }
+        });
+
+        // Handle logout
+        logoutButton.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                console.log('User signed out successfully');
+                // Redirect to home page
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        });
+    </script>
+</body>
+</html> 

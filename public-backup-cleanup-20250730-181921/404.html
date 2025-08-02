@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkInCZ - Европейская платформа поиска работы</title>
+    <meta name="description" content="Найдите работу в Чехии и Европе. Работодатели, кадровые агентства и соискатели - все на одной платформе WorkInCZ.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="0,100 1000,0 1000,100"/></svg>');
+            background-size: cover;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-hero {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        
+        .btn-hero:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary-hero {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        
+        .btn-primary-hero:hover {
+            background: #218838;
+            border-color: #218838;
+        }
+        
+        .features-section {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .feature-card {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            padding: 40px 30px;
+            text-align: center;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .stats-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .cta-section {
+            background: #28a745;
+            color: white;
+            padding: 80px 0;
+        }
+        
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .auth-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn-auth {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-auth:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn-google {
+            background: #4285f4;
+            margin-bottom: 10px;
+        }
+        
+        .btn-google:hover {
+            background: #3367d6;
+        }
+        
+        .btn-anonymous {
+            background: #6c757d;
+        }
+        
+        .btn-anonymous:hover {
+            background: #5a6268;
+        }
+        
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+            max-width: 400px;
+        }
+        
+        .notification.info {
+            background: #17a2b8;
+        }
+        
+        .notification.success {
+            background: #28a745;
+        }
+        
+        .notification.error {
+            background: #dc3545;
+        }
+        
+        .notification.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Loading Spinner */
+        #loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="#">
+                <i class="fas fa-briefcase me-2"></i>WorkInCZ
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Возможности</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#stats">Статистика</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="agency-landing.html">Для агентств</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="showAuthModal()">Войти</button>
+                    <button class="btn btn-primary" onclick="showAuthModal()">Регистрация</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <h1 class="hero-title">Найдите работу мечты в Европе</h1>
+                    <p class="hero-subtitle">WorkInCZ - современная платформа для поиска работы в Чехии и Европе. Соединяем работодателей, кадровые агентства и соискателей.</p>
+                    <div class="hero-buttons">
+                        <a href="#features" class="btn-hero">
+                            <i class="fas fa-search me-2"></i>Найти работу
+                        </a>
+                        <a href="agency-landing.html" class="btn-hero btn-primary-hero">
+                            <i class="fas fa-building me-2"></i>Для агентств
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <i class="fas fa-globe-europe" style="font-size: 15rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-3">Почему WorkInCZ?</h2>
+                <p class="lead text-muted">Инновационная платформа для современного рынка труда</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Для всех участников</h4>
+                        <p class="text-muted">Работодатели, кадровые агентства и соискатели - все на одной платформе</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <h4>Европейский рынок</h4>
+                        <p class="text-muted">Доступ к вакансиям по всей Европе с поддержкой мультивалютности</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4>Безопасность и качество</h4>
+                        <p class="text-muted">Проверенные работодатели и агентства, защита персональных данных</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Аналитика и статистика</h4>
+                        <p class="text-muted">Подробная аналитика для работодателей и агентств</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h4>Мобильное приложение</h4>
+                        <p class="text-muted">Удобное мобильное приложение для поиска работы на ходу</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h4>Поддержка 24/7</h4>
+                        <p class="text-muted">Круглосуточная поддержка на русском, чешском и английском языках</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">10,000+</div>
+                        <div class="stat-label">Активных вакансий</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">5,000+</div>
+                        <div class="stat-label">Компаний-партнеров</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">50,000+</div>
+                        <div class="stat-label">Успешных трудоустройств</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number">100+</div>
+                        <div class="stat-label">Кадровых агентств</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container text-center">
+            <h2 class="display-4 fw-bold mb-4">Готовы начать?</h2>
+            <p class="lead mb-4">Присоединяйтесь к тысячам успешных пользователей WorkInCZ</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-light btn-lg" onclick="showAuthModal()">
+                    <i class="fas fa-user-plus me-2"></i>Зарегистрироваться
+                </button>
+                <a href="agency-landing.html" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-building me-2"></i>Для агентств
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <h5><i class="fas fa-briefcase me-2"></i>WorkInCZ</h5>
+                    <p>Современная платформа для поиска работы в Европе</p>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Платформа</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">О нас</a></li>
+                        <li><a href="#" class="text-light">Возможности</a></li>
+                        <li><a href="#" class="text-light">Цены</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Поддержка</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">Помощь</a></li>
+                        <li><a href="#" class="text-light">Контакты</a></li>
+                        <li><a href="#" class="text-light">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Правовая информация</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">Условия использования</a></li>
+                        <li><a href="#" class="text-light">Политика конфиденциальности</a></li>
+                        <li><a href="#" class="text-light">GDPR</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Социальные сети</h6>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="text-light"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2025 WorkInCZ. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-content">
+            <span class="close-btn" onclick="hideAuthModal()">&times;</span>
+            <h3 class="text-center mb-4">Вход в систему</h3>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchTab('login')">Вход</div>
+                <div class="auth-tab" onclick="switchTab('register')">Регистрация</div>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form active">
+                <button class="btn-auth btn-google" onclick="loginWithGoogle()">
+                    <i class="fab fa-google me-2"></i>Войти через Google
+                </button>
+                <button class="btn-auth btn-anonymous" onclick="loginAnonymously()">
+                    <i class="fas fa-user-secret me-2"></i>Анонимный вход
+                </button>
+                <div class="text-center mt-3">
+                    <small class="text-muted">Или</small>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="Email" id="loginEmail">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Пароль" id="loginPassword">
+                </div>
+                <button class="btn-auth" onclick="loginWithEmail()">Войти</button>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerForm" class="auth-form">
+                <button class="btn-auth btn-google" onclick="loginWithGoogle()">
+                    <i class="fab fa-google me-2"></i>Регистрация через Google
+                </button>
+                <div class="text-center mt-3">
+                    <small class="text-muted">Или</small>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="Email" id="registerEmail">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Пароль" id="registerPassword">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Подтвердите пароль" id="registerPasswordConfirm">
+                </div>
+                <button class="btn-auth" onclick="registerWithEmail()">Зарегистрироваться</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script>
+        // Firebase конфигурация
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+            authDomain: "workclick-cz.web.app",
+            databaseURL: "https://workincz-759c7-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "workincz-759c7",
+            storageBucket: "workincz-759c7.firebasestorage.app",
+            messagingSenderId: "670842817143",
+            appId: "1:670842817143:web:d8998634da78318e9f1472",
+            measurementId: "G-PB27XT0CT0"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        console.log('Firebase инициализирован на 404 странице');
+    </script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Auth Modal Functions
+        window.showAuthModal = () => {
+            document.getElementById('authModal').style.display = 'block';
+        };
+        
+        window.hideAuthModal = () => {
+            document.getElementById('authModal').style.display = 'none';
+        };
+        
+        window.switchTab = (tab) => {
+            // Update tabs
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update forms
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.getElementById('registerForm').classList.add('active');
+            }
+        };
+        
+        // Auth Functions
+        window.loginWithGoogle = async () => {
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                await firebase.auth().signInWithPopup(provider);
+                hideAuthModal();
+                window.location.href = '/dashboard.html';
+            } catch (error) {
+                showNotification('Ошибка входа через Google: ' + error.message, 'error');
+            }
+        };
+        
+        window.loginAnonymously = async () => {
+            try {
+                // Redirect to anonymous auth page
+                window.location.href = '/anonymous-auth.html';
+            } catch (error) {
+                showNotification('Ошибка анонимного входа: ' + error.message, 'error');
+            }
+        };
+        
+        window.loginWithEmail = async () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showNotification('Заполните все поля', 'error');
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                showNotification('Неверный формат email', 'error');
+                return;
+            }
+            
+            try {
+                await firebase.auth().signInWithEmailAndPassword(email, password);
+                hideAuthModal();
+                window.location.href = '/dashboard.html';
+            } catch (error) {
+                showNotification('Ошибка входа: ' + error.message, 'error');
+            }
+        };
+        
+        window.registerWithEmail = async () => {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            
+            if (!email || !password || !passwordConfirm) {
+                showNotification('Заполните все поля', 'error');
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                showNotification('Неверный формат email', 'error');
+                return;
+            }
+            
+            if (password !== passwordConfirm) {
+                showNotification('Пароли не совпадают', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showNotification('Пароль должен содержать минимум 6 символов', 'error');
+                return;
+            }
+            
+            try {
+                await firebase.auth().createUserWithEmailAndPassword(email, password);
+                hideAuthModal();
+                window.location.href = '/dashboard.html';
+            } catch (error) {
+                showNotification('Ошибка регистрации: ' + error.message, 'error');
+            }
+        };
+        
+        // Utility functions
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 transform translate-x-full`;
+            
+            const colors = {
+                success: 'bg-green-500 text-white',
+                error: 'bg-red-500 text-white',
+                info: 'bg-blue-500 text-white',
+                warning: 'bg-yellow-500 text-white'
+            };
+            
+            notification.className += ` ${colors[type]}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Close modal when clicking outside
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('authModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideAuthModal();
+                }
+            });
+            
+            // Add click handlers for job cards
+            document.querySelectorAll('.job-card .btn-primary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showAuthModal();
+                });
+            });
+            
+            // Add search functionality
+            const searchBtn = document.querySelector('.search-btn');
+            if (searchBtn) {
+                searchBtn.addEventListener('click', function() {
+                    alert('Функция поиска будет доступна после входа в систему');
+                    showAuthModal();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

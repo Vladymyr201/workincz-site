@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали вакансии - WorkInCZ</title>
+    <meta name="description" content="Подробная информация о вакансии и подача заявки">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            500: '#64748b',
+                            600: '#475569',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .job-details {
+            transition: all 0.3s ease;
+        }
+        
+        /* Защита контента */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* Разрешаем выделение только для интерактивных элементов */
+        button, input, textarea, a, .selectable {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-2xl font-bold text-primary-600">WorkInCZ</a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900">Главная</a>
+                    <a href="jobs.html" class="text-gray-600 hover:text-gray-900">Вакансии</a>
+                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900">Личный кабинет</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <button id="loginBtn" class="text-primary-600 hover:text-primary-700 font-medium">Войти</button>
+                    <button id="registerBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium">Регистрация</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+        <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Breadcrumbs -->
+        <nav class="flex mb-8" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="index.html" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600">
+                        <i class="fas fa-home mr-2"></i>
+                        Главная
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="jobs.html" class="text-sm font-medium text-gray-700 hover:text-primary-600">Вакансии</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-sm font-medium text-gray-500">Детали вакансии</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Job Details -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-sm p-8">
+                    <!-- Job Header -->
+                    <div class="mb-8">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h1 id="jobTitle" class="text-3xl font-bold text-gray-900 mb-2">Загрузка...</h1>
+                                <p id="companyName" class="text-lg text-gray-600 mb-2">Загрузка...</p>
+                                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                    <span id="jobLocation"><i class="fas fa-map-marker-alt mr-1"></i>Загрузка...</span>
+                                    <span id="jobType"><i class="fas fa-clock mr-1"></i>Загрузка...</span>
+                                    <span id="jobExperience"><i class="fas fa-user mr-1"></i>Загрузка...</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div id="salaryRange" class="text-2xl font-bold text-primary-600 mb-2">Загрузка...</div>
+                                <div class="text-sm text-gray-500">в месяц</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Job Tags -->
+                        <div id="jobTags" class="flex flex-wrap gap-2 mb-6">
+                            <!-- Tags will be loaded here -->
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <div class="flex flex-wrap gap-4">
+                            <button id="applyBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium flex items-center">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Подать заявку
+                            </button>
+                            <button id="saveBtn" class="border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-3 rounded-lg font-medium flex items-center">
+                                <i class="fas fa-bookmark mr-2"></i>
+                                Сохранить
+                            </button>
+                            <button id="shareBtn" class="border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-3 rounded-lg font-medium flex items-center">
+                                <i class="fas fa-share mr-2"></i>
+                                Поделиться
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Job Description -->
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Описание вакансии</h2>
+                        <div id="jobDescription" class="prose max-w-none text-gray-700">
+                            <p>Загрузка описания...</p>
+                        </div>
+                    </div>
+
+                    <!-- Requirements -->
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Требования</h2>
+                        <div id="jobRequirements" class="prose max-w-none text-gray-700">
+                            <p>Загрузка требований...</p>
+                        </div>
+                    </div>
+
+                    <!-- Benefits -->
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Условия и льготы</h2>
+                        <div id="jobBenefits" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Benefits will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Company Info -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">О компании</h3>
+                    <div id="companyInfo" class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-building text-gray-500"></i>
+                            </div>
+                            <div>
+                                <p id="companyNameSidebar" class="font-medium text-gray-900">Загрузка...</p>
+                                <p class="text-sm text-gray-500">Работодатель</p>
+                            </div>
+                        </div>
+                        <div id="companyDescription" class="text-sm text-gray-600">
+                            Загрузка описания компании...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Stats -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Статистика</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Просмотры</span>
+                            <span id="jobViews" class="font-medium">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Заявки</span>
+                            <span id="jobApplications" class="font-medium">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Дата публикации</span>
+                            <span id="jobDate" class="font-medium">Загрузка...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Similar Jobs -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Похожие вакансии</h3>
+                    <div id="similarJobs" class="space-y-4">
+                        <!-- Similar jobs will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Application Modal -->
+    <div id="applicationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-8 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-900">Подача заявки</h3>
+                <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="applicationForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Сопроводительное письмо</label>
+                    <textarea 
+                        id="coverLetter" 
+                        rows="6" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        placeholder="Расскажите о себе и почему вы подходите для этой вакансии..."
+                    ></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Резюме</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <input type="file" id="resumeFile" class="hidden" accept=".pdf,.doc,.docx">
+                        <label for="resumeFile" class="cursor-pointer">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-600">Нажмите для загрузки резюме</p>
+                            <p class="text-xs text-gray-500 mt-1">PDF, DOC, DOCX до 5MB</p>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Дополнительные документы</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <input type="file" id="additionalFiles" class="hidden" multiple accept=".pdf,.doc,.docx,.jpg,.png">
+                        <label for="additionalFiles" class="cursor-pointer">
+                            <i class="fas fa-folder-open text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-600">Добавить дополнительные файлы</p>
+                            <p class="text-xs text-gray-500 mt-1">Необязательно</p>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <input type="checkbox" id="gdprConsent" class="mt-1 mr-3" required>
+                    <label for="gdprConsent" class="text-sm text-gray-700">
+                        Я согласен с <a href="#" class="text-primary-600 hover:underline">политикой конфиденциальности</a> и даю согласие на обработку персональных данных
+                    </label>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="cancelApplication" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                        Отмена
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                        Отправить заявку
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXqX",
+            authDomain: "workclick-cz.web.app",
+            projectId: "workincz-759c7",
+            storageBucket: "workincz-759c7.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <script>
+        class JobDetailsPage {
+            constructor() {
+                this.currentUser = null;
+                this.jobId = null;
+                this.jobData = null;
+                this.init();
+            }
+
+            async init() {
+                this.checkAuth();
+                this.getJobIdFromUrl();
+                await this.loadJobDetails();
+                this.setupEventListeners();
+            }
+
+            checkAuth() {
+                firebase.auth().onAuthStateChanged((user) => {
+                    this.currentUser = user;
+                    this.updateHeaderButtons();
+                });
+            }
+
+            updateHeaderButtons() {
+                const loginBtn = document.getElementById('loginBtn');
+                const registerBtn = document.getElementById('registerBtn');
+
+                if (this.currentUser) {
+                    loginBtn.textContent = 'Личный кабинет';
+                    registerBtn.textContent = 'Выйти';
+                    loginBtn.onclick = () => {
+                        // Перенаправляем на страницу входа
+                        window.location.href = '/dashboard.html';
+                    };
+                    registerBtn.onclick = () => {
+                        // Перенаправляем на страницу регистрации
+                        window.location.href = 'auth/register.html';
+                    };
+                } else {
+                    loginBtn.textContent = 'Войти';
+                    registerBtn.textContent = 'Регистрация';
+                    loginBtn.onclick = () => {
+                        // Перенаправляем на страницу входа
+                        window.location.href = 'auth/login.html';
+                    };
+                    registerBtn.onclick = () => {
+                        // Перенаправляем на страницу регистрации
+                        window.location.href = 'auth/register.html';
+                    };
+                }
+            }
+
+            async loadJobDetails() {
+                try {
+                    this.showLoading();
+                    
+                    // Получаем данные вакансии из Firebase
+                    const jobDoc = await firebase.firestore()
+                        .collection('jobs')
+                        .doc(this.jobId)
+                        .get();
+
+                    if (jobDoc.exists) {
+                        this.jobData = jobDoc.data();
+                        this.renderJobDetails();
+                        this.loadSimilarJobs();
+                    } else {
+                        this.showError('Вакансия не найдена');
+                    }
+                } catch (error) {
+                    console.error('Error loading job details:', error);
+                    this.loadDemoJob();
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            loadDemoJob() {
+                // Демо-данные для тестирования
+                this.jobData = {
+                    title: 'Frontend Developer',
+                    company: 'TechCorp Prague',
+                    location: 'Прага, Чехия',
+                    type: 'Полная занятость',
+                    experience: 'Middle',
+                    salary: '€3,500 - €4,500',
+                    description: 'Мы ищем опытного Frontend разработчика для работы над инновационными проектами. Требуется знание React, TypeScript и современных веб-технологий.',
+                    requirements: '• Опыт работы с React 2+ года\n• Знание TypeScript\n• Опыт с Redux или MobX\n• Понимание принципов REST API\n• Опыт работы в команде',
+                    benefits: ['Гибкий график', 'Удаленная работа', 'Медицинская страховка', 'Спортивный абонемент'],
+                    tags: ['React', 'TypeScript', 'Frontend', 'JavaScript'],
+                    views: 156,
+                    applications: 23,
+                    createdAt: new Date(),
+                    category: 'IT'
+                };
+                this.renderJobDetails();
+            }
+
+            renderJobDetails() {
+                // Заполняем данные вакансии
+                document.getElementById('jobTitle').textContent = this.jobData.title;
+                document.getElementById('companyName').textContent = this.jobData.company;
+                document.getElementById('companyNameSidebar').textContent = this.jobData.company;
+                document.getElementById('jobLocation').innerHTML = `<i class="fas fa-map-marker-alt mr-1"></i>${this.jobData.location}`;
+                document.getElementById('jobType').innerHTML = `<i class="fas fa-clock mr-1"></i>${this.jobData.type}`;
+                document.getElementById('jobExperience').innerHTML = `<i class="fas fa-user mr-1"></i>${this.jobData.experience}`;
+                document.getElementById('salaryRange').textContent = this.jobData.salary;
+                document.getElementById('jobDescription').innerHTML = this.jobData.description.replace(/\n/g, '<br>');
+                document.getElementById('jobRequirements').innerHTML = this.jobData.requirements.replace(/\n/g, '<br>');
+                document.getElementById('jobViews').textContent = this.jobData.views;
+                document.getElementById('jobApplications').textContent = this.jobData.applications;
+                document.getElementById('jobDate').textContent = this.formatDate(this.jobData.createdAt);
+
+                // Рендерим теги
+                const tagsContainer = document.getElementById('jobTags');
+                tagsContainer.innerHTML = this.jobData.tags.map(tag => 
+                    `<span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">${tag}</span>`
+                ).join('');
+
+                // Рендерим льготы
+                const benefitsContainer = document.getElementById('jobBenefits');
+                benefitsContainer.innerHTML = this.jobData.benefits.map(benefit => 
+                    `<div class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-2"></i>
+                        <span class="text-gray-700">${benefit}</span>
+                    </div>`
+                ).join('');
+            }
+
+            async loadSimilarJobs() {
+                try {
+                    const similarJobsSnapshot = await firebase.firestore()
+                        .collection('jobs')
+                        .where('category', '==', this.jobData.category)
+                        .where('status', '==', 'active')
+                        .limit(3)
+                        .get();
+
+                    const similarJobsContainer = document.getElementById('similarJobs');
+                    
+                    if (!similarJobsSnapshot.empty) {
+                        let similarJobsHTML = '';
+                        similarJobsSnapshot.forEach(doc => {
+                            const job = doc.data();
+                            if (doc.id !== this.jobId) {
+                                similarJobsHTML += `
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='job-details.html?id=${doc.id}'">
+                                        <h4 class="font-semibold text-gray-900 text-sm">${job.title}</h4>
+                                        <p class="text-xs text-gray-600">${job.company}</p>
+                                        <p class="text-xs text-gray-500">${job.salary}</p>
+                                    </div>
+                                `;
+                            }
+                        });
+                        similarJobsContainer.innerHTML = similarJobsHTML;
+                    } else {
+                        similarJobsContainer.innerHTML = '<p class="text-sm text-gray-500">Похожих вакансий пока нет</p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading similar jobs:', error);
+                }
+            }
+
+            setupEventListeners() {
+                // Кнопка подачи заявки
+                document.getElementById('applyBtn').addEventListener('click', () => {
+                    if (!this.currentUser) {
+                        this.showNotification('Для подачи заявки необходимо войти в систему', 'error');
+                        return;
+                    }
+                    this.openApplicationModal();
+                });
+
+                // Кнопка сохранения
+                document.getElementById('saveBtn').addEventListener('click', () => {
+                    if (!this.currentUser) {
+                        this.showNotification('Для сохранения необходимо войти в систему', 'error');
+                        return;
+                    }
+                    this.saveJob();
+                });
+
+                // Кнопка поделиться
+                document.getElementById('shareBtn').addEventListener('click', () => {
+                    this.shareJob();
+                });
+
+                // Модальное окно
+                document.getElementById('closeModal').addEventListener('click', () => {
+                    this.closeApplicationModal();
+                });
+
+                document.getElementById('cancelApplication').addEventListener('click', () => {
+                    this.closeApplicationModal();
+                });
+
+                // Форма заявки
+                document.getElementById('applicationForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.submitApplication();
+                });
+
+                // Закрытие модального окна по клику вне его
+                document.getElementById('applicationModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'applicationModal') {
+                        this.closeApplicationModal();
+                    }
+                });
+            }
+
+            openApplicationModal() {
+                document.getElementById('applicationModal').classList.remove('hidden');
+            }
+
+            closeApplicationModal() {
+                document.getElementById('applicationModal').classList.add('hidden');
+                document.getElementById('applicationForm').reset();
+            }
+
+            async submitApplication() {
+                try {
+                    const coverLetter = document.getElementById('coverLetter').value;
+                    const resumeFile = document.getElementById('resumeFile').files[0];
+                    const gdprConsent = document.getElementById('gdprConsent').checked;
+
+                    if (!coverLetter.trim()) {
+                        this.showNotification('Заполните сопроводительное письмо', 'error');
+                        return;
+                    }
+
+                    if (!gdprConsent) {
+                        this.showNotification('Необходимо согласие на обработку данных', 'error');
+                        return;
+                    }
+
+                    // Создаем заявку
+                    const applicationData = {
+                        jobId: this.jobId,
+                        userId: this.currentUser.uid,
+                        coverLetter: coverLetter,
+                        status: 'pending',
+                        createdAt: new Date(),
+                        gdprConsent: true
+                    };
+
+                    // Сохраняем в Firebase
+                    await firebase.firestore()
+                        .collection('applications')
+                        .add(applicationData);
+
+                    this.showNotification('Заявка успешно отправлена!', 'success');
+                    this.closeApplicationModal();
+
+                    // Обновляем счетчик заявок
+                    await firebase.firestore()
+                        .collection('jobs')
+                        .doc(this.jobId)
+                        .update({
+                            applications: firebase.firestore.FieldValue.increment(1)
+                        });
+
+                } catch (error) {
+                    console.error('Error submitting application:', error);
+                    this.showNotification('Ошибка при отправке заявки', 'error');
+                }
+            }
+
+            async saveJob() {
+                try {
+                    const savedJobData = {
+                        jobId: this.jobId,
+                        userId: this.currentUser.uid,
+                        savedAt: new Date()
+                    };
+
+                    await firebase.firestore()
+                        .collection('saved_jobs')
+                        .add(savedJobData);
+
+                    this.showNotification('Вакансия сохранена!', 'success');
+                } catch (error) {
+                    console.error('Error saving job:', error);
+                    this.showNotification('Ошибка при сохранении', 'error');
+                }
+            }
+
+            shareJob() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: this.jobData.title,
+                        text: `Вакансия: ${this.jobData.title} в ${this.jobData.company}`,
+                        url: window.location.href
+                    });
+                } else {
+                    // Fallback - копируем ссылку
+                    navigator.clipboard.writeText(window.location.href);
+                    this.showNotification('Ссылка скопирована в буфер обмена', 'success');
+                }
+            }
+
+            formatDate(date) {
+                if (!date) return 'Недавно';
+                const d = date.toDate ? date.toDate() : new Date(date);
+                return d.toLocaleDateString('ru-RU');
+            }
+
+            showLoading() {
+                document.getElementById('loadingSpinner').classList.remove('hidden');
+            }
+
+            hideLoading() {
+                document.getElementById('loadingSpinner').classList.add('hidden');
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+                    type === 'success' ? 'bg-green-500 text-white' :
+                    type === 'error' ? 'bg-red-500 text-white' :
+                    'bg-blue-500 text-white'
+                }`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+
+            showError(message) {
+                this.showNotification(message, 'error');
+            }
+        }
+
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new JobDetailsPage();
+        });
+    </script>
+</body>
+</html>

@@ -29,7 +29,7 @@ console.log('✅ Файл index.html найден');
 
 // Проверяем наличие всех JS файлов
 const requiredFiles = [
-    'js/auth-manager.js',
+    'js/auth/auth.js',
     'js/jobs.js',
     'js/reviews-system.js',
     'js/calendar-system.js',

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вакансии - WorkInCZ</title>
+    <meta name="description" content="Найдите работу в Чехии и Европе. Тысячи вакансий от ведущих работодателей.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            500: '#64748b',
+                            600: '#475569',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .job-card {
+            transition: all 0.3s ease;
+        }
+        .job-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* Защита контента */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* Разрешаем выделение только для интерактивных элементов */
+        button, input, textarea, a, .selectable {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-2xl font-bold text-primary-600">WorkInCZ</a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900">Главная</a>
+                    <a href="jobs.html" class="text-primary-600 font-medium">Вакансии</a>
+                    <a href="dashboard.html" class="text-gray-600 hover:text-gray-900">Личный кабинет</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <button id="loginBtn" class="text-primary-600 hover:text-primary-700 font-medium">Войти</button>
+                    <button id="registerBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium">Регистрация</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">Найдите свою идеальную работу</h1>
+                <p class="text-lg text-gray-600">Тысячи вакансий от ведущих работодателей Чехии и Европы</p>
+            </div>
+            
+            <!-- Search Form -->
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Должность</label>
+                            <input type="text" id="jobTitle" placeholder="Frontend Developer" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Локация</label>
+                            <input type="text" id="location" placeholder="Прага" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Категория</label>
+                            <select id="category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                <option value="">Все категории</option>
+                                <option value="it">IT & Разработка</option>
+                                <option value="marketing">Маркетинг</option>
+                                <option value="sales">Продажи</option>
+                                <option value="finance">Финансы</option>
+                                <option value="hr">HR & Рекрутинг</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button id="searchBtn" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-md font-medium transition-colors">
+                                <i class="fas fa-search mr-2"></i>Найти
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters and Results -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Filters Sidebar -->
+            <div class="lg:w-1/4">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Фильтры</h3>
+                    
+                    <!-- Salary Range -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Зарплата (€)</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="0-2000">
+                                <span class="text-sm">0 - 2,000</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="2000-4000">
+                                <span class="text-sm">2,000 - 4,000</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="4000-6000">
+                                <span class="text-sm">4,000 - 6,000</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="6000+">
+                                <span class="text-sm">6,000+</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Job Type -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Тип работы</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="full-time">
+                                <span class="text-sm">Полная занятость</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="part-time">
+                                <span class="text-sm">Частичная занятость</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="contract">
+                                <span class="text-sm">Контракт</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="remote">
+                                <span class="text-sm">Удаленная работа</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Experience Level -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Опыт</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="entry">
+                                <span class="text-sm">Начинающий</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="mid">
+                                <span class="text-sm">Средний</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" value="senior">
+                                <span class="text-sm">Старший</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button id="clearFilters" class="w-full text-primary-600 hover:text-primary-700 text-sm font-medium">
+                        Очистить фильтры
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            <div class="lg:w-3/4">
+                <!-- Results Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">Найдено вакансий: <span id="resultsCount">0</span></h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <label class="text-sm text-gray-600">Сортировка:</label>
+                        <select id="sortBy" class="text-sm border border-gray-300 rounded px-2 py-1">
+                            <option value="recent">Сначала новые</option>
+                            <option value="salary">По зарплате</option>
+                            <option value="relevance">По релевантности</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Jobs List -->
+                <div id="jobsList" class="space-y-4">
+                    <!-- Jobs will be loaded here -->
+                </div>
+                
+                <!-- Loading -->
+                <div id="loading" class="text-center py-8 hidden">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                    <p class="mt-2 text-gray-600">Загрузка вакансий...</p>
+                </div>
+                
+                <!-- No Results -->
+                <div id="noResults" class="text-center py-8 hidden">
+                    <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Вакансии не найдены</h3>
+                    <p class="text-gray-600">Попробуйте изменить параметры поиска</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXq",
+            authDomain: "workclick-cz.web.app",
+            projectId: "workincz-759c7",
+            storageBucket: "workincz-759c7.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <!-- Jobs Page Script -->
+    <script>
+        class JobsPage {
+            constructor() {
+                this.currentUser = null;
+                this.jobs = [];
+                this.filters = {};
+                this.init();
+            }
+
+            async init() {
+                await this.checkAuth();
+                this.setupEventListeners();
+                this.loadJobs();
+            }
+
+            async checkAuth() {
+                return new Promise((resolve, reject) => {
+                    firebase.auth().onAuthStateChanged((user) => {
+                        if (user) {
+                            this.currentUser = user;
+                            this.updateAuthButtons();
+                            resolve(user);
+                        } else {
+                            this.updateAuthButtons();
+                            resolve(null);
+                        }
+                    });
+                });
+            }
+
+            updateAuthButtons() {
+                const loginBtn = document.getElementById('loginBtn');
+                const registerBtn = document.getElementById('registerBtn');
+                
+                if (this.currentUser) {
+                    loginBtn.textContent = 'Личный кабинет';
+                    loginBtn.onclick = () => window.location.href = 'dashboard.html';
+                    registerBtn.textContent = 'Выйти';
+                    registerBtn.onclick = () => this.logout();
+                } else {
+                    loginBtn.textContent = 'Войти';
+                    loginBtn.onclick = () => {
+                        // Перенаправляем на страницу входа
+                        window.location.href = 'auth/login.html';
+                    };
+                    registerBtn.textContent = 'Регистрация';
+                    registerBtn.onclick = () => {
+                        // Перенаправляем на страницу регистрации
+                        window.location.href = 'auth/register.html';
+                    };
+                }
+            }
+
+            async logout() {
+                await firebase.auth().signOut();
+                location.reload();
+            }
+
+            setupEventListeners() {
+                document.getElementById('searchBtn').addEventListener('click', () => this.searchJobs());
+                document.getElementById('clearFilters').addEventListener('click', () => this.clearFilters());
+                document.getElementById('sortBy').addEventListener('change', () => this.sortJobs());
+                
+                // Search on Enter
+                document.getElementById('jobTitle').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.searchJobs();
+                });
+                document.getElementById('location').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.searchJobs();
+                });
+            }
+
+            async loadJobs() {
+                this.showLoading();
+                
+                try {
+                    const jobsSnapshot = await firebase.firestore()
+                        .collection('jobs')
+                        .where('status', '==', 'active')
+                        .orderBy('createdAt', 'desc')
+                        .limit(20)
+                        .get();
+                    
+                    this.jobs = [];
+                    jobsSnapshot.forEach(doc => {
+                        this.jobs.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    this.renderJobs();
+                } catch (error) {
+                    console.error('Error loading jobs:', error);
+                    this.loadDemoJobs();
+                }
+            }
+
+            loadDemoJobs() {
+                this.jobs = [
+                    {
+                        id: '1',
+                        title: 'Frontend Developer',
+                        company: 'TechCorp Prague',
+                        location: 'Прага',
+                        salary: '€3,500 - €4,500',
+                        type: 'full-time',
+                        category: 'it',
+                        experience: 'mid',
+                        description: 'Мы ищем опытного Frontend разработчика для работы над инновационными проектами.',
+                        createdAt: new Date(),
+                        status: 'active'
+                    },
+                    {
+                        id: '2',
+                        title: 'UX Designer',
+                        company: 'Design Studio',
+                        location: 'Брно',
+                        salary: '€2,800 - €3,800',
+                        type: 'full-time',
+                        category: 'it',
+                        experience: 'mid',
+                        description: 'Создавайте потрясающие пользовательские интерфейсы для наших клиентов.',
+                        createdAt: new Date(),
+                        status: 'active'
+                    },
+                    {
+                        id: '3',
+                        title: 'Project Manager',
+                        company: 'Global Solutions',
+                        location: 'Прага',
+                        salary: '€4,000 - €5,500',
+                        type: 'full-time',
+                        category: 'it',
+                        experience: 'senior',
+                        description: 'Управляйте крупными IT проектами и командами разработчиков.',
+                        createdAt: new Date(),
+                        status: 'active'
+                    }
+                ];
+                
+                this.renderJobs();
+            }
+
+            renderJobs() {
+                const jobsList = document.getElementById('jobsList');
+                const resultsCount = document.getElementById('resultsCount');
+                
+                resultsCount.textContent = this.jobs.length;
+                
+                if (this.jobs.length === 0) {
+                    this.showNoResults();
+                    return;
+                }
+                
+                let jobsHTML = '';
+                this.jobs.forEach(job => {
+                    jobsHTML += `
+                        <div class="job-card bg-white rounded-lg shadow p-6 cursor-pointer" onclick="jobsPage.showJobDetails('${job.id}')">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">${job.title}</h3>
+                                    <p class="text-gray-600 mb-2">${job.company} • ${job.location}</p>
+                                    <p class="text-sm text-gray-500 mb-3">${job.description.substring(0, 150)}...</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">${job.type}</span>
+                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">${job.category}</span>
+                                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">${job.experience}</span>
+                                    </div>
+                                </div>
+                                <div class="text-right ml-4">
+                                    <p class="text-lg font-semibold text-primary-600">${job.salary}</p>
+                                    <p class="text-sm text-gray-500">${this.formatTime(job.createdAt)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                jobsList.innerHTML = jobsHTML;
+                this.hideLoading();
+            }
+
+            formatTime(timestamp) {
+                if (!timestamp) return 'Недавно';
+                
+                const now = new Date();
+                const time = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                const diff = now - time;
+                
+                const days = Math.floor(diff / 86400000);
+                
+                if (days === 0) return 'Сегодня';
+                if (days === 1) return 'Вчера';
+                if (days < 7) return `${days} дней назад`;
+                return time.toLocaleDateString();
+            }
+
+            searchJobs() {
+                const title = document.getElementById('jobTitle').value;
+                const location = document.getElementById('location').value;
+                const category = document.getElementById('category').value;
+                
+                // Простая фильтрация
+                let filteredJobs = this.jobs.filter(job => {
+                    if (title && !job.title.toLowerCase().includes(title.toLowerCase())) return false;
+                    if (location && !job.location.toLowerCase().includes(location.toLowerCase())) return false;
+                    if (category && job.category !== category) return false;
+                    return true;
+                });
+                
+                this.jobs = filteredJobs;
+                this.renderJobs();
+            }
+
+            clearFilters() {
+                document.getElementById('jobTitle').value = '';
+                document.getElementById('location').value = '';
+                document.getElementById('category').value = '';
+                this.loadJobs();
+            }
+
+            sortJobs() {
+                const sortBy = document.getElementById('sortBy').value;
+                
+                this.jobs.sort((a, b) => {
+                    switch(sortBy) {
+                        case 'salary':
+                            return this.extractSalary(b.salary) - this.extractSalary(a.salary);
+                        case 'relevance':
+                            return b.createdAt - a.createdAt;
+                        default:
+                            return b.createdAt - a.createdAt;
+                    }
+                });
+                
+                this.renderJobs();
+            }
+
+            extractSalary(salaryStr) {
+                const match = salaryStr.match(/(\d+)/);
+                return match ? parseInt(match[1]) : 0;
+            }
+
+            showJobDetails(jobId) {
+                window.location.href = `job-details.html?id=${jobId}`;
+            }
+
+            showLoading() {
+                document.getElementById('loading').classList.remove('hidden');
+                document.getElementById('jobsList').classList.add('hidden');
+                document.getElementById('noResults').classList.add('hidden');
+            }
+
+            hideLoading() {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('jobsList').classList.remove('hidden');
+            }
+
+            showNoResults() {
+                document.getElementById('noResults').classList.remove('hidden');
+                document.getElementById('jobsList').classList.add('hidden');
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        // Initialize jobs page
+        let jobsPage;
+        document.addEventListener('DOMContentLoaded', () => {
+            jobsPage = new JobsPage();
+        });
+    </script>
+</body>
+</html>

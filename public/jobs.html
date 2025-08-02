@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Вакансии в Чехии - WorkInCZ</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#F59E0B',
+                        success: '#10B981'
+                    },
+                    borderRadius: {
+                        'button': '8px'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/tailwind.min.css">
+    <link rel="stylesheet" href="css/modern-styles.css">
+    
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* Touch targets */
+        button, a, input[type="checkbox"], input[type="radio"] {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* iOS fixes */
+        html {
+            overflow: hidden;
+            height: 100%;
+        }
+        body {
+            overflow: auto;
+            height: 100%;
+            overscroll-behavior-y: none;
+        }
+        
+        .card-3d {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: all 0.3s ease;
+        }
+        
+        .card-3d:hover {
+            transform: rotateX(2deg) rotateY(2deg) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .button-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .button-ripple::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 60%);
+            transform: scale(5);
+            opacity: 0;
+            transition: transform 0.5s, opacity 0.5s;
+        }
+        
+        .button-ripple:active::after {
+            transform: scale(0);
+            opacity: 1;
+            transition: 0s;
+        }
+        
+        .custom-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .custom-checkbox:checked {
+            background-color: #4F46E5;
+            border-color: #4F46E5;
+        }
+        
+        .custom-checkbox:checked::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 1px;
+            background-color: white;
+        }
+        
+        .custom-switch {
+            position: relative;
+            display: inline-block;
+            width: 3rem;
+            height: 1.5rem;
+        }
+        
+        .custom-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e2e8f0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 1.1rem;
+            width: 1.1rem;
+            left: 0.2rem;
+            bottom: 0.2rem;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .switch-slider {
+            background-color: #4F46E5;
+        }
+        
+        input:checked + .switch-slider:before {
+            transform: translateX(1.5rem);
+        }
+        
+        .safe-area-top {
+            padding-top: env(safe-area-inset-top);
+        }
+        
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .filter-sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-sidebar {
+                transform: translateX(-100%);
+            }
+            .filter-sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 safe-area-top">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="text-2xl font-['Pacifico'] text-primary hover:scale-105 transition-transform">WorkInCZ</a>
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="jobs.html" class="text-primary font-medium">Поиск работы</a>
+                    <a href="#" class="text-gray-700 hover:text-primary font-medium transition-colors">Биржа услуг</a>
+                    <a href="#" class="text-gray-700 hover:text-primary font-medium transition-colors">Юридическая помощь</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="auth/login.html" class="hidden md:block text-sm font-medium text-gray-700 hover:text-primary transition-colors">Войти</a>
+                <button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors button-ripple">
+                    Регистрация
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-6">
+        <!-- Search Header -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Профессия или ключевые слова</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="ri-search-line text-gray-400"></i>
+                        </div>
+                        <input type="text" id="jobSearch" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm" placeholder="Строитель, водитель, программист...">
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Город</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="ri-map-pin-line text-gray-400"></i>
+                        </div>
+                        <input type="text" id="locationSearch" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-sm" placeholder="Прага, Брно, Острава...">
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <button id="searchBtn" class="bg-primary text-white px-6 py-2 rounded-button font-medium hover:bg-primary/90 transition-colors button-ripple">
+                        Найти
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap gap-4">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="housingFilter" class="custom-checkbox">
+                    <span class="text-sm text-gray-700">С жильём</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="urgentFilter" class="custom-checkbox">
+                    <span class="text-sm text-gray-700">Срочные вакансии</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="noLanguageFilter" class="custom-checkbox">
+                    <span class="text-sm text-gray-700">Без знания языка</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="flex gap-6">
+            <!-- Filter Sidebar -->
+            <div class="w-64 bg-white rounded-lg shadow-sm p-6 filter-sidebar hidden lg:block">
+                <h3 class="text-lg font-semibold mb-4">Фильтры</h3>
+                
+                <!-- Salary Range -->
+                <div class="mb-6">
+                    <h4 class="font-medium mb-3">Зарплата (Kč/час)</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="salary" value="0-100" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">До 100 Kč</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="salary" value="100-150" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">100-150 Kč</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="salary" value="150-200" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">150-200 Kč</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="salary" value="200+" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">От 200 Kč</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Job Type -->
+                <div class="mb-6">
+                    <h4 class="font-medium mb-3">Тип работы</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" value="full-time" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">Полный день</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" value="part-time" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">Частичная занятость</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" value="temporary" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">Временная работа</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Experience -->
+                <div class="mb-6">
+                    <h4 class="font-medium mb-3">Опыт работы</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" value="no-experience" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">Без опыта</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" value="1-3-years" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">1-3 года</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" value="3-5-years" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">3-5 лет</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" value="5+ years" class="custom-checkbox">
+                            <span class="text-sm text-gray-700">5+ лет</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Clear Filters -->
+                <button id="clearFilters" class="w-full bg-gray-100 text-gray-700 py-2 rounded-button text-sm font-medium hover:bg-gray-200 transition-colors">
+                    Очистить фильтры
+                </button>
+            </div>
+
+            <!-- Jobs List -->
+            <div class="flex-1">
+                <!-- Results Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">Найдено вакансий: <span id="jobsCount">0</span></h2>
+                        <p class="text-gray-600">Показано <span id="showingCount">0</span> из <span id="totalCount">0</span></p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button id="mobileFilterBtn" class="lg:hidden bg-white border border-gray-300 px-4 py-2 rounded-button text-sm font-medium hover:bg-gray-50 transition-colors">
+                            <i class="ri-filter-line mr-2"></i>
+                            Фильтры
+                        </button>
+                        <select id="sortSelect" class="bg-white border border-gray-300 px-4 py-2 rounded-button text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20">
+                            <option value="relevance">По релевантности</option>
+                            <option value="date">По дате</option>
+                            <option value="salary">По зарплате</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Jobs Container -->
+                <div id="jobsContainer" class="space-y-4">
+                    <!-- Jobs will be loaded here dynamically -->
+                </div>
+
+                <!-- Load More Button -->
+                <div class="text-center mt-8">
+                    <button id="loadMoreBtn" class="bg-primary text-white px-8 py-3 rounded-button font-medium hover:bg-primary/90 transition-colors button-ripple">
+                        Загрузить еще
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Filter Overlay -->
+    <div id="mobileFilterOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden hidden">
+        <div class="absolute right-0 top-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Фильтры</h3>
+                    <button id="closeFilterBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="ri-close-line text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Mobile filter content (same as desktop) -->
+                <div class="space-y-6">
+                    <!-- Salary Range -->
+                    <div>
+                        <h4 class="font-medium mb-3">Зарплата (Kč/час)</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="salary-mobile" value="0-100" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">До 100 Kč</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="salary-mobile" value="100-150" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">100-150 Kč</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="salary-mobile" value="150-200" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">150-200 Kč</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="salary-mobile" value="200+" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">От 200 Kč</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Job Type -->
+                    <div>
+                        <h4 class="font-medium mb-3">Тип работы</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" value="full-time" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">Полный день</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" value="part-time" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">Частичная занятость</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" value="temporary" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">Временная работа</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Experience -->
+                    <div>
+                        <h4 class="font-medium mb-3">Опыт работы</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" value="no-experience" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">Без опыта</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" value="1-3-years" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">1-3 года</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" value="3-5-years" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">3-5 лет</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" value="5+ years" class="custom-checkbox">
+                                <span class="text-sm text-gray-700">5+ лет</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Apply Filters -->
+                    <button id="applyFilters" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors">
+                        Применить фильтры
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/core/app-bundle.js"></script>
+    <script src="js/features/jobs/jobs-manager.js"></script>
+    
+    <script>
+        // Initialize the jobs page
+        document.addEventListener('DOMContentLoaded', function() {
+            let jobsManager;
+            
+            // Initialize jobs manager
+            if (typeof JobsManager !== 'undefined') {
+                jobsManager = new JobsManager();
+                jobsManager.init();
+                
+                // Load initial jobs
+                loadJobs();
+            }
+            
+            // Search functionality
+            document.getElementById('searchBtn').addEventListener('click', function() {
+                loadJobs();
+            });
+            
+            // Enter key in search fields
+            document.getElementById('jobSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loadJobs();
+                }
+            });
+            
+            document.getElementById('locationSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loadJobs();
+                }
+            });
+            
+            // Filter changes
+            document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    loadJobs();
+                });
+            });
+            
+            // Sort changes
+            document.getElementById('sortSelect').addEventListener('change', function() {
+                loadJobs();
+            });
+            
+            // Clear filters
+            document.getElementById('clearFilters').addEventListener('click', function() {
+                document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+                    input.checked = false;
+                });
+                document.getElementById('jobSearch').value = '';
+                document.getElementById('locationSearch').value = '';
+                loadJobs();
+            });
+            
+            // Load more jobs
+            document.getElementById('loadMoreBtn').addEventListener('click', function() {
+                if (jobsManager) {
+                    jobsManager.loadMoreJobs();
+                }
+            });
+            
+            // Mobile filter functionality
+            document.getElementById('mobileFilterBtn').addEventListener('click', function() {
+                document.getElementById('mobileFilterOverlay').classList.remove('hidden');
+                setTimeout(() => {
+                    document.querySelector('#mobileFilterOverlay > div').classList.remove('translate-x-full');
+                }, 10);
+            });
+            
+            document.getElementById('closeFilterBtn').addEventListener('click', function() {
+                document.querySelector('#mobileFilterOverlay > div').classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.getElementById('mobileFilterOverlay').classList.add('hidden');
+                }, 300);
+            });
+            
+            document.getElementById('applyFilters').addEventListener('click', function() {
+                loadJobs();
+                document.getElementById('closeFilterBtn').click();
+            });
+            
+            // Close overlay when clicking outside
+            document.getElementById('mobileFilterOverlay').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    document.getElementById('closeFilterBtn').click();
+                }
+            });
+            
+            function loadJobs() {
+                if (!jobsManager) return;
+                
+                const searchTerm = document.getElementById('jobSearch').value;
+                const location = document.getElementById('locationSearch').value;
+                const filters = getFilters();
+                const sortBy = document.getElementById('sortSelect').value;
+                
+                jobsManager.searchJobs({
+                    query: searchTerm,
+                    location: location,
+                    filters: filters,
+                    sortBy: sortBy
+                }).then(jobs => {
+                    displayJobs(jobs);
+                    updateJobCounts(jobs.length);
+                });
+            }
+            
+            function getFilters() {
+                const filters = {};
+                
+                // Checkboxes
+                if (document.getElementById('housingFilter').checked) filters.hasHousing = true;
+                if (document.getElementById('urgentFilter').checked) filters.isUrgent = true;
+                if (document.getElementById('noLanguageFilter').checked) filters.noLanguageRequired = true;
+                
+                // Salary range
+                const salaryRadio = document.querySelector('input[name="salary"]:checked');
+                if (salaryRadio) filters.salaryRange = salaryRadio.value;
+                
+                // Job types
+                const jobTypes = [];
+                document.querySelectorAll('input[value="full-time"], input[value="part-time"], input[value="temporary"]').forEach(input => {
+                    if (input.checked) jobTypes.push(input.value);
+                });
+                if (jobTypes.length > 0) filters.jobTypes = jobTypes;
+                
+                // Experience
+                const experience = [];
+                document.querySelectorAll('input[value="no-experience"], input[value="1-3-years"], input[value="3-5-years"], input[value="5+ years"]').forEach(input => {
+                    if (input.checked) experience.push(input.value);
+                });
+                if (experience.length > 0) filters.experience = experience;
+                
+                return filters;
+            }
+            
+            function displayJobs(jobs) {
+                const container = document.getElementById('jobsContainer');
+                
+                if (jobs.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12">
+                            <i class="ri-search-line text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Вакансии не найдены</h3>
+                            <p class="text-gray-600">Попробуйте изменить параметры поиска</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = jobs.map(job => `
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 card-3d">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-1">${job.title}</h3>
+                                    <p class="text-gray-600 mb-1">${job.company}</p>
+                                    <div class="flex items-center gap-2 text-sm text-gray-500">
+                                        <i class="ri-map-pin-line"></i>
+                                        <span>${job.location}</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    ${job.isUrgent ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-secondary/80 to-secondary text-white mb-2">Срочно</span>' : ''}
+                                    ${job.hasHousing ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">С жильём</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <i class="ri-money-czech-koruna-circle-line text-gray-500"></i>
+                                    <span class="font-medium">${job.salaryMin}-${job.salaryMax} ${job.currency}/час</span>
+                                </div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <i class="ri-time-line text-gray-500"></i>
+                                    <span>${job.type}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="ri-translate-2 text-gray-500"></i>
+                                    <span>${job.languageRequirements || 'Любой язык'}</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4">${job.description.substring(0, 150)}...</p>
+                            <div class="flex justify-between">
+                                <button class="bg-primary text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-primary/90 transition-colors button-ripple flex items-center gap-2">
+                                    <i class="ri-send-plane-line"></i>
+                                    Откликнуться
+                                </button>
+                                <button class="bg-secondary/10 text-secondary border-none px-3 py-2 rounded-button text-sm font-medium hover:bg-secondary/20 transition-colors flex items-center gap-2">
+                                    <i class="ri-bookmark-line"></i>
+                                    Сохранить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            function updateJobCounts(count) {
+                document.getElementById('jobsCount').textContent = count;
+                document.getElementById('showingCount').textContent = count;
+                document.getElementById('totalCount').textContent = count;
+            }
+        });
+    </script>
+</body>
+</html>

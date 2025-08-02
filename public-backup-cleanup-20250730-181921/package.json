@@ -1,0 +1,10 @@
+{
+  "name": "WorkInCZ",
+  "description": "Европейская платформа поиска работы",
+  "version": "1.0.0",
+  "homepage": "https://vladymyr201.github.io/workincz-site/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vladymyr201/workincz-site.git"
+  }
+}

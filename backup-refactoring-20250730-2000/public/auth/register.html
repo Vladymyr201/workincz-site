@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - WorkInCZ</title>
+    <meta name="description" content="Создайте аккаунт на WorkInCZ и выберите свою роль">
+    
+    <!-- Tailwind CSS - Оптимизированная версия для продакшена -->
+    <link href="../css/tailwind-optimized.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .role-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .role-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .role-card.selected {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+        .step-indicator.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .step-indicator.completed {
+            background-color: #10b981;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="../index.html" class="text-2xl font-bold text-primary-600">
+                        <i class="fas fa-briefcase mr-2"></i>WorkInCZ
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="../index.html" class="text-gray-600 hover:text-primary-600 transition-colors">Главная</a>
+                    <a href="../jobs.html" class="text-gray-600 hover:text-primary-600 transition-colors">Вакансии</a>
+                    <a href="login.html" class="text-gray-600 hover:text-primary-600 transition-colors">Войти</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Progress Steps -->
+            <div class="mb-8">
+                <div class="flex items-center justify-center space-x-4">
+                    <div class="step-indicator active w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">
+                        1
+                    </div>
+                    <div class="w-16 h-1 bg-gray-300"></div>
+                    <div class="step-indicator w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium bg-gray-300 text-gray-600">
+                        2
+                    </div>
+                    <div class="w-16 h-1 bg-gray-300"></div>
+                    <div class="step-indicator w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium bg-gray-300 text-gray-600">
+                        3
+                    </div>
+                </div>
+                <div class="flex justify-center mt-2 space-x-16">
+                    <span class="text-sm text-primary-600 font-medium">Выбор ролей</span>
+                    <span class="text-sm text-gray-500">Данные профиля</span>
+                    <span class="text-sm text-gray-500">Завершение</span>
+                </div>
+            </div>
+
+            <!-- Step 1: Role Selection -->
+            <div id="step-1" class="step-content">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-4">Создание аккаунта</h1>
+                    <p class="text-lg text-gray-600">Выберите тип аккаунта и заполните данные для регистрации</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Job Seeker Role -->
+                    <div class="role-card selected bg-white rounded-lg border-2 border-primary-500 p-6 text-center" data-role="jobseeker">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-user text-2xl text-blue-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Соискатель</h3>
+                        <p class="text-gray-600 mb-4">Ищете работу в Чехии? Создайте профиль и найдите подходящую вакансию</p>
+                        <ul class="text-sm text-gray-500 space-y-1 text-left">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Просмотр вакансий</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Подача заявок</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Общение с работодателями</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Отслеживание статуса</li>
+                        </ul>
+                    </div>
+
+                    <!-- Employer Role -->
+                    <div class="role-card bg-white rounded-lg border-2 border-gray-200 p-6 text-center" data-role="employer">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-building text-2xl text-green-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Работодатель</h3>
+                        <p class="text-gray-600 mb-4">Ищете сотрудников? Размещайте вакансии и находите подходящих кандидатов</p>
+                        <ul class="text-sm text-gray-500 space-y-1 text-left">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Размещение вакансий</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Просмотр кандидатов</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Управление заявками</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Аналитика</li>
+                        </ul>
+                    </div>
+
+                    <!-- Agency Role -->
+                    <div class="role-card bg-white rounded-lg border-2 border-gray-200 p-6 text-center" data-role="agency">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-handshake text-2xl text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Кадровое агентство</h3>
+                        <p class="text-gray-600 mb-4">Предоставляете услуги по подбору персонала? Подключитесь к платформе</p>
+                        <ul class="text-sm text-gray-500 space-y-1 text-left">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Управление клиентами</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Подбор кандидатов</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Комиссионные</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Аналитика</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button id="next-step-1" class="bg-primary-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors">
+                        Далее
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Profile Data -->
+            <div id="step-2" class="step-content hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Данные профиля</h2>
+                    <p class="text-lg text-gray-600">Заполните информацию для выбранных ролей</p>
+                </div>
+
+                <form id="profileForm" class="bg-white rounded-lg shadow-sm p-8">
+                    <!-- Basic Information -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Основная информация</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">Имя</label>
+                                <input type="text" id="firstName" name="firstName" required autocomplete="given-name" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Фамилия</label>
+                                <input type="text" id="lastName" name="lastName" required autocomplete="family-name" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="email" name="email" required class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+                                <input type="tel" id="phone" name="phone" autocomplete="tel" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Role-specific forms -->
+                    <div id="roleForms">
+                        <!-- Job Seeker Form -->
+                        <div id="jobseekerForm" class="role-form hidden mb-8">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Профиль соискателя</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="birthDate" class="block text-sm font-medium text-gray-700 mb-1">Дата рождения</label>
+                                    <input type="date" id="birthDate" name="birthDate" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Местоположение</label>
+                                    <input type="text" id="location" name="location" placeholder="Город, страна" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="skills" class="block text-sm font-medium text-gray-700 mb-1">Навыки</label>
+                                    <input type="text" id="skills" name="skills" placeholder="JavaScript, React, Node.js" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="experience" class="block text-sm font-medium text-gray-700 mb-1">Опыт работы</label>
+                                    <textarea id="experience" name="experience" rows="3" placeholder="Опишите ваш опыт работы" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="education" class="block text-sm font-medium text-gray-700 mb-1">Образование</label>
+                                    <textarea id="education" name="education" rows="3" placeholder="Опишите ваше образование" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Employer Form -->
+                        <div id="employerForm" class="role-form hidden mb-8">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Профиль работодателя</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label for="companyName" class="block text-sm font-medium text-gray-700 mb-1">Название компании</label>
+                                    <input type="text" id="companyName" name="companyName" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="companyDescription" class="block text-sm font-medium text-gray-700 mb-1">Описание компании</label>
+                                    <textarea id="companyDescription" name="companyDescription" rows="3" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+                                </div>
+                                <div>
+                                    <label for="industry" class="block text-sm font-medium text-gray-700 mb-1">Отрасль</label>
+                                    <input type="text" id="industry" name="industry" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="companySize" class="block text-sm font-medium text-gray-700 mb-1">Размер компании</label>
+                                    <select id="companySize" name="companySize" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                        <option value="">Выберите размер</option>
+                                        <option value="1-10">1-10 сотрудников</option>
+                                        <option value="11-50">11-50 сотрудников</option>
+                                        <option value="51-200">51-200 сотрудников</option>
+                                        <option value="201-1000">201-1000 сотрудников</option>
+                                        <option value="1000+">1000+ сотрудников</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="employerWebsite" class="block text-sm font-medium text-gray-700 mb-1">Веб-сайт</label>
+                                    <input type="url" id="employerWebsite" name="website" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agency Form -->
+                        <div id="agencyForm" class="role-form hidden mb-8">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Профиль агентства</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label for="agencyName" class="block text-sm font-medium text-gray-700 mb-1">Название агентства</label>
+                                    <input type="text" id="agencyName" name="agencyName" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="agencyDescription" class="block text-sm font-medium text-gray-700 mb-1">Описание агентства</label>
+                                    <textarea id="agencyDescription" name="agencyDescription" rows="3" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label for="services" class="block text-sm font-medium text-gray-700 mb-1">Услуги</label>
+                                    <input type="text" id="services" name="services" placeholder="Подбор персонала, HR-консалтинг" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="agencyWebsite" class="block text-sm font-medium text-gray-700 mb-1">Веб-сайт</label>
+                                    <input type="url" id="agencyWebsite" name="website" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <button type="button" id="prev-step-2" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-400 transition-colors">
+                            Назад
+                        </button>
+                        <button type="submit" id="next-step-2" class="bg-primary-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors">
+                            Далее
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Step 3: Authentication -->
+            <div id="step-3" class="step-content hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Создание аккаунта</h2>
+                    <p class="text-lg text-gray-600">Выберите способ создания аккаунта</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-8 max-w-md mx-auto">
+                    <div class="space-y-6">
+                        <!-- Google Registration -->
+                        <div class="text-center">
+                            <button id="googleSignUp" class="w-full bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center">
+                                <i class="fab fa-google text-red-500 mr-3"></i>
+                                Зарегистрироваться через Google
+                            </button>
+                            <p class="text-sm text-gray-500 mt-2">Рекомендуемый способ - быстро и безопасно</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <span class="text-gray-500">или</span>
+                        </div>
+
+                        <!-- Email Registration -->
+                        <form id="emailSignUpForm" class="space-y-4">
+                            <div>
+                                <label for="signupEmail" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Email адрес <span class="text-red-500">*</span>
+                                </label>
+                                <input type="email" id="signupEmail" name="email" required autocomplete="email" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="your@email.com">
+                                <div id="emailValidation" class="hidden text-sm mt-1"></div>
+                            </div>
+                            <div>
+                                <label for="signupPassword" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Пароль <span class="text-red-500">*</span>
+                                </label>
+                                <input type="password" id="signupPassword" name="password" required minlength="6" autocomplete="new-password" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Минимум 6 символов">
+                                <div id="passwordStrength" class="hidden mt-1">
+                                    <div class="flex space-x-1">
+                                        <div class="flex-1 h-1 bg-gray-200 rounded"></div>
+                                        <div class="flex-1 h-1 bg-gray-200 rounded"></div>
+                                        <div class="flex-1 h-1 bg-gray-200 rounded"></div>
+                                        <div class="flex-1 h-1 bg-gray-200 rounded"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Сила пароля</p>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Подтвердите пароль <span class="text-red-500">*</span>
+                                </label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6" autocomplete="new-password" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Повторите пароль">
+                                <div id="passwordMatch" class="hidden text-sm mt-1"></div>
+                            </div>
+                            <button type="submit" id="createAccountBtn" class="w-full bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors">
+                                Создать аккаунт
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button type="button" id="prev-step-3" class="text-gray-600 hover:text-gray-800 transition-colors">
+                            Назад
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Error Monitor -->
+    <script src="../js/utils/error-monitor.js"></script>
+    <!-- Modern UI Components -->
+    <script src="../js/components/modern-ui.js"></script>
+    <!-- Role System -->
+    <script src="../js/modules/auth/role-system.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Firebase Integration -->
+    <script src="../js/firebase-integration.js"></script>
+    <!-- Registration Logic -->
+    <script src="../js/auth/register.js"></script>
+</body>
+</html>

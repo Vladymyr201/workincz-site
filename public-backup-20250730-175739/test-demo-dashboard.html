@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест демо-входа - JobBridge</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+            <h1 class="text-2xl font-bold text-center mb-6">🚀 Тест демо-входа</h1>
+            
+            <div id="status" class="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+                <p class="text-blue-800">Проверяем демо-вход...</p>
+            </div>
+            
+            <div id="demo-info" class="hidden mb-6 p-4 rounded-lg bg-green-50 border border-green-200">
+                <h3 class="font-semibold text-green-800 mb-2">✅ Демо-вход успешен!</h3>
+                <div id="demo-details"></div>
+            </div>
+            
+            <div id="error-info" class="hidden mb-6 p-4 rounded-lg bg-red-50 border border-red-200">
+                <h3 class="font-semibold text-red-800 mb-2">❌ Ошибка демо-входа</h3>
+                <div id="error-details"></div>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button onclick="testDemoLogin('candidate')" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    👤 Соискатель
+                </button>
+                <button onclick="testDemoLogin('client')" class="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    🏢 Работодатель
+                </button>
+            </div>
+            
+            <div class="mt-4 flex space-x-4">
+                <button onclick="testDemoLogin('agency')" class="flex-1 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                    👥 Агентство
+                </button>
+                <button onclick="testDemoLogin('admin')" class="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    🔧 Админ
+                </button>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <a href="/" class="text-blue-500 hover:text-blue-700">← Вернуться на главную</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Простая функция для тестирования демо-входа
+        function testDemoLogin(role) {
+            const status = document.getElementById('status');
+            const demoInfo = document.getElementById('demo-info');
+            const errorInfo = document.getElementById('error-info');
+            const demoDetails = document.getElementById('demo-details');
+            const errorDetails = document.getElementById('error-details');
+            
+            // Скрываем все блоки
+            status.classList.add('hidden');
+            demoInfo.classList.add('hidden');
+            errorInfo.classList.add('hidden');
+            
+            // Показываем статус
+            status.classList.remove('hidden');
+            status.innerHTML = '<p class="text-blue-800">🔄 Перенаправление на дашборд...</p>';
+            
+            // Проверяем URL параметры
+            const urlParams = new URLSearchParams(window.location.search);
+            const isDemo = urlParams.get('demo') === 'true';
+            const currentRole = urlParams.get('role');
+            
+            if (isDemo && currentRole === role) {
+                // Если мы уже на правильной странице с правильными параметрами
+                status.innerHTML = '<p class="text-green-800">✅ Демо-вход работает!</p>';
+                demoInfo.classList.remove('hidden');
+                demoDetails.innerHTML = `
+                    <p><strong>Роль:</strong> ${role}</p>
+                    <p><strong>URL:</strong> ${window.location.href}</p>
+                    <p><strong>Время:</strong> ${new Date().toLocaleString()}</p>
+                `;
+            } else {
+                // Перенаправляем на дашборд с демо-параметрами
+                const dashboardUrl = `/dashboard.html?demo=true&role=${role}`;
+                console.log(`🚀 Перенаправление на: ${dashboardUrl}`);
+                window.location.href = dashboardUrl;
+            }
+        }
+        
+        // Проверяем текущие параметры при загрузке
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isDemo = urlParams.get('demo') === 'true';
+            const role = urlParams.get('role');
+            
+            if (isDemo && role) {
+                const status = document.getElementById('status');
+                const demoInfo = document.getElementById('demo-info');
+                const demoDetails = document.getElementById('demo-details');
+                
+                status.classList.add('hidden');
+                demoInfo.classList.remove('hidden');
+                demoDetails.innerHTML = `
+                    <p><strong>Роль:</strong> ${role}</p>
+                    <p><strong>URL:</strong> ${window.location.href}</p>
+                    <p><strong>Время:</strong> ${new Date().toLocaleString()}</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html> 

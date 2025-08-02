@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест демовхода - WorkInCZ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .log-entry { margin: 2px 0; padding: 2px 4px; border-radius: 4px; }
+        .log-success { background-color: #d1fae5; color: #065f46; }
+        .log-error { background-color: #fee2e2; color: #991b1b; }
+        .log-info { background-color: #dbeafe; color: #1e40af; }
+        .log-warning { background-color: #fef3c7; color: #92400e; }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">🔐 Тест демо-входа WorkInCZ</h1>
+            
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <button onclick="testDemoLogin('candidate')" class="bg-blue-500 text-white py-4 px-6 rounded-lg hover:bg-blue-600 transition-colors">
+                    <div class="text-lg font-semibold">👤 Соискатель</div>
+                    <div class="text-sm opacity-90">Поиск работы, заявки</div>
+                </button>
+                
+                <button onclick="testDemoLogin('client')" class="bg-green-500 text-white py-4 px-6 rounded-lg hover:bg-green-600 transition-colors">
+                    <div class="text-lg font-semibold">🏢 Работодатель</div>
+                    <div class="text-sm opacity-90">Размещение вакансий</div>
+                </button>
+                
+                <button onclick="testDemoLogin('agency')" class="bg-purple-500 text-white py-4 px-6 rounded-lg hover:bg-purple-600 transition-colors">
+                    <div class="text-lg font-semibold">🏛️ Агентство</div>
+                    <div class="text-sm opacity-90">Управление кандидатами</div>
+                </button>
+            </div>
+            
+            <div class="flex gap-4 mb-6">
+                <button onclick="clearLog()" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">
+                    Очистить лог
+                </button>
+                <button onclick="checkFirebaseStatus()" class="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600">
+                    Проверить Firebase
+                </button>
+                <button onclick="testNavigation()" class="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600">
+                    Тест навигации
+                </button>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">📊 Лог событий</h2>
+            <div id="log" class="bg-gray-100 p-4 rounded-lg text-sm font-mono max-h-96 overflow-y-auto">
+                <div class="log-entry log-info">🚀 Тестовая страница загружена</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <!-- Firebase SDK v10 (актуальная версия с поддержкой анонимной аутентификации) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="js-hashed/firebase-init.a9f4627c.js"></script>
+    <script src="js-hashed/demo-login-system.f9518e6f.js"></script>
+    <script src="js-hashed/role-middleware.4b8163dc.js"></script>
+    
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            const className = `log-entry log-${type}`;
+            logDiv.innerHTML += `<div class="${className}">[${time}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '<div class="log-entry log-info">🚀 Лог очищен</div>';
+        }
+        
+        function checkFirebaseStatus() {
+            log('🔍 Проверка статуса Firebase...', 'info');
+            
+            if (typeof firebase === 'undefined') {
+                log('❌ Firebase не загружен!', 'error');
+                return;
+            }
+            
+            if (!firebase.auth) {
+                log('❌ Firebase Auth не загружен!', 'error');
+                return;
+            }
+            
+            if (!firebase.firestore) {
+                log('❌ Firebase Firestore не загружен!', 'error');
+                return;
+            }
+            
+            log('✅ Firebase загружен корректно', 'success');
+            
+            // Проверяем текущего пользователя
+            const user = firebase.auth().currentUser;
+            if (user) {
+                log(`👤 Текущий пользователь: ${user.email}`, 'success');
+            } else {
+                log('👤 Пользователь не авторизован', 'info');
+            }
+        }
+        
+        function testNavigation() {
+            log('🧭 Тестирование навигации...', 'info');
+            
+            const testUrls = [
+                '/dashboard',
+                '/employer-dashboard', 
+                '/agency-dashboard',
+                '/admin-dashboard'
+            ];
+            
+            testUrls.forEach(url => {
+                log(`🔗 Проверка URL: ${url}`, 'info');
+            });
+        }
+        
+        async function testDemoLogin(role) {
+            log(`🚀 Начинаем тест демо-входа для роли: ${role}`, 'info');
+            
+            try {
+                // Проверяем Firebase
+                if (typeof firebase === 'undefined') {
+                    throw new Error('Firebase не загружен');
+                }
+                
+                if (!firebase.auth) {
+                    throw new Error('Firebase Auth не загружен');
+                }
+                
+                log('✅ Firebase проверен', 'success');
+                
+                // Создаем экземпляр DemoLoginSystem
+                if (!window.demoLoginSystem) {
+                    window.demoLoginSystem = new DemoLoginSystem();
+                    log('✅ DemoLoginSystem создан', 'success');
+                }
+                
+                // Выполняем демо-вход
+                log('🔄 Выполняем демо-вход...', 'info');
+                await window.demoLoginSystem.handleDemoLogin(role);
+                log(`✅ Демо-вход выполнен для роли: ${role}`, 'success');
+                
+                // Проверяем результат
+                setTimeout(() => {
+                    const user = firebase.auth().currentUser;
+                    if (user) {
+                        log(`🎉 Успешная авторизация: ${user.email}`, 'success');
+                        log('📍 Ожидайте редиректа на соответствующий дашборд...', 'info');
+                    } else {
+                        log('⚠️ Пользователь не авторизован после демо-входа', 'warning');
+                    }
+                }, 2000);
+                
+            } catch (error) {
+                log(`❌ Ошибка: ${error.message}`, 'error');
+                console.error('Детали ошибки:', error);
+            }
+        }
+        
+        // Слушаем изменения аутентификации
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    log(`🔐 Пользователь авторизован: ${user.email}`, 'success');
+                    
+                    // Проверяем роль пользователя
+                    firebase.firestore().collection('users').doc(user.uid).get()
+                        .then(doc => {
+                            if (doc.exists) {
+                                const userData = doc.data();
+                                log(`👤 Роль пользователя: ${userData.role || 'не указана'}`, 'info');
+                                log(`🎭 Демо-аккаунт: ${userData.isDemoAccount ? 'Да' : 'Нет'}`, 'info');
+                            }
+                        })
+                        .catch(error => {
+                            log(`❌ Ошибка получения профиля: ${error.message}`, 'error');
+                        });
+                } else {
+                    log('🔓 Пользователь не авторизован', 'info');
+                }
+            });
+        }
+        
+        // Автоматическая проверка при загрузке
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                checkFirebaseStatus();
+            }, 1000);
+        });
+        
+        log('✅ Тестовая страница инициализирована', 'success');
+    </script>
+</body>
+</html> 

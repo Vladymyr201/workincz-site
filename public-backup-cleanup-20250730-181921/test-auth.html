@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест авторизации - WorkInCZ</title>
+    <link href="/css/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="font-inter bg-gray-50">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Конфигурация Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+            authDomain: "workincz-759c7.firebaseapp.com",
+            databaseURL: "https://workincz-759c7-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "workincz-759c7",
+            storageBucket: "workincz-759c7.appspot.com",
+            messagingSenderId: "670842817143",
+            appId: "1:670842817143:web:d8998634da78318e9f1472",
+            measurementId: "G-PB27XT0CT0"
+        };
+
+        // Инициализация Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+            console.log('Firebase инициализирован');
+        }
+    </script>
+
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+            <h1 class="text-2xl font-bold text-center mb-8">Тест авторизации</h1>
+            
+            <div id="authStatus" class="mb-6 p-4 bg-gray-100 rounded-lg">
+                <p class="text-sm text-gray-600">Статус авторизации: <span id="statusText">Проверка...</span></p>
+            </div>
+
+            <div id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Пароль</label>
+                    <input type="password" id="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                </div>
+
+                <div class="flex space-x-4">
+                    <button onclick="login()" class="flex-1 bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700">
+                        Войти
+                    </button>
+                    <button onclick="register()" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                        Регистрация
+                    </button>
+                </div>
+
+                <button onclick="anonymousLogin()" class="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                    Войти анонимно
+                </button>
+            </div>
+
+            <div id="userInfo" class="hidden space-y-4">
+                <div class="p-4 bg-green-100 rounded-lg">
+                    <p class="text-sm text-green-800">Пользователь авторизован</p>
+                    <p class="text-sm text-green-700" id="userEmail"></p>
+                </div>
+                
+                <button onclick="logout()" class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                    Выйти
+                </button>
+                
+                <button onclick="goToDashboard()" class="w-full bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700">
+                    Перейти в дашборд
+                </button>
+            </div>
+
+            <div id="errorMessage" class="hidden mt-4 p-4 bg-red-100 rounded-lg">
+                <p class="text-sm text-red-800" id="errorText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Отслеживаем состояние авторизации
+        auth.onAuthStateChanged((user) => {
+            console.log('Состояние авторизации изменилось:', user ? user.email : 'null');
+            
+            if (user) {
+                showUserInfo(user);
+            } else {
+                showLoginForm();
+            }
+        });
+
+        function showUserInfo(user) {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('userEmail').textContent = user.email || 'Анонимный пользователь';
+            document.getElementById('statusText').textContent = 'Авторизован';
+            document.getElementById('authStatus').className = 'mb-6 p-4 bg-green-100 rounded-lg';
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('statusText').textContent = 'Не авторизован';
+            document.getElementById('authStatus').className = 'mb-6 p-4 bg-red-100 rounded-lg';
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('errorMessage').classList.add('hidden');
+            }, 5000);
+        }
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                console.log('Успешный вход');
+            } catch (error) {
+                console.error('Ошибка входа:', error);
+                showError('Ошибка входа: ' + error.message);
+            }
+        }
+
+        async function register() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                console.log('Успешная регистрация');
+                
+                // Создаем документ пользователя в Firestore
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    email: email,
+                    role: 'user',
+                    createdAt: new Date(),
+                    isDemoAccount: false
+                });
+            } catch (error) {
+                console.error('Ошибка регистрации:', error);
+                showError('Ошибка регистрации: ' + error.message);
+            }
+        }
+
+        async function anonymousLogin() {
+            try {
+                const userCredential = await auth.signInAnonymously();
+                console.log('Успешный анонимный вход');
+                
+                // Создаем документ анонимного пользователя
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    isAnonymous: true,
+                    role: 'user',
+                    createdAt: new Date(),
+                    isDemoAccount: false
+                });
+            } catch (error) {
+                console.error('Ошибка анонимного входа:', error);
+                showError('Ошибка анонимного входа: ' + error.message);
+            }
+        }
+
+        async function logout() {
+            try {
+                await auth.signOut();
+                console.log('Успешный выход');
+            } catch (error) {
+                console.error('Ошибка выхода:', error);
+                showError('Ошибка выхода: ' + error.message);
+            }
+        }
+
+        function goToDashboard() {
+            window.location.href = '/dashboard.html';
+        }
+    </script>
+</body>
+</html> 

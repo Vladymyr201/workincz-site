@@ -1,0 +1,2308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет - WorkInCZ</title>
+    <meta name="description" content="Личный кабинет WorkInCZ - управление профилем, вакансиями и заявками">
+    
+    <!-- Tailwind CSS - CDN для совместимости -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* Убираем агрессивную защиту от выделения для лучшего UX */
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Разрешаем выделение для интерактивных элементов */
+        button, input, textarea, a, .selectable {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        /* Защита от перетаскивания изображений */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50">
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+        <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="text-gray-500 hover:text-gray-700 lg:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="ml-4 lg:ml-0">
+                        <h1 class="text-2xl font-bold text-primary-600">WorkInCZ</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button id="notificationsBtn" class="text-gray-500 hover:text-gray-700 relative">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="notificationBadge" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">3</span>
+                        </button>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="relative">
+                        <button id="userMenuBtn" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
+                            <img id="userAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%236B7280'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Avatar" class="w-8 h-8 rounded-full">
+                            <span id="userName" class="hidden md:block">Загрузка...</span>
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden">
+                            <a href="#profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-user mr-2"></i>Профиль
+                            </a>
+                            <a href="#settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i>Настройки
+                            </a>
+                            <hr class="my-1">
+                            <button id="logoutBtn" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Выйти
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 sidebar-transition">
+        <div class="flex items-center justify-between h-16 px-6 border-b">
+            <h2 class="text-lg font-semibold text-gray-800">Меню</h2>
+            <button id="sidebarClose" class="lg:hidden text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="mt-6">
+            <div class="px-4 space-y-2">
+                <a href="#dashboard" class="flex items-center px-4 py-3 text-gray-700 bg-primary-50 border-r-2 border-primary-600 rounded-lg">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <span>Дашборд</span>
+                </a>
+                
+                <a href="#jobs" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg">
+                    <i class="fas fa-briefcase mr-3"></i>
+                    <span>Вакансии</span>
+                </a>
+                
+                <a href="#applications" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg">
+                    <i class="fas fa-file-alt mr-3"></i>
+                    <span>Заявки</span>
+                </a>
+                
+                <a href="#chat" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg">
+                    <i class="fas fa-comments mr-3"></i>
+                    <span>Сообщения</span>
+                    <span id="chatBadge" class="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">5</span>
+                </a>
+                
+                <a href="#profile" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg">
+                    <i class="fas fa-user mr-3"></i>
+                    <span>Профиль</span>
+                </a>
+                
+                <a href="#payments" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg">
+                    <i class="fas fa-credit-card mr-3"></i>
+                    <span>Платежи</span>
+                </a>
+                
+                <a href="#analytics" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg">
+                    <i class="fas fa-chart-bar mr-3"></i>
+                    <span>Аналитика</span>
+                </a>
+                
+                <a href="#settings" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg">
+                    <i class="fas fa-cog mr-3"></i>
+                    <span>Настройки</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 pt-16">
+        <div class="p-6">
+            <!-- Welcome Section -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Добро пожаловать, <span id="welcomeName">Пользователь</span>!</h1>
+                        <p class="text-gray-600">Управляйте своей карьерой и находите лучшие возможности</p>
+                    </div>
+                    <!-- УДАЛЕНО: Кнопки переключения ролей -->
+                    <div class="bg-blue-100 px-4 py-2 rounded-lg">
+                        <span class="text-sm text-blue-800 font-medium">Роль: <span id="userRole" class="font-bold">candidate</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role-based Sections -->
+            <div class="mb-8">
+                <!-- Candidate Section -->
+                <div id="candidateSection" class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-4">
+                        <i class="fas fa-user-graduate mr-2"></i>Панель кандидата
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="flex items-center">
+                                <i class="fas fa-search text-blue-600 text-xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Поиск вакансий</h4>
+                                    <p class="text-sm text-gray-600">Найдите подходящую работу</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="flex items-center">
+                                <i class="fas fa-file-alt text-green-600 text-xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Мои заявки</h4>
+                                    <p class="text-sm text-gray-600">Отслеживайте статус</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="flex items-center">
+                                <i class="fas fa-comments text-purple-600 text-xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Сообщения</h4>
+                                    <p class="text-sm text-gray-600">Общайтесь с работодателями</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employer Section -->
+                <div id="employerSection" class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6" style="display: none;">
+                    <h3 class="text-lg font-semibold text-green-900 mb-4">
+                        <i class="fas fa-building mr-2"></i>Панель работодателя
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="flex items-center">
+                                <i class="fas fa-plus text-green-600 text-xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Разместить вакансию</h4>
+                                    <p class="text-sm text-gray-600">Создайте новую вакансию</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="flex items-center">
+                                <i class="fas fa-users text-blue-600 text-xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Кандидаты</h4>
+                                    <p class="text-sm text-gray-600">Просматривайте заявки</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="flex items-center">
+                                <i class="fas fa-chart-line text-purple-600 text-xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Аналитика</h4>
+                                    <p class="text-sm text-gray-600">Статистика вакансий</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agency Section -->
+                <div id="agencySection" class="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-6" style="display: none;">
+                    <h3 class="text-lg font-semibold text-purple-900 mb-4">
+                        <i class="fas fa-handshake mr-2"></i>Панель агентства
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="flex items-center">
+                                <i class="fas fa-users-cog text-purple-600 text-xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Управление клиентами</h4>
+                                    <p class="text-sm text-gray-600">Работа с работодателями</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="flex items-center">
+                                <i class="fas fa-user-tie text-blue-600 text-xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">База кандидатов</h4>
+                                    <p class="text-sm text-gray-600">Поиск и подбор</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="flex items-center">
+                                <i class="fas fa-chart-pie text-green-600 text-xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Отчеты</h4>
+                                    <p class="text-sm text-gray-600">Аналитика и статистика</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Всего заявок</p>
+                            <p class="text-2xl font-bold text-gray-900" id="totalApplications">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-clipboard-list text-blue-600"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Новых сообщений</p>
+                            <p class="text-2xl font-bold text-gray-900" id="newMessages">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-comments text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Просмотры профиля</p>
+                            <p class="text-2xl font-bold text-gray-900" id="profileViews">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-eye text-purple-600"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Уведомления</p>
+                            <p class="text-2xl font-bold text-gray-900" id="notificationsCount">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-bell text-red-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications and Messages Stats -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Статистика заявок</h3>
+                    <div id="applicationsStats">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600">0</div>
+                                <div class="text-sm text-blue-600">Всего заявок</div>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600">0</div>
+                                <div class="text-sm text-green-600">Активные</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">💬 Сообщения</h3>
+                    <div id="messagesStats">
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-purple-600">0</div>
+                            <div class="text-sm text-purple-600">Новых сообщений</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Recent Jobs -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-gray-900">Рекомендуемые вакансии</h2>
+                            <a href="#jobs" class="text-primary-600 hover:text-primary-700 font-medium">Посмотреть все</a>
+                        </div>
+                        
+                        <div id="recentJobs" class="space-y-4">
+                            <!-- Job cards will be loaded here -->
+                            <div class="animate-pulse">
+                                <div class="h-20 bg-gray-200 rounded-lg mb-4"></div>
+                                <div class="h-20 bg-gray-200 rounded-lg mb-4"></div>
+                                <div class="h-20 bg-gray-200 rounded-lg"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions & Notifications -->
+                <div class="space-y-6">
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Быстрые действия</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <button id="createProfileBtn" class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                                <i class="fas fa-user-edit text-2xl text-blue-600 mb-2"></i>
+                                <span class="text-sm font-medium text-gray-900">Создать профиль</span>
+                            </button>
+                            <button id="searchJobsBtn" class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                                <i class="fas fa-search text-2xl text-green-600 mb-2"></i>
+                                <span class="text-sm font-medium text-gray-900">Поиск вакансий</span>
+                            </button>
+                            <button id="uploadCVBtn" class="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                                <i class="fas fa-file-upload text-2xl text-purple-600 mb-2"></i>
+                                <span class="text-sm font-medium text-gray-900">Загрузить CV</span>
+                            </button>
+                            <button id="chatBtn" class="flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
+                                <i class="fas fa-comments text-2xl text-orange-600 mb-2"></i>
+                                <span class="text-sm font-medium text-gray-900">Чат</span>
+                            </button>
+                            <button id="applicationsBtn" class="flex flex-col items-center p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
+                                <i class="fas fa-clipboard-list text-2xl text-indigo-600 mb-2"></i>
+                                <span class="text-sm font-medium text-gray-900">Мои заявки</span>
+                            </button>
+                            <button id="notificationsBtn" class="flex flex-col items-center p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                                <i class="fas fa-bell text-2xl text-red-600 mb-2"></i>
+                                <span class="text-sm font-medium text-gray-900">Уведомления</span>
+                            </button>
+
+                            <button id="upgradePlanBtn" class="flex flex-col items-center p-4 bg-pink-50 rounded-lg hover:bg-pink-100 transition-colors">
+                                <i class="fas fa-crown text-2xl text-pink-600 mb-2"></i>
+                                <span class="text-sm font-medium text-gray-900">Premium</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Notifications -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Уведомления</h3>
+                        <div id="notificationsList" class="space-y-3">
+                            <!-- Notifications will be loaded here -->
+                            <div class="animate-pulse">
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div class="h-4 bg-gray-200 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="mt-8">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">Последняя активность</h3>
+                    <div id="recentActivity" class="space-y-4">
+                        <!-- Activity items will be loaded here -->
+                        <div class="animate-pulse">
+                            <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                            <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                            <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                            <div class="h-4 bg-gray-200 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+
+    
+    <!-- Firebase Configuration -->
+    <script>
+        // Firebase конфигурация
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+            authDomain: "workincz-759c7.firebaseapp.com",
+            databaseURL: "https://workincz-759c7-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "workincz-759c7",
+            storageBucket: "workincz-759c7.firebasestorage.app",
+            messagingSenderId: "670842817143",
+            appId: "1:670842817143:web:d8998634da78318e9f1472",
+            measurementId: "G-PB27XT0CT0"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        console.log('Firebase инициализирован в dashboard');
+    </script>
+    
+    <!-- Dashboard Script -->
+    <script>
+        let currentUser = null;
+        let userRole = 'candidate';
+
+        // Инициализация dashboard
+        function initDashboard() {
+            // ПРИНУДИТЕЛЬНАЯ ОЧИСТКА КЭША И СТАРОГО ТОКЕНА
+            console.log('Dashboard: Начинаем инициализацию...');
+            
+            // Очищаем кэш браузера для обновленных файлов
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                    console.log('Dashboard: Кэш браузера очищен');
+                });
+            }
+            
+            // ПРИНУДИТЕЛЬНАЯ ОЧИСТКА СТАРОГО ТОКЕНА (исправление проблемы с uid)
+            if (window.simpleAuth) {
+                const oldUser = window.simpleAuth.getCurrentUser();
+                if (oldUser && !oldUser.uid) {
+                    console.log('SimpleAuth: Обнаружен старый токен без uid, очищаем...');
+                    window.simpleAuth.clearOldToken();
+                    console.log('SimpleAuth: Старый токен очищен, перенаправляем на вход');
+                    window.location.href = '/';
+                    return; // Теперь return находится внутри функции - ИСПРАВЛЕНО!
+                }
+            }
+
+            // Проверка авторизации при загрузке страницы
+            // Сначала проверяем SimpleAuth, потом Firebase Auth
+            if (window.simpleAuth && window.simpleAuth.isAuthenticated()) {
+                const simpleUser = window.simpleAuth.getCurrentUser();
+                console.log('Пользователь авторизован через SimpleAuth в dashboard:', simpleUser.email);
+                console.log('SimpleAuth user uid:', simpleUser.uid); // ← ОТЛАДОЧНАЯ ИНФОРМАЦИЯ
+                currentUser = simpleUser;
+                loadUserProfile();
+                updateDashboardUI();
+            } else {
+                firebase.auth().onAuthStateChanged((user) => {
+                    if (user) {
+                        console.log('Пользователь авторизован через Firebase Auth в dashboard:', user.email);
+                        currentUser = user;
+                        loadUserProfile();
+                        updateDashboardUI();
+                    } else {
+                        console.log('Пользователь не авторизован, перенаправляем на главную');
+                        hideLoadingSpinner(); // Скрываем spinner перед редиректом
+                        window.location.href = '/';
+                    }
+                });
+            }
+        }
+
+        // Глобальная функция для скрытия loading spinner
+        function hideLoadingSpinner() {
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) {
+                spinner.style.display = 'none';
+            }
+        }
+
+        // Запускаем инициализацию
+        initDashboard();
+
+        // Загрузка профиля пользователя
+        async function loadUserProfile() {
+            try {
+                // Проверяем тип авторизации
+                if (window.simpleAuth && window.simpleAuth.isAuthenticated()) {
+                    // SimpleAuth пользователь
+                    const simpleUser = window.simpleAuth.getCurrentUser();
+                    userRole = simpleUser.role || 'candidate';
+                    console.log('Роль SimpleAuth пользователя:', userRole);
+                    
+                    // Обновляем отображение роли
+                    const userRoleElement = document.getElementById('userRole');
+                    if (userRoleElement) {
+                        userRoleElement.textContent = userRole;
+                    }
+                    updateRoleBasedUI();
+                } else if (currentUser && currentUser.uid) {
+                    // Firebase Auth пользователь
+                    const userRef = firebase.firestore().collection('users').doc(currentUser.uid);
+                    const userDoc = await userRef.get();
+                    
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        userRole = userData.role || 'candidate';
+                        console.log('Роль Firebase пользователя:', userRole);
+                        
+                        // Обновляем отображение роли
+                        const userRoleElement = document.getElementById('userRole');
+                        if (userRoleElement) {
+                            userRoleElement.textContent = userRole;
+                        }
+                        updateRoleBasedUI();
+                    } else {
+                        console.log('Профиль пользователя не найден, создаем новый');
+                        await createUserProfile();
+                    }
+                } else {
+                    console.log('Пользователь не определен');
+                    userRole = 'candidate';
+                    updateRoleBasedUI();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки профиля:', error);
+                userRole = 'candidate';
+                updateRoleBasedUI();
+                hideLoadingSpinner(); // Скрываем spinner при ошибке
+            }
+        }
+
+        // Создание профиля пользователя
+        async function createUserProfile() {
+            try {
+                const userRef = firebase.firestore().collection('users').doc(currentUser.uid);
+                await userRef.set({
+                    email: currentUser.email,
+                    name: currentUser.displayName || currentUser.email,
+                    image: currentUser.photoURL,
+                    role: 'candidate',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    isActive: true
+                });
+                
+                userRole = 'candidate';
+                document.getElementById('userRole').textContent = userRole;
+                updateRoleBasedUI();
+                
+                showNotification('Профиль создан успешно!', 'success');
+            } catch (error) {
+                console.error('Ошибка создания профиля:', error);
+                showNotification('Ошибка создания профиля', 'error');
+            }
+        }
+
+        // Обновление UI в зависимости от роли
+        function updateRoleBasedUI() {
+            const candidateSection = document.getElementById('candidateSection');
+            const employerSection = document.getElementById('employerSection');
+            const agencySection = document.getElementById('agencySection');
+            
+            // Скрываем все секции
+            if (candidateSection) candidateSection.style.display = 'none';
+            if (employerSection) employerSection.style.display = 'none';
+            if (agencySection) agencySection.style.display = 'none';
+            
+            // Показываем соответствующую секцию
+            switch (userRole) {
+                case 'candidate':
+                    if (candidateSection) candidateSection.style.display = 'block';
+                    break;
+                case 'employer':
+                    if (employerSection) employerSection.style.display = 'block';
+                    break;
+                case 'agency':
+                    if (agencySection) agencySection.style.display = 'block';
+                    break;
+                default:
+                    if (candidateSection) candidateSection.style.display = 'block';
+            }
+        }
+
+        // Обновление UI dashboard
+        function updateDashboardUI() {
+            // Обновляем информацию о пользователе
+            const welcomeNameElement = document.getElementById('welcomeName');
+            const userEmailElement = document.getElementById('userEmail');
+            
+            if (welcomeNameElement && currentUser) {
+                // Поддерживаем как Firebase Auth, так и SimpleAuth
+                const userName = currentUser.displayName || currentUser.name || currentUser.email;
+                welcomeNameElement.textContent = userName;
+            }
+            if (userEmailElement && currentUser) {
+                userEmailElement.textContent = currentUser.email;
+            }
+            
+            // Обновляем аватар если есть
+            if (currentUser && currentUser.photoURL) {
+                const userAvatar = document.getElementById('userAvatar');
+                if (userAvatar) {
+                    userAvatar.src = currentUser.photoURL;
+                }
+            }
+            
+            // Скрываем loading spinner после обновления UI
+            hideLoadingSpinner();
+        }
+
+        // Смена роли пользователя
+        async function changeUserRole(newRole) {
+            try {
+                if (window.simpleAuth && window.simpleAuth.isAuthenticated()) {
+                    // SimpleAuth - обновляем роль в памяти
+                    const simpleUser = window.simpleAuth.getCurrentUser();
+                    simpleUser.role = newRole;
+                    userRole = newRole;
+                    
+                    // Обновляем отображение
+                    const userRoleElement = document.getElementById('userRole');
+                    if (userRoleElement) {
+                        userRoleElement.textContent = userRole;
+                    }
+                    updateRoleBasedUI();
+                    
+                    showNotification(`Роль изменена на: ${newRole}`, 'success');
+                } else if (currentUser && currentUser.uid) {
+                    // Firebase Auth - обновляем в Firestore
+                    const userRef = firebase.firestore().collection('users').doc(currentUser.uid);
+                    await userRef.update({
+                        role: newRole,
+                        updatedAt: new Date()
+                    });
+                    
+                    userRole = newRole;
+                    const userRoleElement = document.getElementById('userRole');
+                    if (userRoleElement) {
+                        userRoleElement.textContent = userRole;
+                    }
+                    updateRoleBasedUI();
+                    
+                    showNotification(`Роль изменена на: ${newRole}`, 'success');
+                } else {
+                    // Fallback - обновляем только локально
+                    userRole = newRole;
+                    const userRoleElement = document.getElementById('userRole');
+                    if (userRoleElement) {
+                        userRoleElement.textContent = userRole;
+                    }
+                    updateRoleBasedUI();
+                    
+                    showNotification(`Роль изменена на: ${newRole}`, 'success');
+                }
+            } catch (error) {
+                console.error('Ошибка смены роли:', error);
+                showNotification('Ошибка смены роли: ' + error.message, 'error');
+            }
+        }
+
+        // Выход из системы
+        async function logout() {
+            try {
+                if (window.simpleAuth && window.simpleAuth.isAuthenticated()) {
+                    // SimpleAuth - выходим через SimpleAuth
+                    await window.simpleAuth.logout();
+                    showNotification('Вы вышли из системы', 'info');
+                    window.location.href = '/';
+                } else {
+                    // Firebase Auth - выходим через Firebase
+                    await firebase.auth().signOut();
+                    showNotification('Вы вышли из системы', 'info');
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Ошибка выхода:', error);
+                showNotification('Ошибка выхода', 'error');
+                // Принудительный редирект даже при ошибке
+                window.location.href = '/';
+            }
+        }
+
+        // Функция показа уведомлений
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 transform translate-x-full`;
+            
+            const colors = {
+                success: 'bg-green-500 text-white',
+                error: 'bg-red-500 text-white',
+                info: 'bg-blue-500 text-white',
+                warning: 'bg-yellow-500 text-white'
+            };
+            
+            notification.className += ` ${colors[type]}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard загружен');
+            
+            // УДАЛЕНО: Обработчики для кнопок смены роли
+            // document.getElementById('roleCandidate').addEventListener('click', () => {
+            //     window.roleManager.changeRole('candidate');
+            // });
+            // document.getElementById('roleEmployer').addEventListener('click', () => {
+            //     window.roleManager.changeRole('employer');
+            // });
+            // document.getElementById('roleAgency').addEventListener('click', () => {
+            //     window.roleManager.changeRole('agency');
+            // });
+            
+            // Обработчик для кнопки выхода
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+        });
+    </script>
+    
+    <!-- Chart.js для аналитики -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Подключение готовых систем -->
+    <script src="js-hashed/applications.4b83c9fd.js"></script>
+    <script src="js-hashed/messaging-manager.4eaa7594.js"></script>
+    <script src="js-hashed/notification-manager.197a2059.js"></script>
+    <script src="js-hashed/reviews-system.322c7ae6.js"></script>
+    <script src="js-hashed/subscription-system.3a2f0d65.js"></script>
+    <script src="js-hashed/analytics-dashboard.3a994dcc.js"></script>
+    <script src="js-hashed/agency-candidate-manager.7bb0eb1d.js"></script>
+    <script src="js-hashed/ab-testing.8e78ac09.js"></script>
+    
+    <!-- Исправление для applicationsManager -->
+    <script>
+        // Создаем заглушку для applicationsManager если он не существует
+        window.applicationsManager = window.applicationsManager || {};
+        
+        // Добавляем метод getApplicationStats если его нет
+        if (!window.applicationsManager.getApplicationStats) {
+            window.applicationsManager.getApplicationStats = async function() {
+                console.warn('⚠️ Используется заглушка для getApplicationStats');
+                return { 
+                    total: 0, 
+                    active: 0, 
+                    pending: 0, 
+                    accepted: 0, 
+                    rejected: 0 
+                };
+            };
+        }
+        
+        console.log('✅ Chart.js и applicationsManager исправления загружены');
+    </script>
+    <!-- УДАЛЕНО: <script src="js/role-switcher.js"></script> -->
+    
+
+    
+    <!-- Подключаем простую систему авторизации -->
+    <script src="js/auth/simple-auth.js"></script>
+    <script src="js/auth/simple-auth-guard.js"></script>
+    <script>
+        // Инициализация SimpleAuthGuard для защиты страницы
+        let authGuard;
+        
+        class Dashboard {
+            constructor() {
+                this.db = firebase.firestore();
+                this.currentUser = null;
+                this.init();
+            }
+
+            async init() {
+                console.log('🚀 Dashboard: Начинаем инициализацию...');
+                
+                // Инициализируем SimpleAuthGuard
+                authGuard = new SimpleAuthGuard();
+                
+                // Инициализируем SimpleAuth если доступен
+                if (window.simpleAuth && !window.simpleAuth.isInitialized) {
+                    console.log('🔄 Инициализируем SimpleAuth...');
+                    window.simpleAuth.init();
+                    
+                    // Проверяем сохраненную сессию
+                    if (window.simpleAuth.isAuthenticated()) {
+                        this.currentUser = window.simpleAuth.getCurrentUser();
+                        console.log('✅ Восстановлена сессия SimpleAuth:', this.currentUser);
+                        
+                        // Синхронизируем с Firebase Auth для демо-пользователей
+                        if (this.currentUser && this.currentUser.email === 'demo@workincz.cz') {
+                            console.log('🔄 Синхронизируем SimpleAuth с Firebase Auth...');
+                            await window.simpleAuth.syncWithFirebaseAuth();
+                            this.currentUser = window.simpleAuth.getCurrentUser();
+                            console.log('✅ UID синхронизирован:', this.currentUser.uid);
+                        }
+                    }
+                }
+                
+                // Ждем инициализации AuthGuard
+                await this.waitForAuthGuard();
+                
+                // Проверяем авторизацию
+                if (!authGuard.isAuthenticated()) {
+                    console.log('⚠️ Dashboard: Пользователь не авторизован, создаем демо-пользователя...');
+                    
+                    // Создаем демо-пользователя для тестирования
+                    this.currentUser = {
+                        uid: 'demo-user-' + Date.now(),
+                        email: 'demo@workincz.cz',
+                        name: 'Демо Пользователь',
+                        role: 'user'
+                    };
+                    
+                    console.log('✅ Создан демо-пользователь:', this.currentUser);
+                } else {
+                    this.currentUser = authGuard.getCurrentUser();
+                    console.log('✅ Dashboard: Пользователь авторизован', this.currentUser.email);
+                }
+                
+                this.setupEventListeners();
+                this.loadDashboardData();
+                
+                console.log('✅ Dashboard: Инициализация завершена');
+            }
+
+            async waitForAuthGuard() {
+                return new Promise((resolve) => {
+                    const checkAuth = () => {
+                        if (authGuard && authGuard.isInitialized) {
+                            resolve();
+                        } else {
+                            setTimeout(checkAuth, 100);
+                        }
+                    };
+                    checkAuth();
+                });
+            }
+
+            // Инициализация готовых систем
+            initializeSystems() {
+                // Инициализируем RoleMiddleware
+                if (window.roleMiddleware) {
+                    window.roleMiddleware.init().catch(console.error);
+                }
+
+                // Инициализируем MessagingManager
+                if (window.messagingManager) {
+                    console.log('✅ MessagingManager подключен');
+                }
+
+                // Инициализируем ApplicationsManager
+                if (window.applicationsManager) {
+                    console.log('✅ ApplicationsManager подключен');
+                }
+
+                // Инициализируем ChatWidget
+                if (window.chatWidget) {
+                    console.log('✅ ChatWidget подключен');
+                }
+
+                        // УДАЛЕНО: Инициализация RoleSwitcher
+        // if (window.roleSwitcher) {
+        //     console.log('✅ RoleSwitcher подключен');
+        // }
+
+                // Инициализируем NotificationManager
+                if (window.notificationManager) {
+                    console.log('✅ NotificationManager подключен');
+                }
+            }
+
+            async checkAuth() {
+                return new Promise((resolve, reject) => {
+                    // Используем существующий слушатель вместо создания нового
+                    if (firebase.auth().currentUser) {
+                        this.currentUser = firebase.auth().currentUser;
+                        this.updateUserInfo();
+                        resolve(this.currentUser);
+                    } else {
+                        // Redirect to login
+                        window.location.href = 'index.html';
+                        reject(new Error('User not authenticated'));
+                    }
+                });
+            }
+
+            updateUserInfo() {
+                const userName = this.currentUser.displayName || this.currentUser.email;
+                document.getElementById('welcomeName').textContent = userName;
+                document.getElementById('userName').textContent = userName;
+                
+                if (this.currentUser.photoURL) {
+                    document.getElementById('userAvatar').src = this.currentUser.photoURL;
+                }
+            }
+
+            setupEventListeners() {
+                // Sidebar toggle
+                document.getElementById('sidebarToggle').addEventListener('click', () => {
+                    document.getElementById('sidebar').classList.remove('-translate-x-full');
+                });
+
+                document.getElementById('sidebarClose').addEventListener('click', () => {
+                    document.getElementById('sidebar').classList.add('-translate-x-full');
+                });
+
+                // User menu
+                document.getElementById('userMenuBtn').addEventListener('click', () => {
+                    document.getElementById('userDropdown').classList.toggle('hidden');
+                });
+
+                // Logout
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    this.logout();
+                });
+
+                // Quick actions
+                document.getElementById('createProfileBtn').addEventListener('click', () => {
+                    this.showFeature('Создание профиля');
+                });
+
+                document.getElementById('searchJobsBtn').addEventListener('click', () => {
+                    this.showFeature('Поиск вакансий');
+                });
+
+                document.getElementById('uploadCVBtn').addEventListener('click', () => {
+                    this.showFeature('Загрузка CV');
+                });
+
+                document.getElementById('chatBtn').addEventListener('click', () => {
+                    this.showFeature('Чат с работодателем');
+                });
+
+                document.getElementById('applicationsBtn').addEventListener('click', () => {
+                    this.showFeature('Мои заявки');
+                });
+
+                document.getElementById('notificationsBtn').addEventListener('click', () => {
+                    this.showFeature('Система уведомлений');
+                });
+
+
+
+                document.getElementById('upgradePlanBtn').addEventListener('click', () => {
+                    this.showFeature('Планы подписки');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('#userMenuBtn')) {
+                        document.getElementById('userDropdown').classList.add('hidden');
+                    }
+                });
+            }
+
+            async loadDashboardData() {
+                try {
+                    // Загружаем данные из готовых систем
+                    if (window.applicationsManager) {
+                        await this.loadApplicationsData();
+                    }
+                    
+                    if (window.messagingManager) {
+                        await this.loadMessagesData();
+                    }
+
+                    // Загружаем стандартные данные
+                    await this.loadNotifications();
+                    await this.loadRecentActivity();
+                    await this.loadUserStats();
+                    
+                    // Запускаем быстрый фикс для принудительного обновления UI
+                    await this.quickFixUI();
+                } catch (error) {
+                    console.error('Error loading dashboard data:', error);
+                }
+            }
+
+            // Загрузка данных из ApplicationsManager
+            async loadApplicationsData() {
+                try {
+                    const applicationsContainer = document.getElementById('applicationsStats');
+                    if (applicationsContainer && window.applicationsManager) {
+                        const stats = await window.applicationsManager.getApplicationStats();
+                        applicationsContainer.innerHTML = `
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-blue-600">${stats.total || 0}</div>
+                                    <div class="text-sm text-blue-600">Всего заявок</div>
+                                </div>
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-green-600">${stats.active || 0}</div>
+                                    <div class="text-sm text-green-600">Активные</div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Загружаем данные напрямую из Firebase
+                        const applicationsSnapshot = await firebase.firestore()
+                            .collection('applications')
+                            .get();
+                        
+                        // Фильтруем заявки пользователя на клиенте
+                        const userApplications = applicationsSnapshot.docs.filter(doc => {
+                            const app = doc.data();
+                            return app.userId === this.currentUser.uid || 
+                                   app.applicantId === this.currentUser.uid ||
+                                   app.userId === this.currentUser.id ||
+                                   app.applicantId === this.currentUser.id;
+                        });
+                        
+                        const totalApplications = userApplications.length;
+                        const activeApplications = userApplications.filter(doc => 
+                            doc.data().status === 'pending' || doc.data().status === 'reviewing'
+                        ).length;
+                        
+                        // ОБНОВЛЯЕМ ОСНОВНОЙ СЧЕТЧИК "ВСЕГО ЗАЯВОК"
+                        const totalApplicationsElement = document.getElementById('totalApplications');
+                        if (totalApplicationsElement) {
+                            totalApplicationsElement.textContent = totalApplications;
+                            console.log('✅ Обновлен счетчик "Всего заявок":', totalApplications);
+                        }
+                        
+                        applicationsContainer.innerHTML = `
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-blue-600">${totalApplications}</div>
+                                    <div class="text-sm text-blue-600">Всего заявок</div>
+                                </div>
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-green-600">${activeApplications}</div>
+                                    <div class="text-sm text-green-600">Активные</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading applications data:', error);
+                    this.showError('Ошибка загрузки данных заявок: ' + error.message);
+                    
+                    // Показываем нулевые значения при ошибке
+                    const applicationsContainer = document.getElementById('applicationsStats');
+                    if (applicationsContainer) {
+                        applicationsContainer.innerHTML = `
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-blue-600">0</div>
+                                    <div class="text-sm text-blue-600">Всего заявок</div>
+                                </div>
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-green-600">0</div>
+                                    <div class="text-sm text-green-600">Активные</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            }
+
+            // Загрузка данных из MessagingManager
+            async loadMessagesData() {
+                try {
+                    const messagesContainer = document.getElementById('messagesStats');
+                    if (messagesContainer && window.messagingManager) {
+                        const unreadCount = await window.messagingManager.getUnreadCount();
+                        messagesContainer.innerHTML = `
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-purple-600">${unreadCount || 0}</div>
+                                <div class="text-sm text-purple-600">Новых сообщений</div>
+                            </div>
+                        `;
+                    } else {
+                        // Загружаем данные напрямую из Firebase
+                        const messagesSnapshot = await firebase.firestore()
+                            .collection('messages')
+                            .where('recipientId', '==', this.currentUser.uid)
+                            .where('read', '==', false)
+                            .get();
+                        
+                        const unreadCount = messagesSnapshot.size;
+                        
+                        messagesContainer.innerHTML = `
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-purple-600">${unreadCount}</div>
+                                <div class="text-sm text-purple-600">Новых сообщений</div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading messages data:', error);
+                    this.showError('Ошибка загрузки данных сообщений: ' + error.message);
+                    
+                    // Показываем нулевые значения при ошибке
+                    const messagesContainer = document.getElementById('messagesStats');
+                    if (messagesContainer) {
+                        messagesContainer.innerHTML = `
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-purple-600">0</div>
+                                <div class="text-sm text-purple-600">Новых сообщений</div>
+                            </div>
+                        `;
+                    }
+                }
+            }
+
+            async loadUserStats() {
+                try {
+                    // ОТЛАДОЧНАЯ ИНФОРМАЦИЯ
+                    console.log('📊 loadUserStats: this.currentUser:', this.currentUser);
+                    console.log('📊 loadUserStats: this.currentUser.uid:', this.currentUser?.uid);
+                    
+                    // Обновляем глобальную отладочную информацию
+                    if (window.debugDashboard) {
+                        window.debugDashboard.currentUser = this.currentUser;
+                        window.debugDashboard.authStatus = this.currentUser ? 'authenticated' : 'not_authenticated';
+                    }
+                    
+                    // Проверяем, что пользователь авторизован и имеет uid
+                    if (!this.currentUser || !this.currentUser.uid) {
+                        console.log('⚠️ Пользователь не авторизован или нет uid, показываем демо-статистику');
+                        this.showDemoStats();
+                        return;
+                    }
+                    
+                    // Получаем реальную статистику из Firebase
+                    const statsSnapshot = await firebase.firestore()
+                        .collection('user_stats')
+                        .doc(this.currentUser.uid)
+                        .get();
+                    
+                    if (statsSnapshot.exists) {
+                        const stats = statsSnapshot.data();
+                        console.log('📊 Загружена статистика из Firestore:', stats);
+                        document.getElementById('totalApplications').textContent = stats.totalApplications || 0;
+                        document.getElementById('newMessages').textContent = stats.newMessages || 0;
+                        document.getElementById('profileViews').textContent = stats.profileViews || 0;
+                        document.getElementById('notificationsCount').textContent = stats.notificationsCount || 0;
+                    } else {
+                        console.log('📊 Статистика не найдена, создаем демо-данные...');
+                        // Создаем демо-данные если их нет
+                        await this.createDemoDataForSimpleAuth();
+                        
+                        // Повторно загружаем статистику
+                        const retrySnapshot = await firebase.firestore()
+                            .collection('user_stats')
+                            .doc(this.currentUser.uid)
+                            .get();
+                        
+                        if (retrySnapshot.exists) {
+                            const stats = retrySnapshot.data();
+                            console.log('📊 Загружена статистика после создания демо-данных:', stats);
+                            document.getElementById('totalApplications').textContent = stats.totalApplications || 0;
+                            document.getElementById('newMessages').textContent = stats.newMessages || 0;
+                            document.getElementById('profileViews').textContent = stats.profileViews || 0;
+                            document.getElementById('notificationsCount').textContent = stats.notificationsCount || 0;
+                        } else {
+                            // Устанавливаем нулевые значения если все еще нет данных
+                            document.getElementById('totalApplications').textContent = '0';
+                            document.getElementById('newMessages').textContent = '0';
+                            document.getElementById('profileViews').textContent = '0';
+                            document.getElementById('notificationsCount').textContent = '0';
+                        }
+                    }
+
+                    // Обновляем данные из интегрированных систем
+                    await this.updateIntegratedStats();
+                } catch (error) {
+                    console.error('Error loading user stats:', error);
+                    this.showError('Ошибка загрузки статистики: ' + error.message);
+                    
+                    // Показываем нулевые значения при ошибке
+                    document.getElementById('totalApplications').textContent = '0';
+                    document.getElementById('newMessages').textContent = '0';
+                    document.getElementById('profileViews').textContent = '0';
+                    document.getElementById('notificationsCount').textContent = '0';
+                }
+            }
+
+            // Обновление статистики из интегрированных систем
+            async updateIntegratedStats() {
+                try {
+                    console.log('🔄 Обновление интегрированной статистики...');
+                    
+                    // Обновляем статистику заявок
+                    if (window.applicationsManager) {
+                        const appStats = await window.applicationsManager.getApplicationStats();
+                        if (appStats) {
+                            const totalElement = document.getElementById('totalApplications');
+                            if (totalElement) {
+                                totalElement.textContent = appStats.total || 0;
+                                console.log('✅ Обновлен счетчик заявок через ApplicationsManager:', appStats.total);
+                            }
+                        }
+                    } else {
+                        // Если нет ApplicationsManager, загружаем напрямую из Firebase
+                        console.log('📊 Загружаем заявки напрямую из Firebase...');
+                        const applicationsSnapshot = await firebase.firestore()
+                            .collection('applications')
+                            .get();
+                        
+                        // Фильтруем заявки пользователя на клиенте
+                        const userApplications = applicationsSnapshot.docs.filter(doc => {
+                            const app = doc.data();
+                            return app.userId === this.currentUser.uid || 
+                                   app.applicantId === this.currentUser.uid ||
+                                   app.userId === this.currentUser.id ||
+                                   app.applicantId === this.currentUser.id;
+                        });
+                        
+                        const totalApplications = userApplications.length;
+                        const totalElement = document.getElementById('totalApplications');
+                        if (totalElement) {
+                            totalElement.textContent = totalApplications;
+                            console.log('✅ Обновлен счетчик заявок из Firebase:', totalApplications);
+                        }
+                    }
+
+                    // Обновляем статистику сообщений
+                    if (window.messagingManager) {
+                        const msgStats = await window.messagingManager.getUnreadCount();
+                        if (msgStats !== undefined) {
+                            const messagesElement = document.getElementById('newMessages');
+                            if (messagesElement) {
+                                messagesElement.textContent = msgStats;
+                                console.log('✅ Обновлен счетчик сообщений:', msgStats);
+                            }
+                        }
+                    }
+
+                    // Обновляем уведомления
+                    if (window.notificationManager) {
+                        const notifCount = await window.notificationManager.getUnreadCount();
+                        if (notifCount !== undefined) {
+                            const notificationsElement = document.getElementById('notificationsCount');
+                            if (notificationsElement) {
+                                notificationsElement.textContent = notifCount;
+                                console.log('✅ Обновлен счетчик уведомлений:', notifCount);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error updating integrated stats:', error);
+                }
+            }
+
+            async loadRecentJobs() {
+                try {
+                    const recentJobsContainer = document.getElementById('recentJobs');
+                    
+                    // Получаем реальные вакансии из Firebase
+                    const jobsSnapshot = await firebase.firestore()
+                        .collection('jobs')
+                        .where('status', '==', 'active')
+                        .orderBy('createdAt', 'desc')
+                        .limit(3)
+                        .get();
+                    
+                    if (!jobsSnapshot.empty) {
+                        let jobsHTML = '';
+                        jobsSnapshot.forEach(doc => {
+                            const job = doc.data();
+                            jobsHTML += `
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="dashboard.showJobDetails('${doc.id}')">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900">${job.title}</h4>
+                                            <p class="text-sm text-gray-600">${job.company}</p>
+                                            <p class="text-xs text-gray-500">${job.salary}</p>
+                                        </div>
+                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">${job.status}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        recentJobsContainer.innerHTML = jobsHTML;
+                    } else {
+                        // Fallback к демо-данным
+                        recentJobsContainer.innerHTML = `
+                            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Frontend Developer</h4>
+                                        <p class="text-sm text-gray-600">TechCorp Prague</p>
+                                        <p class="text-xs text-gray-500">€3,500 - €4,500</p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Новая</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading recent jobs:', error);
+                }
+            }
+
+            async loadNotifications() {
+                try {
+                    const notificationsContainer = document.getElementById('notificationsList');
+                    
+                    // ОТЛАДОЧНАЯ ИНФОРМАЦИЯ
+                    console.log('loadNotifications: this.currentUser:', this.currentUser);
+                    console.log('loadNotifications: this.currentUser.uid:', this.currentUser?.uid);
+                    
+                    // Проверяем, что пользователь авторизован и имеет uid
+                    if (!this.currentUser || !this.currentUser.uid) {
+                        console.log('Пользователь не авторизован или нет uid, показываем демо-данные');
+                        this.showDemoNotifications();
+                        return;
+                    }
+                    
+                    // Для демо-пользователей создаем демо-данные в Firestore
+                    if (this.currentUser.email === 'demo@workincz.cz' || this.currentUser.email === 'anonymous@workincz.cz') {
+                        console.log('Демо-пользователь: Создаем демо-данные в Firestore для', this.currentUser.uid);
+                        await this.createDemoDataForSimpleAuth();
+                    }
+                    
+                    // Получаем реальные уведомления из Firebase
+                    const notificationsSnapshot = await firebase.firestore()
+                        .collection('notifications')
+                        .where('userId', '==', this.currentUser.uid)
+                        .where('read', '==', false)
+                        .orderBy('createdAt', 'desc')
+                        .limit(5)
+                        .get();
+                    
+                    if (!notificationsSnapshot.empty) {
+                        let notificationsHTML = '';
+                        notificationsSnapshot.forEach(doc => {
+                            const notification = doc.data();
+                            notificationsHTML += `
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-900">${notification.title}</p>
+                                        <p class="text-xs text-gray-500">${this.formatTime(notification.createdAt)}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        notificationsContainer.innerHTML = notificationsHTML;
+                    } else {
+                        // Fallback к демо-данным
+                        this.showDemoNotifications();
+                    }
+                } catch (error) {
+                    console.error('Error loading notifications:', error);
+                }
+            }
+
+            async loadRecentActivity() {
+                try {
+                    const activityContainer = document.getElementById('recentActivity');
+                    
+                    // ОТЛАДОЧНАЯ ИНФОРМАЦИЯ
+                    console.log('loadRecentActivity: this.currentUser:', this.currentUser);
+                    console.log('loadRecentActivity: this.currentUser.uid:', this.currentUser?.uid);
+                    
+                    // Проверяем, что пользователь авторизован и имеет uid
+                    if (!this.currentUser || !this.currentUser.uid) {
+                        console.log('Пользователь не авторизован или нет uid, показываем демо-активность');
+                        this.showDemoActivity();
+                        return;
+                    }
+                    
+                    // Получаем реальную активность из Firebase
+                    const activitySnapshot = await firebase.firestore()
+                        .collection('activity')
+                        .where('userId', '==', this.currentUser.uid)
+                        .orderBy('createdAt', 'desc')
+                        .limit(5)
+                        .get();
+                    
+                    if (!activitySnapshot.empty) {
+                        let activityHTML = '';
+                        activitySnapshot.forEach(doc => {
+                            const activity = doc.data();
+                            activityHTML += `
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas ${this.getActivityIcon(activity.type)} text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-900">${activity.description}</p>
+                                        <p class="text-xs text-gray-500">${this.formatTime(activity.timestamp)}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        activityContainer.innerHTML = activityHTML;
+      } else {
+                        // Fallback к демо-данным
+                        this.showDemoActivity();
+                    }
+                } catch (error) {
+                    console.error('Error loading recent activity:', error);
+                }
+            }
+
+            formatTime(timestamp) {
+                if (!timestamp) return 'Недавно';
+                
+                const now = new Date();
+                const time = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                const diff = now - time;
+                
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+                
+                if (minutes < 60) return `${minutes} минут назад`;
+                if (hours < 24) return `${hours} часов назад`;
+                return `${days} дней назад`;
+            }
+
+            getActivityIcon(type) {
+                const icons = {
+                    'application': 'fa-file-alt',
+                    'message': 'fa-comments',
+                    'profile': 'fa-user',
+                    'job': 'fa-briefcase',
+                    'default': 'fa-info-circle'
+                };
+                return icons[type] || icons.default;
+            }
+
+            showJobDetails(jobId) {
+                // Открываем детальную страницу вакансии
+                // Если jobId не передан, используем демо ID
+                const targetJobId = jobId || 'demo-job-1';
+                window.location.href = `job-details.html?id=${targetJobId}`;
+            }
+
+            // Методы для показа демо-данных
+            showDemoNotifications() {
+                const notificationsContainer = document.getElementById('notificationsList');
+                if (notificationsContainer) {
+                    notificationsContainer.innerHTML = `
+                        <div class="flex items-start space-x-3">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-900">Новое сообщение от работодателя</p>
+                                <p class="text-xs text-gray-500">2 минуты назад</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            showDemoActivity() {
+                const activityContainer = document.getElementById('recentActivity');
+                if (activityContainer) {
+                    activityContainer.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-file-alt text-blue-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-900">Подана заявка на вакансию "Frontend Developer"</p>
+                                <p class="text-xs text-gray-500">Сегодня, 14:30</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            showDemoStats() {
+                // Устанавливаем нулевые значения для демо
+                const elements = ['totalApplications', 'newMessages', 'profileViews', 'notificationsCount'];
+                elements.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = '0';
+                    }
+                });
+            }
+
+            showFeature(featureName) {
+                switch (featureName) {
+                    case 'Поиск вакансий':
+                        window.location.href = 'jobs.html';
+                        break;
+                    case 'Создание профиля':
+                        this.openProfileEditor();
+                        break;
+                    case 'Загрузка CV':
+                        this.openCVUpload();
+                        break;
+                    case 'Планы подписки':
+                        this.openSubscriptionPlans();
+                        break;
+                    case 'Мои заявки':
+                        window.location.href = 'my-applications.html';
+                        break;
+                    case 'Детали вакансии':
+                        this.openJobSearch();
+                        break;
+                    case 'Чат с работодателем':
+                        this.openChatSystem();
+                        break;
+                    case 'Система уведомлений':
+                        this.openNotificationSystem();
+                        break;
+
+                    case 'Подача заявки':
+                        this.openApplicationSystem();
+                        break;
+                    default:
+                        // Проверяем, есть ли готовые системы для этой функции
+                        if (window.messagingManager && featureName.includes('чат')) {
+                            this.openChatSystem();
+                        } else if (window.applicationsManager && featureName.includes('заявк')) {
+                            this.openApplicationSystem();
+
+                        } else {
+                            this.showError(`Функция "${featureName}" недоступна в текущей версии`);
+                        }
+                }
+            }
+
+            // Открытие поиска вакансий
+            openJobSearch() {
+                try {
+                    // Перенаправляем на страницу поиска вакансий
+                    window.location.href = 'jobs.html';
+                } catch (error) {
+                    console.error('Error opening job search:', error);
+                    this.showError('Ошибка открытия поиска вакансий: ' + error.message);
+                }
+            }
+
+            openProfileEditor() {
+                // Создаем модальное окно для редактирования профиля
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                        <h3 class="text-lg font-semibold mb-4">Редактирование профиля</h3>
+                        <p class="text-gray-600 mb-4">Функция редактирования профиля будет доступна в следующем обновлении.</p>
+                        <button onclick="this.closest('.fixed').remove()" class="bg-blue-500 text-white px-4 py-2 rounded">Закрыть</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+
+            openCVUpload() {
+                // Создаем модальное окно для загрузки CV
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                        <h3 class="text-lg font-semibold mb-4">Загрузка CV</h3>
+                        <p class="text-gray-600 mb-4">Функция загрузки CV будет доступна в следующем обновлении.</p>
+                        <button onclick="this.closest('.fixed').remove()" class="bg-blue-500 text-white px-4 py-2 rounded">Закрыть</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+
+            openSubscriptionPlans() {
+                // Создаем модальное окно для планов подписки
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+                        <h3 class="text-lg font-semibold mb-4">Планы подписки</h3>
+                        <div class="space-y-4">
+                            <div class="border rounded p-4">
+                                <h4 class="font-semibold">Basic - Бесплатно</h4>
+                                <p class="text-sm text-gray-600">5 заявок в месяц, базовый поиск</p>
+                            </div>
+                            <div class="border rounded p-4 bg-blue-50">
+                                <h4 class="font-semibold">Premium - €19/месяц</h4>
+                                <p class="text-sm text-gray-600">Неограниченные заявки, приоритет в поиске</p>
+                            </div>
+                            <div class="border rounded p-4">
+                                <h4 class="font-semibold">Enterprise - €49/месяц</h4>
+                                <p class="text-sm text-gray-600">Все функции + персональный менеджер</p>
+                            </div>
+                        </div>
+                        <button onclick="this.closest('.fixed').remove()" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">Закрыть</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+
+            // Интеграция с готовыми системами
+            openChatSystem() {
+                if (window.messagingManager) {
+                    // Открываем панель сообщений
+                    if (typeof openMessagesPanel === 'function') {
+                        openMessagesPanel();
+                    } else {
+                        // Fallback - создаем простой чат
+                        this.createSimpleChat();
+                    }
+                } else {
+                    this.createSimpleChat();
+                }
+            }
+
+            createSimpleChat() {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                        <h3 class="text-lg font-semibold mb-4">💬 Чат с работодателем</h3>
+                        <div class="space-y-4">
+                            <div class="bg-gray-50 p-4 rounded h-64 overflow-y-auto">
+                                <div class="text-sm text-gray-600">Чат загружается...</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <input type="text" placeholder="Введите сообщение..." class="flex-1 px-3 py-2 border rounded">
+                                <button class="bg-blue-500 text-white px-4 py-2 rounded">Отправить</button>
+                            </div>
+                        </div>
+                        <button onclick="this.closest('.fixed').remove()" class="bg-gray-500 text-white px-4 py-2 rounded mt-4">Закрыть</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+
+            openNotificationSystem() {
+                if (window.notificationManager) {
+                    // Используем готовую систему уведомлений
+                    window.notificationManager.show('Система уведомлений активна', 'info');
+                } else {
+                    // Fallback
+                    const modal = document.createElement('div');
+                    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                    modal.innerHTML = `
+                        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                            <h3 class="text-lg font-semibold mb-4">🔔 Система уведомлений</h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between p-2 bg-blue-50 rounded">
+                                    <span class="text-sm">Новое сообщение</span>
+                                    <span class="text-xs text-gray-500">2 мин назад</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                                    <span class="text-sm">Заявка принята</span>
+                                    <span class="text-xs text-gray-500">1 час назад</span>
+                                </div>
+                            </div>
+                            <button onclick="this.closest('.fixed').remove()" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">Закрыть</button>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                }
+            }
+
+
+
+            openApplicationSystem() {
+                if (window.applicationsManager) {
+                    // Используем готовую систему заявок
+                    window.applicationsManager.showApplicationModal();
+                } else {
+                    // Fallback
+                    const modal = document.createElement('div');
+                    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                    modal.innerHTML = `
+                        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                            <h3 class="text-lg font-semibold mb-4">📝 Подача заявки</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Сопроводительное письмо</label>
+                                    <textarea class="w-full px-3 py-2 border rounded" rows="4" placeholder="Расскажите о себе..."></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Резюме</label>
+                                    <input type="file" class="w-full px-3 py-2 border rounded">
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-4">
+                                <button class="bg-blue-500 text-white px-4 py-2 rounded">Отправить заявку</button>
+                                <button onclick="this.closest('.fixed').remove()" class="bg-gray-500 text-white px-4 py-2 rounded">Отмена</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                }
+            }
+
+            async logout() {
+                try {
+                    await firebase.auth().signOut();
+                    window.location.href = 'index.html';
+                } catch (error) {
+        console.error('Logout error:', error);
+                    this.showError('Ошибка при выходе из системы');
+                }
+            }
+
+            // hideLoadingSpinner теперь глобальная функция
+
+            showError(message) {
+                // Create notification
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+            
+            // Создание демо-данных для SimpleAuth пользователей
+            async createDemoDataForSimpleAuth() {
+                try {
+                    console.log('SimpleAuth: Создаем демо-данные в Firestore...');
+                    
+                    // Проверяем, что Firebase Auth инициализирован
+                    if (!firebase || !firebase.auth || !firebase.firestore) {
+                        console.warn('SimpleAuth: Firebase не инициализирован, пропускаем создание демо-данных');
+                        return;
+                    }
+                    
+                    // Принудительно аутентифицируемся в Firebase если нужно
+                    if (window.simpleAuth) {
+                        await window.simpleAuth.ensureFirebaseAuth();
+                    }
+                    
+                    // Проверяем, что пользователь аутентифицирован в Firebase
+                    const firebaseUser = firebase.auth().currentUser;
+                    if (!firebaseUser) {
+                        console.warn('SimpleAuth: Пользователь не аутентифицирован в Firebase, пропускаем создание демо-данных');
+                        return;
+                    }
+                    
+                    // Используем Firebase Auth uid вместо SimpleAuth uid
+                    const userId = firebaseUser.uid;
+                    const db = firebase.firestore();
+                    
+                    console.log('SimpleAuth: Используем Firebase uid для создания данных:', userId);
+                    
+                    // Создаем профиль пользователя
+                    await db.collection('users').doc(userId).set({
+                        email: this.currentUser.email,
+                        name: this.currentUser.name,
+                        role: this.currentUser.role,
+                        isDemoAccount: true,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    }, { merge: true });
+                    
+                    // Создаем демо-уведомления
+                    const notifications = [
+                        {
+                            title: 'Новая вакансия подходит вам',
+                            message: 'Позиция "Frontend Developer" в компании TechCorp',
+                            type: 'job_match',
+                            read: false,
+                            createdAt: new Date()
+                        },
+                        {
+                            title: 'Ваша заявка рассмотрена',
+                            message: 'Заявка на позицию "React Developer" принята',
+                            type: 'application_status',
+                            read: false,
+                            createdAt: new Date(Date.now() - 3600000)
+                        }
+                    ];
+                    
+                    for (const notification of notifications) {
+                        await db.collection('notifications').add({
+                            ...notification,
+                            userId: userId
+                        });
+                    }
+                    
+                    // Создаем демо-активность
+                    const activities = [
+                        {
+                            type: 'application_submitted',
+                            description: 'Подана заявка на вакансию "React Developer"',
+                            timestamp: new Date(Date.now() - 7200000)
+                        },
+                        {
+                            type: 'profile_updated',
+                            description: 'Обновлен профиль пользователя',
+                            timestamp: new Date(Date.now() - 86400000)
+                        }
+                    ];
+                    
+                    for (const activity of activities) {
+                        await db.collection('activity').add({
+                            ...activity,
+                            userId: userId
+                        });
+                    }
+                    
+                    // Создаем демо-статистику пользователя
+                    await db.collection('user_stats').doc(userId).set({
+                        totalApplications: 3,
+                        newMessages: 2,
+                        profileViews: 15,
+                        notificationsCount: 2,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    }, { merge: true });
+                    
+                    // Создаем демо-заявки
+                    const applications = [
+                        {
+                            jobTitle: 'React Developer',
+                            company: 'TechCorp',
+                            status: 'pending',
+                            appliedAt: new Date(Date.now() - 86400000),
+                            userId: userId
+                        },
+                        {
+                            jobTitle: 'Frontend Developer',
+                            company: 'StartupXYZ',
+                            status: 'accepted',
+                            appliedAt: new Date(Date.now() - 172800000),
+                            userId: userId
+                        },
+                        {
+                            jobTitle: 'JavaScript Developer',
+                            company: 'BigTech Inc',
+                            status: 'rejected',
+                            appliedAt: new Date(Date.now() - 259200000),
+                            userId: userId
+                        }
+                    ];
+                    
+                    for (const application of applications) {
+                        await db.collection('applications').add(application);
+                    }
+                    
+                    console.log('SimpleAuth: Демо-данные созданы успешно');
+                } catch (error) {
+                    console.error('SimpleAuth: Ошибка создания демо-данных:', error);
+                }
+            }
+
+            // Принудительная загрузка данных (для отладки)
+            async forceLoadData() {
+                console.log('🔄 Dashboard: Принудительная загрузка данных...');
+                
+                try {
+                    // Пытаемся получить пользователя из разных источников
+                    let user = this.currentUser;
+                    
+                    if (!user && window.simpleAuth) {
+                        user = window.simpleAuth.getCurrentUser();
+                        console.log('🔄 Получен пользователь из SimpleAuth:', user);
+                    }
+                    
+                    if (!user && firebase && firebase.auth) {
+                        const firebaseUser = firebase.auth().currentUser;
+                        if (firebaseUser) {
+                            user = {
+                                uid: firebaseUser.uid,
+                                email: firebaseUser.email || 'anonymous@workincz.cz',
+                                name: firebaseUser.displayName || 'Пользователь',
+                                role: 'user'
+                            };
+                            console.log('🔄 Получен пользователь из Firebase Auth:', user);
+                        }
+                    }
+                    
+                    if (!user) {
+                        // Создаем демо-пользователя
+                        user = {
+                            uid: 'demo-user-' + Date.now(),
+                            email: 'demo@workincz.cz',
+                            name: 'Демо Пользователь',
+                            role: 'user'
+                        };
+                        console.log('🔄 Создан демо-пользователь:', user);
+                        
+                        // Пытаемся выполнить анонимную аутентификацию Firebase
+                        try {
+                            if (firebase && firebase.auth) {
+                                const userCredential = await firebase.auth().signInAnonymously();
+                                user.uid = userCredential.user.uid;
+                                console.log('🔄 Анонимная аутентификация Firebase успешна:', user.uid);
+                                
+                                // Обновляем SimpleAuth если он инициализирован
+                                if (window.simpleAuth && window.simpleAuth.currentUser) {
+                                    window.simpleAuth.currentUser.uid = user.uid;
+                                    window.simpleAuth.token = window.simpleAuth.generateToken(window.simpleAuth.currentUser);
+                                    localStorage.setItem('authToken', window.simpleAuth.token);
+                                }
+                            }
+                        } catch (error) {
+                            console.warn('🔄 Ошибка анонимной аутентификации Firebase:', error);
+                        }
+                    }
+                    
+                    this.currentUser = user;
+                    
+                    // Обновляем отладочную информацию
+                    if (window.debugDashboard) {
+                        window.debugDashboard.currentUser = user;
+                        window.debugDashboard.authStatus = 'force_loaded';
+                    }
+                    
+                    // Загружаем данные
+                    await this.loadUserStats();
+                    await this.loadNotifications();
+                    await this.loadRecentActivity();
+                    await this.loadRecentJobs();
+                    
+                    // Обновляем UI
+                    this.updateUI();
+                    
+                    console.log('✅ Dashboard: Принудительная загрузка завершена');
+                    
+                    if (window.debugDashboard) {
+                        window.debugDashboard.dataLoaded = true;
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Dashboard: Ошибка принудительной загрузки:', error);
+                    if (window.debugDashboard) {
+                        window.debugDashboard.errors.push(error.message);
+                    }
+                }
+            }
+
+            // Обновление UI
+            updateUI() {
+                console.log('🎨 Dashboard: Обновление UI...');
+                
+                // Обновляем приветствие
+                const welcomeElement = document.querySelector('h1');
+                if (welcomeElement && this.currentUser) {
+                    welcomeElement.textContent = `Добро пожаловать, ${this.currentUser.name}!`;
+                }
+                
+                // Обновляем роль
+                const roleElement = document.querySelector('.text-sm.text-gray-600');
+                if (roleElement && this.currentUser) {
+                    roleElement.textContent = `Роль: ${this.currentUser.role}`;
+                }
+                
+                // 🔥 ПРИНУДИТЕЛЬНО ОБНОВЛЯЕМ СЧЕТЧИКИ ДАННЫХ
+                this.forceUpdateCounters();
+                
+                console.log('✅ Dashboard: UI обновлен');
+            }
+            
+            // Принудительное обновление счетчиков
+            async forceUpdateCounters() {
+                try {
+                    console.log('🔥 Принудительное обновление счетчиков...');
+                    
+                    // Загружаем данные напрямую из Firebase
+                    const statsSnapshot = await firebase.firestore()
+                        .collection('user_stats')
+                        .doc(this.currentUser.uid)
+                        .get();
+                    
+                    if (statsSnapshot.exists) {
+                        const stats = statsSnapshot.data();
+                        console.log('📊 Принудительно загружена статистика:', stats);
+                        
+                        // Обновляем все счетчики
+                        const totalElement = document.getElementById('totalApplications');
+                        const messagesElement = document.getElementById('newMessages');
+                        const viewsElement = document.getElementById('profileViews');
+                        const notificationsElement = document.getElementById('notificationsCount');
+                        
+                        if (totalElement) {
+                            totalElement.textContent = stats.totalApplications || 0;
+                            console.log('✅ Обновлен счетчик заявок:', stats.totalApplications);
+                        }
+                        
+                        if (messagesElement) {
+                            messagesElement.textContent = stats.newMessages || 0;
+                            console.log('✅ Обновлен счетчик сообщений:', stats.newMessages);
+                        }
+                        
+                        if (viewsElement) {
+                            viewsElement.textContent = stats.profileViews || 0;
+                            console.log('✅ Обновлен счетчик просмотров:', stats.profileViews);
+                        }
+                        
+                        if (notificationsElement) {
+                            notificationsElement.textContent = stats.notificationsCount || 0;
+                            console.log('✅ Обновлен счетчик уведомлений:', stats.notificationsCount);
+                        }
+                        
+                        // Обновляем статус загрузки
+                        if (window.debugDashboard) {
+                            window.debugDashboard.dataLoaded = true;
+                        }
+                        
+                        console.log('🔥 Все счетчики обновлены принудительно!');
+                    } else {
+                        console.warn('⚠️ Статистика не найдена для принудительного обновления');
+                    }
+                } catch (error) {
+                    console.error('❌ Ошибка принудительного обновления счетчиков:', error);
+                }
+            }
+
+            // Быстрый фикс для принудительного обновления UI
+            async quickFixUI() {
+                try {
+                    console.log('🔄 Быстрый фикс-скрипт запущен...');
+                    
+                    // Принудительно загружаем статистику
+                    await this.loadUserStats();
+                    await this.loadApplicationsData();
+                    await this.updateIntegratedStats();
+                    
+                    // Дополнительная проверка через 2 секунды
+                    setTimeout(async () => {
+                        const totalApps = document.getElementById('totalApplications');
+                        if (totalApps && totalApps.textContent === '0') {
+                            console.log('🔄 Принудительное обновление UI...');
+                            await this.forceUpdateCounters();
+                        }
+                    }, 2000);
+                    
+                    console.log('✅ Быстрый фикс-скрипт завершен');
+                } catch (error) {
+                    console.error('❌ Ошибка в быстром фикс-скрипте:', error);
+                }
+            }
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Dashboard: DOM загружен, начинаем инициализацию...');
+            
+            // Добавляем глобальную отладочную информацию
+            window.debugDashboard = {
+                currentUser: null,
+                authStatus: 'unknown',
+                dataLoaded: false,
+                errors: []
+            };
+            
+            // 🔥 СОХРАНЯЕМ DASHBOARD В ГЛОБАЛЬНОЙ ОБЛАСТИ ВИДИМОСТИ
+            window.dashboard = new Dashboard();
+            console.log('✅ Dashboard объект сохранен в window.dashboard');
+            
+            // 🔥 ОДНОКРАТНАЯ ПРОВЕРКА ЧЕРЕЗ 3 СЕКУНДЫ (НЕ БЕСКОНЕЧНЫЙ ЦИКЛ)
+            setTimeout(() => {
+                console.log('🔍 Dashboard: Финальная проверка состояния...');
+                console.log('Debug info:', window.debugDashboard);
+                
+                if (!window.debugDashboard.dataLoaded) {
+                    console.warn('⚠️ Dashboard: Данные не загружены, принудительная загрузка...');
+                    window.dashboard.forceLoadData();
+                } else {
+                    console.log('✅ Dashboard: Данные загружены успешно, UI готов!');
+                }
+            }, 3000);
+        });
+            </script>
+        
+        <!-- 🚀 БЫСТРЫЙ ФИКС-СКРИПТ для отладки -->
+        <script type="module">
+            console.log('🔧 Быстрый фикс-скрипт загружен');
+            
+            // 🔥 ОДНОКРАТНАЯ ПРОВЕРКА (НЕ БЕСКОНЕЧНЫЙ ЦИКЛ)
+            setTimeout(() => {
+                const user = firebase.auth().currentUser;
+                console.log('🔍 Проверка аутентификации:', user ? `uid: ${user.uid}` : 'null');
+                
+                // Проверяем элементы UI
+                const totalApps = document.getElementById('totalApplications');
+                const newMessages = document.getElementById('newMessages');
+                const profileViews = document.getElementById('profileViews');
+                const notifications = document.getElementById('notificationsCount');
+                
+                console.log('🔍 Элементы UI:', {
+                    totalApplications: totalApps?.textContent || 'не найден',
+                    newMessages: newMessages?.textContent || 'не найден',
+                    profileViews: profileViews?.textContent || 'не найден',
+                    notificationsCount: notifications?.textContent || 'не найден'
+                });
+                
+                // Принудительно обновляем UI если данные не загружены
+                if (totalApps && totalApps.textContent === '0') {
+                    console.log('🔄 Принудительное обновление UI...');
+                    if (window.dashboard) {
+                        window.dashboard.loadUserStats();
+                        window.dashboard.loadApplicationsData();
+                    }
+                }
+                
+                console.log('✅ Быстрый фикс-скрипт завершен');
+            }, 2000);
+        </script>
+        
+        <!-- 🔥 ПРИНУДИТЕЛЬНЫЙ ВЫЗОВ ОТРИСОВКИ UI -->
+        <script>
+            // Ждём когда все скрипты загрузятся
+            window.addEventListener('load', () => {
+                console.log('🔥 DOM + все скрипты готовы → рисуем UI');
+                
+                // Диагностика
+                console.table({
+                    currentUser: firebase.auth().currentUser?.uid,
+                    dataloaded: window.debugDashboard?.dataLoaded ?? false,
+                    domReady: document.readyState
+                });
+                
+                // Принудительно вызываем отрисовку UI
+                setTimeout(() => {
+                    if (window.dashboard) {
+                        console.log('🔥 Принудительный вызов отрисовки dashboard...');
+                        window.dashboard.forceUpdateCounters();
+                        window.dashboard.updateUI();
+                    } else {
+                        console.warn('⚠️ Dashboard объект не найден');
+                    }
+                }, 1000);
+            });
+        </script>
+        
+        <!-- 🚀 СПАСАТЕЛЬНЫЙ КОНТЕЙНЕР И УЛУЧШЕННАЯ ОТРИСОВКА -->
+        <div id="dashboard-container" style="display: none;">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-bold mb-4">Загрузка Dashboard...</h2>
+                <div class="space-y-2">
+                    <p>👤 UID: <span id="user-uid">загрузка...</span></p>
+                    <p>📊 Заявки: <span id="total-applications">0</span></p>
+                    <p>💬 Сообщения: <span id="new-messages">0</span></p>
+                    <p>👁️ Просмотры: <span id="profile-views">0</span></p>
+                    <p>🔔 Уведомления: <span id="notifications-count">0</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // Заставляем JS искать элемент после полной загрузки
+            window.addEventListener('DOMContentLoaded', () => {
+                console.log('🔧 Спасательный скрипт загружен');
+                
+                const container = document.getElementById('dashboard-container');
+                if (!container) {
+                    console.error('❌ #dashboard-container не найден');
+                    return;
+                }
+                
+                console.log('✅ #dashboard-container найден, показываем...');
+                container.style.display = 'block';
+                
+                // Обновляем данные в спасательном контейнере
+                const updateRescueUI = () => {
+                    const user = firebase.auth().currentUser;
+                    const uidElement = document.getElementById('user-uid');
+                    const totalElement = document.getElementById('total-applications');
+                    const messagesElement = document.getElementById('new-messages');
+                    const viewsElement = document.getElementById('profile-views');
+                    const notificationsElement = document.getElementById('notifications-count');
+                    
+                    if (uidElement) {
+                        uidElement.textContent = user?.uid || 'demo';
+                    }
+                    
+                    // Обновляем счетчики из window.debugDashboard или из Firestore
+                    if (window.debugDashboard?.dataLoaded) {
+                        console.log('📊 Обновляем спасательный UI из debugDashboard');
+                        // Здесь можно добавить обновление из загруженных данных
+                    }
+                };
+                
+                // 🔥 ОДНОКРАТНОЕ ОБНОВЛЕНИЕ (НЕ БЕСКОНЕЧНЫЙ ЦИКЛ)
+                updateRescueUI();
+                setTimeout(updateRescueUI, 2000);
+                
+                console.log('✅ Спасательный UI инициализирован');
+            });
+            
+            // 🔥 ФУНКЦИИ ДЛЯ БЫСТРОГО ИСПРАВЛЕНИЯ
+            window.stopAllTimers = () => {
+                console.log('🛑 Останавливаем все таймеры...');
+                let id = setTimeout(() => {}, 0);
+                while (id--) clearTimeout(id);
+                console.log('✅ Все таймеры остановлены');
+            };
+            
+            window.forceRenderDashboard = () => {
+                console.log('🎨 Принудительная отрисовка Dashboard...');
+                
+                if (window.dashboard) {
+                    window.dashboard.forceUpdateCounters();
+                    window.dashboard.updateUI();
+                    console.log('✅ Dashboard отрисован принудительно');
+                } else {
+                    console.warn('❌ Dashboard объект не найден для принудительной отрисовки');
+                }
+            };
+            
+            window.quickFix = () => {
+                console.log('⚡ Быстрое исправление Dashboard...');
+                
+                // Останавливаем все таймеры
+                window.stopAllTimers();
+                
+                // Принудительно отрисовываем
+                window.forceRenderDashboard();
+                
+                console.log('✅ Быстрое исправление завершено');
+            };
+        </script>
+    </body>
+</html> 

@@ -1,0 +1,685 @@
+{
+  "files": {
+    "public\\auth\\confirm.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public\\404.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public\\job-details.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXqX",
+          "isCurrent": false,
+          "description": "Неизвестный API-ключ"
+        }
+      ]
+    },
+    "public\\js\\auth\\auth.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public\\js\\core\\app-bundle.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public\\js\\firebase-config.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public\\js\\firebase-integration.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public\\my-applications.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXqX",
+          "isCurrent": false,
+          "description": "Неизвестный API-ключ"
+        }
+      ]
+    },
+    "src\\lib\\firebase.ts": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "src\\modules\\auth\\index.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\anonymous-auth.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\404.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\auth\\confirm.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\auth\\login.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\auth\\register.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\email-auth.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\dashboard.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\index.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\job-details.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXqX",
+          "isCurrent": false,
+          "description": "Неизвестный API-ключ"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\js\\auth\\auth.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\js\\core\\app-bundle.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\js-hashed\\firebase-config.346f80c7.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\js-hashed\\firebase-config.96d0a17e.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\js-hashed\\firebase-init-fixed.1753789238,34585.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\js-hashed\\firebase-init-new.1753789148,63255.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\js-hashed\\firebase-init.1753788902,31635.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\js-hashed\\firebase-init.a9f4627c.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\js-hashed\\firebase-init.966bfcff.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\my-applications.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXqX",
+          "isCurrent": false,
+          "description": "Неизвестный API-ключ"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\simple-login.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\test-auth.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\simple-test.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\test.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\404.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-20250730-175739\\test-demo-fix.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+          "isCurrent": false,
+          "description": "Неизвестный API-ключ"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\auth\\confirm.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\auth\\login.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\auth\\register.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\email-auth.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\dashboard.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\job-details.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXqX",
+          "isCurrent": false,
+          "description": "Неизвестный API-ключ"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\js\\auth\\auth.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\anonymous-auth.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\js\\core\\app-bundle.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\js-hashed\\firebase-config.346f80c7.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\js-hashed\\firebase-init-fixed.1753789238,34585.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\js-hashed\\firebase-init-new.1753789148,63255.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\js-hashed\\firebase-init.1753788902,31635.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\js-hashed\\firebase-init.966bfcff.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\js-hashed\\firebase-config.96d0a17e.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\js-hashed\\firebase-init.a9f4627c.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\my-applications.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXqX",
+          "isCurrent": false,
+          "description": "Неизвестный API-ключ"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\simple-test.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\simple-login.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\test-auth.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\test-demo-fix.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+          "isCurrent": false,
+          "description": "Неизвестный API-ключ"
+        }
+      ]
+    },
+    "public-backup-cleanup-20250730-181921\\test.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\404.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\auth\\confirm.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\auth\\login.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\firebase-config.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\job-details.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXqX",
+          "isCurrent": false,
+          "description": "Неизвестный API-ключ"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\js\\auth\\auth.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\js\\core\\app-bundle.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\js\\firebase-integration.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\js-hashed\\firebase-config.346f80c7.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\js-hashed\\firebase-config.96d0a17e.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\js-hashed\\firebase-init-new.1753789148,63255.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\js-hashed\\firebase-init-fixed.1753789238,34585.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\js-hashed\\firebase-init.a9f4627c.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\js-hashed\\firebase-init.966bfcff.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\js-hashed\\firebase-init.1753788902,31635.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\public\\my-applications.html": {
+      "keys": [
+        {
+          "value": "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXqX",
+          "isCurrent": false,
+          "description": "Неизвестный API-ключ"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\src\\lib\\firebase.ts": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    },
+    "backup-refactoring-20250730-2000\\src\\modules\\auth\\index.js": {
+      "keys": [
+        {
+          "value": "AIzaSyBQBIE0lphKrKyq40dGmv3zDACVnJL90Z0",
+          "isCurrent": true,
+          "description": "Текущий рабочий ключ Firebase"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalFiles": 792,
+    "filesWithApiKeys": 75,
+    "totalApiKeysFound": 75,
+    "oldApiKeysFound": 0
+  }
+}
