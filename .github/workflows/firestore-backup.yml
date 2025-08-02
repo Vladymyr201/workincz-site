@@ -21,9 +21,12 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
           export_environment_variables: true
+          token_format: 'access_token'
       
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
+        with:
+          version: '>=363.0.0'
       
       # Проверка срока действия ключей
       - name: Check service account key expiration
@@ -88,9 +91,9 @@ jobs:
           echo "BACKUP_TIMESTAMP=$TIMESTAMP" >> $GITHUB_OUTPUT
           echo "BACKUP_PATH=$BACKUP_PATH" >> $GITHUB_OUTPUT
           
-          # Создаем бэкап
-          echo "Запуск экспорта Firestore в $BACKUP_PATH..."
-          EXPORT_RESULT=$(gcloud firestore export $BACKUP_PATH --collection-ids="(default)" --async 2>&1) || {
+          # Создаем бэкап с указанием project_id
+          echo "Запуск экспорта Firestore в $BACKUP_PATH для проекта ${PROJECT_ID}..."
+          EXPORT_RESULT=$(gcloud firestore export $BACKUP_PATH --project=${PROJECT_ID} --collection-ids="(default)" --async 2>&1) || {
             echo "::error::Ошибка при запуске экспорта Firestore: $EXPORT_RESULT"
             exit 1
           }
@@ -107,7 +110,7 @@ jobs:
             echo "Проверка наличия файлов бэкапа (попытка $ATTEMPT из $MAX_ATTEMPTS)..."
             sleep 60
             
-            if gsutil -q stat $BACKUP_PATH/*/default_namespace/all_namespaces/kind_* 2>/dev/null; then
+                          if gsutil -u ${PROJECT_ID} -q stat $BACKUP_PATH/*/default_namespace/all_namespaces/kind_* 2>/dev/null; then
               echo "Бэкап создан успешно: $BACKUP_PATH"
               SUCCESS=true
               
@@ -116,7 +119,7 @@ jobs:
               echo "backup_timestamp=$TIMESTAMP" >> $GITHUB_ENV
               
               # Проверяем, что бэкап не пустой
-              BACKUP_SIZE=$(gsutil du -s $BACKUP_PATH | awk '{print $1}')
+              BACKUP_SIZE=$(gsutil -u ${PROJECT_ID} du -s $BACKUP_PATH | awk '{print $1}')
               if [ -z "$BACKUP_SIZE" ] || [ "$BACKUP_SIZE" -lt 1000 ]; then
                 echo "::warning::Бэкап создан, но имеет подозрительно маленький размер: $BACKUP_SIZE байт"
               else
@@ -133,6 +136,7 @@ jobs:
           fi
         env:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       
       # Шифрование бэкапа (опционально)
       - name: Encrypt backup
@@ -169,7 +173,7 @@ jobs:
             
             # Загружаем зашифрованный архив в хранилище
             echo "Загрузка зашифрованного архива..."
-            gsutil cp ${TMP_ENCRYPTED} ${BACKUP_PATH}.enc \
+            gsutil -u ${PROJECT_ID} cp ${TMP_ENCRYPTED} ${BACKUP_PATH}.enc \
               || { echo "Ошибка загрузки зашифрованного архива"; exit 1; }
             
             # Очистка
@@ -181,6 +185,7 @@ jobs:
           fi
         env:
           ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         continue-on-error: true
       
       # Очистка старых бэкапов
@@ -191,7 +196,7 @@ jobs:
           
           # Находим и удаляем старые бэкапы
           echo "Получение списка бэкапов из gs://${GCS_BUCKET}/backup-*"
-          OLD_BACKUPS=$(gsutil ls gs://${GCS_BUCKET}/backup-* 2>/dev/null | grep -E 'backup-[0-9]{4}-[0-9]{2}-[0-9]{2}' || echo "")
+          OLD_BACKUPS=$(gsutil -u ${PROJECT_ID} ls gs://${GCS_BUCKET}/backup-* 2>/dev/null | grep -E 'backup-[0-9]{4}-[0-9]{2}-[0-9]{2}' || echo "")
           
           if [ -z "$OLD_BACKUPS" ]; then
             echo "Старых бэкапов не найдено или бакет пуст"
@@ -201,7 +206,7 @@ jobs:
               BACKUP_DATE=$(echo $backup | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' || echo "")
               if [ -n "$BACKUP_DATE" ] && [[ "$BACKUP_DATE" < "$CUTOFF_DATE" ]]; then
                 echo "Удаление $backup (старше ${RETENTION_DAYS} дней)"
-                gsutil -m rm -r $backup || echo "Ошибка при удалении $backup"
+                gsutil -u ${PROJECT_ID} -m rm -r $backup || echo "Ошибка при удалении $backup"
               else
                 echo "Оставляем $backup (новее ${RETENTION_DAYS} дней)"
               fi
@@ -209,8 +214,9 @@ jobs:
           fi
           
           echo "Очистка завершена"
-        env:
+                  env:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           RETENTION_DAYS: ${{ env.RETENTION_DAYS }}
       
       # Сохранение диагностической информации
