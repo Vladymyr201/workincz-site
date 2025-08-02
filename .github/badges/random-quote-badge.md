@@ -1,0 +1,1 @@
+![Random Quote](https://img.shields.io/badge/quote-Code%20is%20like%20humor%20When%20you%20have%20to%20explain%20it%20it%20is%20bad--Cory%20House-blue)

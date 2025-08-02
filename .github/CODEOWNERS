@@ -1,0 +1,29 @@
+# Файл определяет владельцев кода для автоматического назначения ревьюеров
+# Подробнее: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Глобальные владельцы по умолчанию
+* @admin-team
+
+# Владельцы файлов в директории src
+/src/ @dev-team
+
+# Frontend код
+/src/app/ @frontend-team
+/src/components/ @frontend-team
+/src/contexts/ @frontend-team
+/src/hooks/ @frontend-team
+
+# Backend код
+/src/app/api/ @backend-team
+/src/lib/services/ @backend-team
+/src/middleware.ts @backend-team
+
+# Конфигурация сборки и деплоя
+/.github/workflows/ @devops-team
+/scripts/ @devops-team
+
+# Документация
+/docs/ @all-team
+
+# Тесты
+/tests/ @qa-team

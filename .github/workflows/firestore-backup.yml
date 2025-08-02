@@ -6,6 +6,7 @@ on:
 
 env:
   RETENTION_DAYS: 14 # хранить бэкапы 14 дней
+  ERROR_LOGS_PATH: ".github/logs/firestore-backup"
 
 jobs:
   backup:
@@ -47,15 +48,37 @@ jobs:
           GCP_SA_EMAIL: ${{ secrets.GCP_SA_EMAIL }}
         continue-on-error: true
       
+      - name: Check environment and permissions
+        id: environment
+        run: |
+          # Создаем директорию для логов
+          mkdir -p "${{ env.ERROR_LOGS_PATH }}"
+          
+          # Загружаем функции обработки ошибок
+          source .github/actions/workflow-utils/error-handlers.sh || {
+            echo "::error::Не удалось загрузить утилиты обработки ошибок"
+            exit 1
+          }
+          
+          # Проверяем наличие необходимых секретов
+          check_required_secrets "GCP_PROJECT_ID" "GCP_SA_KEY" "GCS_BUCKET" || exit 1
+          
+          # Проверка доступа к проекту
+          check_gcp_access "project" "${{ secrets.GCP_PROJECT_ID }}" || exit 1
+          
+          # Проверка доступа к бакету
+          check_gcp_access "bucket" "${{ secrets.GCS_BUCKET }}" || exit 1
+          
+          # Проверка доступа к Firestore
+          check_gcp_access "firestore" "${{ secrets.GCP_PROJECT_ID }}" || exit 1
+          
+          echo "✅ Проверки окружения успешно пройдены"
+          
       - name: Backup Firestore with timestamp
         id: backup
         run: |
-          # Проверка доступа к бакету
-          echo "Проверка доступа к бакету gs://${GCS_BUCKET}..."
-          if ! gsutil ls gs://${GCS_BUCKET} &>/dev/null; then
-            echo "::error::Не удалось получить доступ к бакету gs://${GCS_BUCKET}. Проверьте права доступа сервисного аккаунта."
-            exit 1
-          fi
+          # Загружаем функции обработки ошибок
+          source .github/actions/workflow-utils/error-handlers.sh
           
           # Формируем временную метку и путь к бэкапу
           TIMESTAMP=$(date +%Y-%m-%d-%H%M%S)
@@ -190,39 +213,62 @@ jobs:
           GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
           RETENTION_DAYS: ${{ env.RETENTION_DAYS }}
       
-      # Отправка уведомления в Slack или другой сервис
-      - name: Notify on success
-        if: success()
+      # Сохранение диагностической информации
+      - name: Save diagnostics information
+        if: always()
         run: |
-          if [ -n "${WEBHOOK_URL}" ]; then
-            BACKUP_PATH="${{ env.backup_path }}"
-            CURRENT_DATE=$(date +'%d.%m.%Y %H:%M:%S')
-            
-            echo "Отправка уведомления об успешном резервном копировании..."
-            MESSAGE="{\"text\": \"✅ Резервное копирование Firestore выполнено успешно!\nПроект: ${PROJECT_ID}\nБэкап: ${BACKUP_PATH}\nДата: ${CURRENT_DATE}\"}"
-            curl -X POST -H 'Content-type: application/json' --data "$MESSAGE" "${WEBHOOK_URL}"
-          else
-            echo "✅ Резервное копирование Firestore выполнено успешно!"
-          fi
-        env:
-          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          # Загружаем функции обработки ошибок
+          source .github/actions/workflow-utils/error-handlers.sh || true
+          
+          # Сохраняем информацию о выполнении
+          DIAGNOSTICS_FILE="${{ env.ERROR_LOGS_PATH }}/diagnostics-$(date +%Y%m%d-%H%M%S).log"
+          
+          {
+            echo "========== Диагностика выполнения Firestore Backup =========="
+            echo "Дата/Время: $(date)"
+            echo "Статус: ${{ job.status }}"
+            echo "Проект: ${{ secrets.GCP_PROJECT_ID }}"
+            echo "Бакет: ${{ secrets.GCS_BUCKET }}"
+            echo "Путь бэкапа: ${{ env.backup_path || 'Не создан' }}"
+            echo "Run ID: ${{ github.run_id }}"
+            echo "Run URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo ""
+            echo "=== Версии инструментов ==="
+            echo "gcloud version:"
+            gcloud version 2>&1 || echo "Ошибка получения версии gcloud"
+            echo ""
+            echo "=== Информация о дисковом пространстве ==="
+            df -h 2>&1 || echo "Ошибка получения информации о дисковом пространстве"
+          } > "$DIAGNOSTICS_FILE"
+          
+          echo "Диагностическая информация сохранена в $DIAGNOSTICS_FILE"
       
-      - name: Notify on failure
-        if: failure()
+      # Отправка уведомления в Slack или другой сервис
+      - name: Notify on completion
+        if: always()
         run: |
-          if [ -n "${WEBHOOK_URL}" ]; then
-            CURRENT_DATE=$(date +'%d.%m.%Y %H:%M:%S')
-            LOGS_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-            
-            echo "Отправка уведомления о неудачном резервном копировании..."
-            MESSAGE="{\"text\": \"❌ Ошибка резервного копирования Firestore!\nПроект: ${PROJECT_ID}\nДата: ${CURRENT_DATE}\nПожалуйста, проверьте логи: ${LOGS_URL}\"}"
-            curl -X POST -H 'Content-type: application/json' --data "$MESSAGE" "${WEBHOOK_URL}"
+          # Загружаем функции обработки ошибок
+          source .github/actions/workflow-utils/error-handlers.sh || {
+            echo "::error::Не удалось загрузить утилиты обработки ошибок"
+            exit 1
+          }
+          
+          BACKUP_PATH="${{ env.backup_path || 'Не создан' }}"
+          JOB_STATUS="${{ job.status }}"
+          
+          if [ "$JOB_STATUS" = "success" ]; then
+            TITLE="Резервное копирование Firestore выполнено успешно"
+            MESSAGE="Бэкап создан и сохранен в *$BACKUP_PATH*"
+            DETAILS="Проект: *$PROJECT_ID*\nВремя создания: $(date +'%d.%m.%Y %H:%M:%S')"
+            send_slack_notification "$WEBHOOK_URL" "success" "$TITLE" "$MESSAGE" "$DETAILS"
+            echo "✅ Резервное копирование Firestore выполнено успешно!"
           else
+            TITLE="Ошибка резервного копирования Firestore"
+            MESSAGE="Не удалось создать бэкап для проекта *$PROJECT_ID*"
+            DETAILS="Время выполнения: $(date +'%d.%m.%Y %H:%M:%S')\nПроверьте логи для получения дополнительной информации."
+            send_slack_notification "$WEBHOOK_URL" "failure" "$TITLE" "$MESSAGE" "$DETAILS"
             echo "❌ Ошибка резервного копирования Firestore!"
           fi
         env:
           WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_RUN_ID: ${{ github.run_id }}

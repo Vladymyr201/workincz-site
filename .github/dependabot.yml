@@ -1,0 +1,31 @@
+version: 2
+updates:
+  # Обновление npm-пакетов
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    target-branch: "develop"
+    labels:
+      - "dependencies"
+      - "npm"
+    ignore:
+      # Игнорировать основные зависимости Next.js и React для предотвращения конфликтов
+      - dependency-name: "react"
+        versions: ["17.x", "18.x"]
+      - dependency-name: "react-dom"
+        versions: ["17.x", "18.x"]
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+
+  # Обновление GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
